@@ -1,5 +1,6 @@
-# # CS-study
+# CS-study
 cs지식을 정리하는 공간
+## Reopository Rules
 
 ## Table of Contents
 - Development Common Sense(개발상식)
