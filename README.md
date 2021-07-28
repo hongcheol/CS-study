@@ -6,16 +6,16 @@ cs지식을 정리하는 공간
 
 ## Table of Contents
 
-- Development Common Sense(개발상식)
-- Data Structure(자료구조)
-- Algorithm(알고리즘)
-- Database(데이터베이스)
-- Network(네트워크)
-- Operating System(운영체제)
-- Design Pattern(디자인 패턴)
-- Web(웹)
+- [Development Common Sense(개발상식)](#개발상식-)
+- [Data Structure(자료구조)](#자료구조-)
+- [Algorithm(알고리즘)](#알고리즘-)
+- [Database(데이터베이스)](#데이터베이스-)
+- [Network(네트워크)](#네트워크-)
+- [Operating System(운영체제)](#운영체제-)
+- [Design Pattern(디자인 패턴)](#디자인-패턴-)
+- [Web(웹)](#-)
 
-# 개발상식
+# 개발상식 [🔍](./DevelopmentCommonSense/REAMDE.md)
 
 - 클린코드 & 리팩토링 & 시큐어코딩
 - 애자일
@@ -28,7 +28,7 @@ cs지식을 정리하는 공간
 
 ---
 
-# 자료구조
+# 자료구조 [🔍](./DataStructure/REAMDE.md)
 
 1. Array
 2. LinkedList
@@ -42,7 +42,7 @@ cs지식을 정리하는 공간
 10. 그래프(Graph)
 ---
 
-# 알고리즘
+# 알고리즘 [🔍](./Algorithm/REAMDE.md)
 
 프로그래밍 대회에서 배우는 알고리즘 문제 해결 전략(a.k.a 종만북)을 기반으로 작성한 목차입니다.
 
@@ -94,7 +94,7 @@ cs지식을 정리하는 공간
 
 ---
 
-# 데이터베이스
+# 데이터베이스 [🔍](./Database/REAMDE.md)
 
 1. 키
 2. SQL - 기초 Query
@@ -109,7 +109,7 @@ cs지식을 정리하는 공간
 
 ---
 
-# 네트워크
+# 네트워크 [🔍](./Network/REAMDE.md)
 
 1. OSI 7계층
 2. IP
@@ -124,7 +124,7 @@ cs지식을 정리하는 공간
 
 ---
 
-# 운영체제
+# 운영체제 [🔍](./OS/REAMDE.md)
 
 1. 운영체제란?
 2. 프로세스와 쓰레드
@@ -144,7 +144,7 @@ cs지식을 정리하는 공간
 
 ---
 
-# 디자인 패턴
+# 디자인 패턴 [🔍](./DesignPatten/REAMDE.md)
 
 - 디자인 패턴이란?
 
@@ -177,6 +177,6 @@ cs지식을 정리하는 공간
 
 ---
 
-# 웹
+# 웹 [🔍](./Web/REAMDE.md)
 
 - test
