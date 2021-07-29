@@ -1,12 +1,3 @@
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-# 과목명
-=======
-=======
->>>>>>> a7ea030e52a9c9f11ee05dce498875c08ebda9b2
-=======
->>>>>>> a7ea030e52a9c9f11ee05dce498875c08ebda9b2
 # Design Pattern
 
 ### Design Pattern이란? 
@@ -76,10 +67,3 @@ public class Singleton2 {
     }
 }
 ```
-<<<<<<< HEAD
-<<<<<<< HEAD
->>>>>>> a7ea030e52a9c9f11ee05dce498875c08ebda9b2
-=======
->>>>>>> a7ea030e52a9c9f11ee05dce498875c08ebda9b2
-=======
->>>>>>> a7ea030e52a9c9f11ee05dce498875c08ebda9b2
