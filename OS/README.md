@@ -51,7 +51,7 @@
 
 교착상태는 정점(vertex, V)과 간선(edge, E) 집합으로 표현할 수 있습니다.
 
-![resource-allocation-graph](.img/resource-allocation-graph1.png)
+![resource-allocation-graph](./img/resource-allocation-graph1.png)
 
 - 정점
     - 시스템 내의 모든 활성 프로세스(원으로 표현)
@@ -60,7 +60,7 @@
     - 프로세스의 자원 요청 관계(프로세스에서 자원으로의 화살표로 표현)
     - 자원의 프로세스 할당 관계(자원에서 프로세스로의 화살표로 표현)
 
-![resource-allocation-graph](.img/resource-allocation-graph2.png)
+![resource-allocation-graph](./img/resource-allocation-graph2.png)
 
 ## 교착상태 처리 방법
 
@@ -113,7 +113,7 @@
 
 요청 간선과 할당 간선에 **예약 간선**이라는 새로운 유형을 도입합니다. 예약 간선은 프로세스가 미래에 해당 자원을 요청할 것이라는 의미를 내포합니다. 따라서 프로세스 실행 전 모든 예약 간선을 자원 할당 그래프에 명시해둔다면 교착 상태가 발생할 것을 사전에 예측할 수 있습니다.
 
-![resource-allocation-graph-algorithm](.img/resource-allocation-graph-algorithm.png)
+![resource-allocation-graph-algorithm](./img/resource-allocation-graph-algorithm.png)
 
 예약 간선을 할당 간선으로 변환시켜도 자원 할당 그래프에 사이클이 형성되지 않을 때에만 자원을 할당한다면 교착 상태가 발생하는 것을 피할 수 있습니다.
 
@@ -157,7 +157,7 @@
     - Finish[i] = true
 4. 모든 i에 대해 Finish[i] == true이면 이 시스템은 안전 상태에 있다.
 
-![banker's-algorithm](.img/banker's-algorithm.png)
+![banker's-algorithm](./img/banker's-algorithm.png)
 
 ### 교착 상태 탐지(Deadlock Detection)
 
@@ -169,7 +169,7 @@
 
 자원 할당 그래프를 변형시킨 대기 그래프를 활용하여 교착상태를 탐지할 수 있습니다. 대기 그래프가 사이클을 포함할 경우 시스템에 교착상태가 존재한다고 판단할 수 있습니다.
 
-![wait-for-graph](.img/wait-for-graph.png)
+![wait-for-graph](./img/wait-for-graph.png)
 
 2. 자원 유형 별 자원이 여러개 있는 경우
 
