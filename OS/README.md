@@ -30,8 +30,6 @@
 > 3개의 CD RW 드라이브를 가진 시스템에서 3개의 프로세스가 각각의 CD RW 드라이브를 사용하고 있는 상태라고 가정합니다. 만약 이 상황에서 3개의 프로세스가 또 다른 드라이브를 요청할 경우, 세 프로세스는 교착상태에 빠지게 됩니다. 모든 프로세스는 다른 대기중인 프로세스에 의해 드라이브가 방출되어야지만 대기에서 빠져나올 수 있기때문입니다.
 
 <br>
-<br>
-
 
 ## 교착상태의 특징
 
@@ -57,8 +55,6 @@
 
 교착상태는 정점(vertex, V)과 간선(edge, E) 집합으로 표현할 수 있습니다.
 
-![resource-allocation-graph](./img/resource-allocation-graph1.png)
-
 - 정점
     - 시스템 내의 모든 활성 프로세스(원으로 표현)
     - 시스템 내의 모든 자원 유형(사각형으로 표현)
@@ -66,9 +62,10 @@
     - 프로세스의 자원 요청 관계(프로세스에서 자원으로의 화살표로 표현)
     - 자원의 프로세스 할당 관계(자원에서 프로세스로의 화살표로 표현)
 
+![resource-allocation-graph](./img/resource-allocation-graph1.png)
+
 ![resource-allocation-graph](./img/resource-allocation-graph2.png)
 
-<br>
 <br>
 
 ## 교착상태 처리 방법
