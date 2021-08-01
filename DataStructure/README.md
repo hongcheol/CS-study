@@ -1,6 +1,6 @@
 # 과목명
 
-1. [Array](#Array)
+1. Array
 2. LinkedList
 3. Array & ArrayList & LinkedList
 4. 스택(Stack) & 큐(Queue)
