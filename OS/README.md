@@ -7,7 +7,7 @@
 5. PCB와 Context Switching
 6. IPC
 7. CPU 스케줄링
-8. [Deadlock 교착상태] (#Deadlock-교착상태)
+8. [Deadlock 교착상태](#Deadlock-교착상태)
 9. Race Condition
 10. 세마포어
 11. 뮤텍스
