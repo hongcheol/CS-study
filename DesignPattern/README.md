@@ -15,7 +15,7 @@
    
 **2. 구조 패턴**
    - Bridge
-   - Decorator
+   - [Decorator](#ecorator)
    - Facade
    - Flyweight
    - Proxy
@@ -69,3 +69,6 @@ public class Singleton2 {
     }
 }
 ```
+
+# 2. 패턴 
+## Decorator
