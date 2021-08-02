@@ -15,7 +15,7 @@
    
 **2. 구조 패턴**
    - Bridge
-   - [Decorator](#ecorator)
+   - [Decorator](#decorator)
    - Facade
    - Flyweight
    - Proxy
