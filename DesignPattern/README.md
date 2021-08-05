@@ -79,19 +79,19 @@ public class Singleton2 {
 카페에서 음료 주문을 받는 프로그램을 객체 지향 프로그래밍 관점으로 만들었다고 가정해 보자.
 이 프로그램에서 카페의 음료를 설계한다면 음료가 공통적으로 가지고 있는 성질을 따로 빼서 '음료'라는 클래스로 만들고, 이것을 상속 받아 사용하게 할 것이다.
 
-![](https://images.velog.io/images/bae_mung/post/b8ab47f8-1e75-4a13-8c5c-4280c4f3087e/Deco1.png)
+![](./img/Deco1.png)
 
 그래서 위와 같이 가장 상위 클래스인 Beverager 클래스를 생성하고, 카페모카, 바닐라라떼, 아메리카노, 카페라떼 4가지 음료 클래스를 생성하여 Berverage를 상속받도록 하였다.
 
 그러나 실제 카페에서는 카페모카에 샷추가를 하거나 휘핑크림 추가, 또는 아메리카노에 샷추가를 할 수 있다. 그러한 음료들까지 모두 클래스로 생성을 한다면 아래와 같이 아주 복잡해질 것이다.
 
-![](https://images.velog.io/images/bae_mung/post/7e8ce804-e582-4f52-a1d7-c347e10b818e/Deco2.png)
+![](./img/Deco2.png)
 
 보기만해도 복잡하다. 이렇게 된다면 메뉴를 1개만 새로 개발되어도 해당 메뉴의 샷추가, 휘핑추가, 자바칩추가 등등 클래스는 수십개가 추가될 것이고, 그렇게 되면 유지보수가 아주 힘들어질 것이다.
 
 그러면 좀 더 개선해서 다양한 옵션들을 Beverage 클래스에 Boolean 타입으로 관리한다고 하자.
 
-![](https://images.velog.io/images/bae_mung/post/1b0497c3-ed6d-4114-8527-ea218e191978/Deco3.png)
+![](./img/Deco3.png)
 
 Beverage 클래스의 cost 메소드에서 if문으로 hasMilk, hasCream 등을 체크하여 옵션별 가격들을 더할 수 있다.
 
@@ -139,11 +139,11 @@ OCP (Open-Closed Principle) : 클래스는 확장에 대해서는 열려 있고,
 ---
 
 그래서 프로그램을 데코레이터 패턴을 적용해서 새롭게 설계하려한다.
-![](https://images.velog.io/images/bae_mung/post/e52a1ed4-311d-42b7-92d3-6821ed2c0855/Deco6.png)
+![](./img/Deco5.png)
 
 데코레이터 패턴의 일반적인 형태는 위와 같다.
 
-![](https://images.velog.io/images/bae_mung/post/44a67b14-f046-4923-9693-3c35137bbeb1/Deco4.png)
+![](./img/Deco4.png)
 
 그리고 프로그램을 데코레이터 패턴을 적용한 설계는 위와 같다.
 음료 옵션들은 모두 CondimentDecorator 클래스를 상속받는다.
