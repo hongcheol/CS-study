@@ -1,3 +1,23 @@
+# 개발상식
+- 클린코드 & 리팩토링 & 시큐어코딩
+- 애자일
+- TDD
+- DDD
+- MSA
+- OOP
+- OOP의 5가지 설계 원칙
+- 함수형 프로그래밍
+- DevOps
+- 3rd Party
+- Git , Github, Gitlab
+- REST API
+- Parameter vs Argument
+- Sync vs Async
+- XSS
+- [도커와 쿠버네티스](#도커는)
+
+<br>
+
 # 도커란?
 도커는 **'컨테이너 기반의 오픈소스 가상화 플랫폼'**
 - 도커로 컨테이너를 띄운다.
