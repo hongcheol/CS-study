@@ -132,7 +132,7 @@ public class Americano extends Beverage {
 또한 hasMilk처럼 boolean이다 보니 옵션은 2번이상 추가하려고 할 때, 옵션들을 
 if(milk != 0) total += milk*500; 처럼 사용할 수 있게 boolean이 아니라 int형으로 변경하여야 한다.
 
-그래서 위 설계는 객체지향 설계 5대 원칙 **SOLID**중 특히, 2번째 **OPC**를 완전히 위반한 설계이다.
+그래서 위 설계는 객체지향 설계 5대 원칙 [SOLID](../../../tree/main/CommonSense#oop의-5가지-설계-원칙)중 특히, 2번째 [OPC](../../../tree/main/CommonSense#ocp)를 완전히 위반한 설계이다.
 
 > 
 OCP (Open-Closed Principle) : 클래스는 확장에 대해서는 열려 있고, 변경에 대해서는 닫혀 있어야 한다.
