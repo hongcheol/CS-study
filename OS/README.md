@@ -6,7 +6,7 @@
 4. 시스템 콜
 5. PCB와 Context Switching
 6. IPC
-7. [CPU 스케줄링](#CPU-스케줄링-(CPU-Scheduling))
+7. [CPU 스케줄링](#-CPU-스케줄링-(CPU-Scheduling))
 8. [Deadlock 교착상태](#Deadlock-교착상태)
 9. Race Condition
 10. 세마포어
@@ -16,9 +16,7 @@
 14. 메모리 & 가상 메모리
 15. 파일 시스템
 
-
-
-
+<br>
 
 # CPU 스케줄링 (CPU Scheduling)
 
@@ -268,7 +266,7 @@ CPU 스케줄링 알고리즘은 모두 서로 다른 특징을 갖고 있습니
 
 논리적인 처리기는 하나의 물리적인 처리기 내부에 여러개 존재할 수 있습니다. 이 논리적인 처리기들은 캐시 메모리, 버스 등과 같은 자신이 속한 물리적인 처리기의 자원을 공유하며 사용합니다.
 
-
+<br>
 
 # Deadlock 교착상태
 
