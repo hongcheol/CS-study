@@ -94,25 +94,20 @@ CPU 선점이 발생할 수 있는 조금 더 구체적인 상황을 생각해�
 CPU 스케줄링 알고리즘은 모두 서로 다른 특징을 갖고 있습니다. 특정 상황에서 더 나은 스케줄링 알고리즘을 선택하기 위해 다음과 같은 기준을 바탕으로 성능을 비교할 수 있습니다.
 
 1. CPU 이용률 (CPU utilization)
-    
     - CPU가 사용되는 정도
 
 2. 처리량 (Throughput)
-    
     - 단위 시간당 완료된 프로세스의 개수(작업량)
 
 3. 총처리 시간 (Turnaround time)
-
     - 한 프로세스를 실행하는데 소요된 시간
     - 프로세스 완료 시간에서 프로세스 제출 시간을 마이너스
     - 준비 완료 큐에서 대기한 시간, CPU에서 실행하는 시간, 입/출력 시간 등을 포함
 
 4. 대기 시간 (Waiting time)
-
     - 프로세스가 준비 완료 큐에서 대기하면서 보낸 시간의 합
 
 5. 응답 시간 (Response time)
-
     - 대화식 시스템(interactive system)을 위한 기준
     - 응답이 시작되는 데까지 걸리는 시간
 
@@ -135,12 +130,14 @@ CPU 스케줄링 알고리즘은 모두 서로 다른 특징을 갖고 있습니
     - 최소 평균 대기 시간을 보장하지 않습니다.
     - 하나의 긴 프로세스가 CPU를 점유할 경우 모든 다른 프로세스들이 CPU 양도를 기다리는 호위효과(convoy effect)가 발생합니다. -> CPU와 장치 이용률 저하
 
-스케줄링 시뮬레이션
+#### 스케줄링 시뮬레이션
 
 <p align="center"><img src="./img/fcfs_process.png" width="300"></p>
 <p align="center"><img src="./img/fcfs_gantt.png" width="600"></p>
 
 > 평균대기시간 = (0+24+27)/3 = 17
+
+<br>
 
 ### 최단 작업 우선 스케줄링 (Shortest-Job-First Scheduling)
 
@@ -150,19 +147,21 @@ CPU 스케줄링 알고리즘은 모두 서로 다른 특징을 갖고 있습니
 - 장점 : 최소 평균 대기 시간을 보장하므로 **최적** 스케줄링 기법입니다.
 - 단점 : 다음 CPU 버스트 길이를 미리 파악하기 어렵습니다.(다음 CPU 버스트 길이가 이전의 버스트 길이와 유사할 것이라고 기대한 뒤 근사 값을 계산하는 방법이 있습니다.)
 
-1. 비선점형 스케줄링 시뮬레이션
+#### 비선점형 스케줄링 시뮬레이션
 
 <p align="center"><img src="./img/sjf_process.png" width="300"></p>
 <p align="center"><img src="./img/sjf_gantt.png" width="600"></p>
 
 > 평균대기시간 = (3+16+9+0)/4 = 7
 
-1. 선점형 스케줄링(최소 잔여 시간 우선 스케줄링) 시뮬레이션
+#### 선점형 스케줄링(최소 잔여 시간 우선 스케줄링) 시뮬레이션
 
 <p align="center"><img src="./img/preem_sjf_process.png" width="300"></p>
 <p align="center"><img src="./img/preem_sjf_gantt.png" width="600"></p>
 
 > 평균대기시간 = ((10-1)+(1-1)+(17-2)+(5-3))/4 = 6.5
+
+<br>
 
 ### 우선순위 스케줄링 (Priority Scheduling)
 
@@ -177,12 +176,14 @@ CPU 스케줄링 알고리즘은 모두 서로 다른 특징을 갖고 있습니
 - 단점 : 낮은 우선순위 프로세스들이 CPU를 무한히 대기하는 문제(**무한 봉쇄(indefinite blocking)** 혹은 **기아 상태(starvation)**)가 발생할 수 있습니다.
     - 위의 문제를 해결하는 방법으로 오랫동안 대기하는 프로세스들의 우선순위를 점진적으로(특정 시간마다) 증가시켜주는 기법(**노화(aging)**)을 적용할 수 있습니다.
 
-선점형 스케줄링 시뮬레이션
+#### 선점형 스케줄링 시뮬레이션
 
 <p align="center"><img src="./img/priority_process.png" width="300"></p>
 <p align="center"><img src="./img/priori_gantt.png" width="600"></p>
 
 > 평균대기시간 = (6+0+16+18+1)/5 = 8.2
+
+<br>
 
 ### 라운드 로빈 스케줄링 (Round-Robin Scheduling)
 
@@ -199,12 +200,14 @@ CPU 스케줄링 알고리즘은 모두 서로 다른 특징을 갖고 있습니
     - 시간 할당량이 지나치게 크면 선입 선처리 스케줄링 기법과 같아질 수 있습니다.
     - 시간 할당량이 지나치게 작으면 문맥 교환 오버헤드가 커져 총처리 시간이 증가합니다.
 
-스케줄링 시뮬레이션 (시간 할당량 : 4)
+#### 스케줄링 시뮬레이션 (시간 할당량 : 4)
 
 <p align="center"><img src="./img/fcfs_process.png" width="300"></p>
 <p align="center"><img src="./img/rr_gantt.png" width="600"></p>
 
 > 평균대기시간 = (10+4+7)/3 = 7
+
+<br>
 
 ### 다단계 큐 스케줄링 (Multilevel Queue Scheduling)
 
