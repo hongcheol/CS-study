@@ -137,9 +137,8 @@ CPU 스케줄링 알고리즘은 모두 서로 다른 특징을 갖고 있습니
 
 스케줄링 시뮬레이션
 
-![선입 선처리 프로세스](./img/fcfs_process.png)
-
-![선입 선처리 Gantt 차트](./img/fcfs_gantt.png)
+<center><img src="./img/fcfs_process.png" width="400"></center>
+<center><img src="./img/fcfs_gantt.png" width="600"></center>
 
 > 평균대기시간 = (0+24+27)/3 = 17
 
@@ -153,17 +152,15 @@ CPU 스케줄링 알고리즘은 모두 서로 다른 특징을 갖고 있습니
 
 1. 비선점형 스케줄링 시뮬레이션
 
-![최단 작업 우선 프로세스](./img/sjf_process.png)
-
-![최단 작업 우선 Gantt 차트](./img/sjf_gantt.png)
+<center><img src="./img/sjf_process.png" width="400"></center>
+<center><img src="./img/sjf_gantt.png" width="600"></center>
 
 > 평균대기시간 = (3+16+9+0)/4 = 7
 
-2. 선점형 스케줄링(최소 잔여 시간 우선 스케줄링) 시뮬레이션
+1. 선점형 스케줄링(최소 잔여 시간 우선 스케줄링) 시뮬레이션
 
-![선점형 최단 작업 우선 프로세스](./img/preem_sjf_process.png)
-
-![선점형 최단 작업 우선 Gantt 차트](./img/preem_sjf_gantt.png)
+<center><img src="./img/preem_sjf_process.png" width="400"></center>
+<center><img src="./img/preem_sjf_gantt.png" width="600"></center>
 
 > 평균대기시간 = ((10-1)+(1-1)+(17-2)+(5-3))/4 = 6.5
 
@@ -182,9 +179,8 @@ CPU 스케줄링 알고리즘은 모두 서로 다른 특징을 갖고 있습니
 
 선점형 스케줄링 시뮬레이션
 
-![우선순위 프로세스](./img/priority_process.png)
-
-![우선순위 Gantt 차트](./img/priori_gantt.png)
+<center><img src="./img/priority_process.png" width="400"></center>
+<center><img src="./img/priori_gantt.png" width="600"></center>
 
 > 평균대기시간 = (6+0+16+18+1)/5 = 8.2
 
@@ -205,9 +201,8 @@ CPU 스케줄링 알고리즘은 모두 서로 다른 특징을 갖고 있습니
 
 스케줄링 시뮬레이션 (시간 할당량 : 4)
 
-![라운드 로빈 프로세스](./img/fcfs_process.png)
-
-![라운드 로빈 Gantt 차트](./img/rr_gantt.png)
+<center><img src="./img/fcfs_process.png" width="400"></center>
+<center><img src="./img/rr_gantt.png" width="600"></center>
 
 > 평균대기시간 = (10+4+7)/3 = 7
 
