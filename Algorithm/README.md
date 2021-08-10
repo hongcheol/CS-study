@@ -145,11 +145,13 @@ DFS(Depth-First Search,깊이 우선 탐색)은 그래프의 모든 노드를 �
 
 각 정점이 정수형인 경우를 예시로 설명하겠습니다.
 
-![그래프_표](./img/그래프_표.png)
+
+![그래프_표](./img/graph_chart.png)
 
 위와 같이 만들어진 그래프를 DFS로 탐색하는 그림은 다음과 같습니다.
 
-![그래프_DFS](./img/그래프_DFS.png)
+<img src="./img/graph_DFS.png" alt="그래프_DFS" style="zoom:50%;" />
+
 
 ## Java로 그래프를 표현하는 방법
 
