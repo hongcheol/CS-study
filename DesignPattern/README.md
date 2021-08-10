@@ -334,17 +334,125 @@ br.readLine();
 
 어댑터 패턴은 우리가 여행용 전원 어댑터를 생각해보면 이해가 쉽다.
 
-우리의 휴대폰, 노트북 충전기는 220V 동그란 돼지코 한국의 표준 플러그를 사용하지만, 전세계별로 이 플러그 표준은 각기 다 다르다.
+우리가 사용하는 휴대폰, 노트북 충전기는 220V 동그란 돼지코 한국의 표준 플러그를 사용하지만, 전세계별로 이 플러그 표준이 각기 다 다르다.
 
-일본은 동그란 모양이 아닌 || 모양을 표준으로 사용하고, 호주는 ∴ 모양을 표준으로 사용한다. 그렇기 때문에 우리는 해당 나라에서 우리 충전기를 사용하기 위해서는
+일본은 동그란 모양이 아닌 || 모양을 표준으로 사용하고, 호주는 ∴ 모양을 표준으로 사용한다. 
+
+그렇기 때문에 우리가 해당 나라에서 여행을 가서 콘센트를 사용해 충전을 하기 위해서는 아래 사진과 같은 전원 어댑터가 필요하다.
 
 ![](./img/adapter.jpg)
 
-위 사진과 같은 여행용 전원 어댑터가 필요하다.
+이와 같이 어댑터는 소켓의 인터페이스를 플러그에서 필요로 하는 인터페이스로 바꿔준다고 할 수 있다.
 
-이와같이 어댑터는 소켓의 인터페이스를 플러그에서 필요로 하는 인터페이스로 바꿔준다고 할 수 있다.
+객체 지향 프로그램에서의 어댑터도 마찬가지로 일상 생활에서와 동일하게 어떤 인터페이스를 클라이언트에서 요구하는 형태의 인터페이스로 맞춰주기 위해 중간에서 연결시켜주는 역할을 한다.
 
-그렇다면 객체지향 어댑터는 일상 생활에서와 동일하게 어떤 인터페이스를 클라이언트에서 요구하는 형태의 인터페이스에 적응시켜주는 역할을 한다.
+아래 어댑터의 기능을 잘 표현하는  UML이 있어서 가져와봤다.
+약간의 이해를 더 돕기 위해 MediaPackage라는 이름을 VideoPlayer으로,
+Media Player는 AudioPlayer라는 이름으로 변경하여 구현하였다.
 
+![](./img/adapter.png)
+
+> AudioPlayer.java
+```java
+public interface AudioPlayer{
+   
+   void play(String filename);
+   
+}
+```
+
+> VideoPlayer.java
+```java
+public interface VideoPlayer{
+   
+   void play(String filename);
+   
+}
+```
+
+> MP3.java
+```java
+public class MP3 implements AudioPlayer{
+   
+   @Override
+   void play(String filename){
+      System.out.println("Playing MP3 File ♪ : "filename);
+   }
+   
+}
+```
+
+> MP4.java
+```java
+public class MP3 implements VideoPlayer{
+   
+   @Override
+   void play(String filename){
+      System.out.println("Playing MP4 File ▶ : "filename);
+   }
+   
+}
+```
+
+> MKV.java
+```java
+public class MKV implements VideoPlayer{
+   
+   @Override
+   void play(String filename){
+      System.out.println("Playing MKV File ▶ : "filename);
+   }
+   
+}
+```
+
+아래는 VideoPlayer포맷을 AudioPlayer포맷에서도 사용할 수 있게 도와주는 FormatAdapter Class이다.
+FormatAdapter Class는 AudioPlayer 인터페이스를 상속받고, 멤버 변수로 VideoPlayer를 사용한다.
+생성자로 VideoPlayer를 입력받아 해당 Video 포맷을 사용하는 것이다.
+
+> FormatAdapter.java
+```java
+public class FormatAdapter implements AudioPlayer{
+   
+   private VideoPlayer media;
+   
+   public FormatAdapter(VideoPlayer video){
+      this.media = video;
+   }
+   
+   @Override
+   void play(String filename){
+      System.out.println("Using Adapter : ");
+      media.playFile(filename);
+   }
+   
+}
+```
+
+>Main.java
+```java
+public class Main{
+
+   public static void main(String[] args){
+   
+   AudioPlayer mp3Player = new MP3();
+   mp3Player.play("file.mp3");
+   
+   mp3Player = new FormatAdapter(new MP4());
+   mp3Player.play("file.mp4");
+   
+   mp3Player = new FormatAdapter(new MKV());
+   mp3Player.play("file.mkv");
+   
+   }
+   
+}
+```
+
+```
+> Playing MP3 File : file.mp3
+> Using Adapter : Playing MP4 File : file.mp4
+> Using Adapter : Playing MKV File : file.mkv
+```
 
 
