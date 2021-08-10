@@ -44,6 +44,7 @@
       1. 포드-풀커슨 알고리즘
       2. 네트워크 모델링
       3. 이분 매칭
+7. 정렬
 
 # 그래프
 # 그래프의 표현과 정의
@@ -142,18 +143,79 @@ DFS(Depth-First Search,깊이 우선 탐색)은 그래프의 모든 노드를 �
 3. 더 이상 갈 곳이 없는 막힌 정점에 도달할 때까지 반복한다.
 4. 더이상 갈 곳이 없다면 가장 마지막에 지난 간선을 따라 돌아가 더 이상 방문할 정점이 없을 때까지 반복한다.
 
+각 정점이 정수형인 경우를 예시로 설명하겠습니다.
+
+![그래프_표](./img/그래프_표.png)
+
+위와 같이 만들어진 그래프를 DFS로 탐색하는 그림은 다음과 같습니다.
+
+![그래프_DFS](./img/그래프_DFS.png)
+
 ## Java로 그래프를 표현하는 방법
+
+정점의 개수를 n, 간선의 개수를 m,  연결관계에 있는 노드를 (node1, node2)의 순서쌍으로 하면, 다음과 같이 그래프를 표현할 수 있습니다.
+
+```java
+Map<Integer, ArrayList<Integer>> graph = new TreeMap<Integer, ArrayList<Integer>>();
+int n = 0, m = 0
+Scanner sc = new Scanner(System.in);
+n = sc.nextInt();
+m = sc.nextInt();
+//초기화 해줘야지 아래의 반복문에서 nullPointException 발생하지않는다.
+for(int i = 0;i<n;i++){
+  graph.put(i+1,new ArrayList<>());
+}
+for(int i = 0;i<m;i++){
+  int n1 = 0, v1 = 0;
+  node1 = sc.nextInt();
+  node2 = sc.nextInt();
+  graph.get(n1).add(node2);
+  graph.get(node2).add(node1);
+}
+```
 
 
 
 ## DFS 알고리즘 구현
 
-스택과 큐를 활용해서 구현할 수 있습니다.
+스택을 활용해서 구현할 수 있습니다.
 
 ```java
-Stack needVisit;
-Queue visited;
+//code
+public void dfsWithoutRecursion(int start) {
+  Stack<Integer> stack = new Stack<Integer>();
+  boolean[] isVisited = new boolean[adjVertices.size()];
+  stack.push(start);
+  while (!stack.isEmpty()) {
+    int current = stack.pop();
+    isVisited[current] = true;
+    visit(current);
+    for (int dest : adjVertices.get(current)) {
+      if (!isVisited[dest])
+        stack.push(dest);
+    }
+  }
+}
 ```
+
+재귀호출을 통해 메서드 스택을 이용해서 구현하는 방법도 있습니다.
+
+```java
+public void dfs(int start) {
+  boolean[] isVisited = new boolean[adjVertices.size()];
+  dfsRecursive(start, isVisited);
+}
+void dfsRecursive(int current, boolean[] isVisited) {
+  isVisited[current] = true;
+  visit(current);
+  for (int dest : adjVertices.get(current)) {
+    if (!isVisited[dest])
+      dfsRecursive(dest, isVisited);
+  }
+}
+```
+
+
 
 ## 시간 복잡도
 
