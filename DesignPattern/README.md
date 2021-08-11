@@ -84,19 +84,19 @@ public class Singleton2 {
 카페에서 음료 주문을 받는 프로그램을 객체 지향 프로그래밍 관점으로 만들었다고 가정해 보자.
 이 프로그램에서 카페의 음료를 설계한다면 음료가 공통적으로 가지고 있는 성질을 따로 빼서 '음료'라는 클래스로 만들고, 이것을 상속 받아 사용할 것이다.
 
-![](./img/Deco1.png)
+<p align="center"><img src="./img/Deco1.png"></p>
 
 그래서 위와 같이 가장 상위 클래스인 Beverage 클래스를 생성하고, 카페모카, 바닐라라떼, 아메리카노, 카페라떼 4가지 음료 클래스를 생성하여 Beverage 클래스를 상속받도록 하였다.
 
 그러나 실제 카페에서는 카페모카에 샷추가를 하거나 휘핑크림 추가, 또는 아메리카노에 샷추가를 할 수 있다. 그러한 음료들까지 모두 클래스로 생성을 한다면 아래와 같이 아주 복잡해질 것이다.
 
-![](./img/Deco2.png)
+<p align="center"><img src="./img/Deco2.png"></p>
 
 보기만해도 복잡하다... 이렇게 된다면 메뉴를 1개만 새로 개발되어도 해당 메뉴의 샷추가, 휘핑추가, 자바칩추가 클래스까지 새로운 파생클래스 수십개가 추가될 것이고, 그렇게 되면 유지보수가 아주 힘들어질 것이다.
 
 그러면 좀 더 개선해서 다양한 옵션들을 Beverage 클래스에 Boolean 타입으로 관리한다고 하자.
 
-![](./img/Deco3.png)
+<p align="center"><img src="./img/Deco3.png"></p>
 
 Beverage 클래스의 cost 메소드에서 if문으로 hasMilk, hasCream 등을 체크하여 옵션별 가격들을 더할 수 있다.
 
@@ -144,11 +144,11 @@ public class Americano extends Beverage {
 
 그래서 프로그램을 데코레이터 패턴을 적용해 새롭게 설계하려 한다.
 
-![](./img/Deco5.png)
+<p align="center"><img src="./img/Deco5.png"></p>
 
 데코레이터 패턴의 일반적인 형태는 위와 같다.
 
-![](./img/Deco4.png)
+<p align="center"><img src="./img/Deco4.png"></p>
 
 그리고 프로그램을 데코레이터 패턴을 적용한 설계는 위와 같다.
 데코레이션 중 최상위 클래스인 CondimentDecorator 클래스가 있으며, 모든 추가 옵션들은 CondimentDecorator 클래스를 상속받는다.
@@ -317,16 +317,19 @@ cost 메소드 또한 마찬가지로 호출이 자바칩 -> ... -> 카메모카
 지금처럼 카페의 음료에 옵션을 추가하여 가격이 더해지고, getDescription에서 문자열이 더해지는 설명은 데코레이터 패턴을 이해하기 쉽게 표현한 것이고,
 실질적으로는 추가적인 기능들을 덧붙이는 것으로 사용된다.
 대표적으로 데코레이터 패턴이 쓰이는 곳은 우리가 가장 많이 사용하는 자바의 I/O 클래스이다. 
+
 ```java
 BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 br.readLine();
 ```
 를 풀어서 본다면 
+
 ```java
 BufferedReader br = new InputStreamReader(System.in);
 br = new BufferedReader(br);
 br.readLine();
 ```
+
 처럼 데코레이터 패턴이 적용됨을 알 수 있다.
 
 ---
@@ -343,7 +346,7 @@ br.readLine();
 
 그렇기 때문에 우리가 해당 나라에서 여행을 가서 콘센트를 사용해 충전을 하기 위해서는 아래 사진과 같은 전원 어댑터가 필요하다.
 
-![](./img/adapter.jpg)
+<p align="center"><img src="./img/adapter.jpg"></p>
 
 이와 같이 어댑터는 소켓의 인터페이스를 플러그에서 필요로 하는 인터페이스로 바꿔준다고 할 수 있다.
 
@@ -353,7 +356,7 @@ br.readLine();
 약간의 이해를 더 돕기 위해 MediaPackage라는 이름을 VideoPlayer으로,
 Media Player는 AudioPlayer라는 이름으로 변경하여 구현하였다.
 
-![](./img/adapter.png)
+<p align="center"><img src="./img/adapter.png"></p>
 
 아래는 AudioPlayer 인터페이스와 AudioPlayer 인터페이스를 구현하는 MP3 클래스이다.
 
