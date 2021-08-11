@@ -9,7 +9,7 @@
 **1. 생성 패턴**
    - Builder
    - Prototype
-   - Factory Method
+   - [Factory Method](#factory-method)
    - Abstract Factory
    - [Singleton](#singleton)
    
@@ -36,6 +36,9 @@
    - Visitor
    
 # 1. 생성패턴 
+## Factory Method
+#### 팩토리 메소드 패턴(Factory Method Pattern)이란
+
 ## Singleton
 #### 싱글턴 패턴(Singleton Pattern)이란 생성자가 여러 차례 호출되더라도 실제로 생성되는 객체는 하나이고 최초 생성 이후에 호출된 생성자는 최초의 생성자가 생성한 객체를 리턴하는 생성패턴이다. 
 - 클래스 내에서 인스턴스가 단 하나뿐임을 보장하므로, 프로그램 전역에서 해당 클래스의 인스턴스를 바로 얻을 수 있고 , 불필요한 메모리 낭비를 최소화한다.
