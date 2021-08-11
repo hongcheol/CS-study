@@ -463,8 +463,10 @@ public class Main{
 
 ```
 > Playing MP3 File ♪ : file.mp3
-> Using Adapter : Playing MP4 File ▶  : file.mp4
+> Using Adapter : Playing MP4 File ▶ : file.mp4
 > Using Adapter : Playing MKV File ▶ : file.mkv
 ```
+
+이렇게 어댑터 패턴을 통해 mp3Player 에서도 video 포맷의 파일을 재생시킬 수 있다. 물론 영상은 못보고 소리만 나오겠지만..
 
 ---
