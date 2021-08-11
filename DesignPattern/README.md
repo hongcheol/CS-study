@@ -462,9 +462,9 @@ public class Main{
 위 코드를 실행시켜보면 아래와 같이 출력이 됨을 알 수 있다.
 
 ```
-> Playing MP3 File : file.mp3
-> Using Adapter : Playing MP4 File : file.mp4
-> Using Adapter : Playing MKV File : file.mkv
+> Playing MP3 File ♪ : file.mp3
+> Using Adapter : Playing MP4 File ▶  : file.mp4
+> Using Adapter : Playing MKV File ▶ : file.mkv
 ```
 
 ---
