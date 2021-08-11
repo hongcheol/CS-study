@@ -346,24 +346,17 @@ br.readLine();
 
 객체 지향 프로그램에서의 어댑터도 마찬가지로 일상 생활에서와 동일하게 어떤 인터페이스를 클라이언트에서 요구하는 형태의 인터페이스로 맞춰주기 위해 중간에서 연결시켜주는 역할을 한다.
 
-아래 어댑터의 기능을 잘 표현하는  UML이 있어서 가져와봤다.
+아래 어댑터의 기능을 잘 표현하는  UML이 있어서 가져와 보았다.
 약간의 이해를 더 돕기 위해 MediaPackage라는 이름을 VideoPlayer으로,
 Media Player는 AudioPlayer라는 이름으로 변경하여 구현하였다.
 
 ![](./img/adapter.png)
 
+아래는 AudioPlayer 인터페이스와 AudioPlayer 인터페이스를 구현하는 MP3 클래스이다.
+
 > AudioPlayer.java
 ```java
 public interface AudioPlayer{
-   
-   void play(String filename);
-   
-}
-```
-
-> VideoPlayer.java
-```java
-public interface VideoPlayer{
    
    void play(String filename);
    
@@ -378,6 +371,17 @@ public class MP3 implements AudioPlayer{
    void play(String filename){
       System.out.println("Playing MP3 File ♪ : "filename);
    }
+   
+}
+```
+
+아래는 VideoPlayer 인터페이스와 VideoPlayerr 인터페이스를 구현하는 MP4, MKV 클래스이다.
+
+> VideoPlayer.java
+```java
+public interface VideoPlayer{
+   
+   void play(String filename);
    
 }
 ```
@@ -429,6 +433,12 @@ public class FormatAdapter implements AudioPlayer{
 }
 ```
 
+아래 Main Class는 어댑터 패턴의 사용 예시이다.
+
+MP3 객체를 AudioPlayer 참조변수로 mp3Player라는 생성하였는데,
+
+MP4 생성 객체를 어댑터를 사용하면 mp3Player에서도 사용할 수 있게된다.
+
 >Main.java
 ```java
 public class Main{
@@ -449,10 +459,12 @@ public class Main{
 }
 ```
 
+위 코드를 실행시켜보면 아래와 같이 출력이 됨을 알 수 있다.
+
 ```
 > Playing MP3 File : file.mp3
 > Using Adapter : Playing MP4 File : file.mp4
 > Using Adapter : Playing MKV File : file.mkv
 ```
 
-
+---
