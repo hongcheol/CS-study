@@ -435,9 +435,9 @@ public class FormatAdapter implements AudioPlayer{
 
 아래 Main Class는 어댑터 패턴의 사용 예시이다.
 
-MP3 객체를 AudioPlayer 참조변수로 mp3Player라는 생성하였는데,
+MP3 인스턴스를 AudioPlayer 참조변수로 mp3Player 객체를 생성하였는데,
 
-MP4 생성 객체를 어댑터를 사용하면 mp3Player에서도 사용할 수 있게된다.
+MP4 인스턴스에 어댑터를 사용하면 MP4도 mp3Player에서도 사용할 수 있게된다.
 
 >Main.java
 ```java
