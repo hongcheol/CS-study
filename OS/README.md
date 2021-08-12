@@ -1,12 +1,12 @@
 # Operating System(OS) 운영체제
 
 1. [운영체제란?](#운영체제란)
-2. [프로세스와 쓰레드](#프로세스와 쓰레드(Process & Thread))
+2. [프로세스와 쓰레드](#프로세스와-쓰레드(Process-&-Thread))
 3. 인터럽트
 4. 시스템 콜
 5. PCB와 Context Switching
 6. IPC
-7. [CPU 스케줄링](#CPU 스케줄링 (CPU Scheduling))
+7. [CPU 스케줄링](#CPU-스케줄링-(CPU-Scheduling))
 8. [Deadlock 교착상태](#Deadlock-교착상태)
 9. Race Condition
 10. 세마포어
@@ -17,6 +17,7 @@
 15. 파일 시스템
 
 <br>
+
 # 운영체제란?
 
 운영체제(Operating System)는 컴퓨터 **시스템 자원들을 효율적으로 관리**하여 사용자의 편의성과 시스템 성능을 극대화하는 시스템 소프트웨어 입니다.
@@ -26,16 +27,14 @@
 응용프로그램은 운영체제가 제공하는 자원만을 사용할 수 있습니다.
 
 
-
-![os](.\img\os.png)
-
+<p align="center"><img src="./img/os.png" width="400"></p>
 
 
 ## 부팅(Booting)
 
 운영체제는 다음의 순서로 실행됩니다.
 
-![os-booting](.\img\os-booting.png)
+<p align="center"><img src="./img/os-booting.png" width="1000"></p>
 
 1. 컴퓨터의 전원이 켜진다.
 2. 프로세서(CPU)에서 ROM에 있는 내용을 읽는다.
@@ -49,7 +48,7 @@
 
 운영체제는 크게 셸과 커널로 나누어집니다.
 
-![os-shell-kernel](.\img\os-shell-kernel.png)
+<p align="center"><img src="./img/os-shell-kernel.png" width="1000"></p>
 
 셸(Shell)은 명령어 해석기입니다. 사용자의 지시를 해석하여 시스템에 전달하는 인터페이스 역할을 합니다. sh, bash 등이 있습니다.
 
@@ -63,7 +62,7 @@
 - 입출력 관리 : 필요한 입출력 서비스 제공
 - 프로세스 간 통신 관리 : 공동 작업을 위한 각 프로세스 간 통신 환경 제공
 
-
+<br>
 
 # 프로세스와 쓰레드(Process & Thread)
 
@@ -79,7 +78,7 @@
 
 Data에는 전역 변수들이 저장되고 Stack에는 함수의 매개변수, return 주소, 로컬 변수와 같은 임시 값들을 저장합니다. heap에는 프로세스 실행 중에 동적으로 할당되는 값들이 저장됩니다. 
 
-![process](.\img\process.png)
+<p align="center"><img src="./img/process.png" width="600"></p>
 
 각 프로세스는 별도의 메모리 공간에서 실행되기 때문에 다른 프로세스의 자원에 접근할 수 없으며,
 
@@ -99,11 +98,11 @@ Data에는 전역 변수들이 저장되고 Stack에는 함수의 매개변수, 
 
 쓰레드는 프로세스 내에서 Stack만 따로 할당받고, Code, Data, Heap 영역은 공유합니다. 
 
-![thread](.\img\thread.png)
+<p align="center"><img src="./img/thread.png" width="600"></p>
 
 그래서 프로세스와 다르게 쓰레드 간의 일부 공간이나 자원을 공유하여 작동합니다.
 
-![Thread-share](.\img\Thread-share.png)
+<p align="center"><img src="./img/Thread-share.png" width="700"></p>
 
 
 
@@ -111,7 +110,6 @@ Data에는 전역 변수들이 저장되고 Stack에는 함수의 매개변수, 
 
  하나의 프로세스를 다수의 실행 단위로 구분하여 자원을 공유하고 자원의 생성과 관리의 중복성을 최소화하여 수행 능력을 향상시키는 것을 멀티스레딩이라고 합니다. 이 경우 각각의 스레드는 독립적인 작업을 수행해야 하기 때문에 각자의 스택과 PC 레지스터 값을 갖고 있습니다.
 
-<br>
 
 #### 스택을 쓰레드마다 독립적으로 할당하는 이유
 
@@ -121,14 +119,12 @@ Data에는 전역 변수들이 저장되고 Stack에는 함수의 매개변수, 
 
 따라서 쓰레드의 정의에 따라 독립적인 실행 흐름을 추가하기 위한 최소 조건으로 독립된 스택을 할당합니다.
 
-<br>
 
 #### PC Register 를 쓰레드마다 독립적으로 할당하는 이유
 
 쓰레드는 CPU 를 할당받았다가 스케줄러에 의해 다시 반환합니다.  그래서 PC Register에 쓰레드가 명령어의 어느 부분까지 수행했는지 PC 값을 저장해놓을 필요가 있습니다. 
 
 따라서 PC 레지스터를 독립적으로 할당합니다.
-
 
 
 ## 멀티 프로세스 VS 멀티 쓰레드
