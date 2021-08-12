@@ -37,7 +37,161 @@
    
 # 1. 생성패턴 
 ## Factory Method
-#### 팩토리 메소드 패턴(Factory Method Pattern)이란
+#### 팩토리 메소드 패턴(Factory Method Pattern)이란 상위 클래스에 알려지지 않은 구체 클래스를 생성하는 패턴이다.
+#### 또한 하위 클래스가 어떤 객체를 생성할지 결정하도록 하는 패턴이기도 하다. 그리고 상위 클래스 코드에 구체적인 클래스 이름을 감추기 위한 방법으로도 사용한다.
+
+<p align="center"><img src="./img/factory1.png"></p>
+
+팩토리 메소드 패턴을 이해하기 위해서는 먼저 아래와 코드와 같은 신발 매장 예시를 살펴보자.
+
+```java
+// 이름을 통해 신발을 주문 받음
+Shoes orderShoes(String name) {
+    // 해당 이름의 신발을 찾아서 특정 구상 객체 생성
+    Shoes shoes;
+    
+    if (name.equals("blackShoes"))     shoes = new BlackShoes();
+    else if (name.equals("brownShoes"))shoes = new BrownShoes();
+    else if (name.equals("redShoes"))  shoes = new RedShoes();
+    
+    // 신발을 준비하고 포장하는 메소드
+    // 모든 신발 공용 메소드
+    shoes.prepare(); 
+    shoes.packing(); 
+ 
+    return shoes;
+}
+```
+현재 이 신발 매장에는 3개의 신발만 팔고 있다. 그리고 앞으로 판매되는 제품이 늘어나거나 지금 있는 제품이 더 이상 판매 되지 않을 수도 있다. 이 부분은 언제나 변경이 가능 한 부분이다.
+
+그러나 밑에 있는 prepare()과 packing() 두 메소드는 제품에 변화가 생기더라도 변하지 않는 부분이다.
+
+위 코드를 간단하게 캡슐화하여 ShoesFactory라는 클래스로 만들면
+
+> ShoesFactory.java
+
+```java
+public class ShoesFactory {
+ 
+    public Shoes makeShoes(String name) {
+ 
+       Shoes shoes = null;
+       if (name.equals("blackShoes"))     shoes = new BlackShoes();
+       else if (name.equals("brownShoes"))shoes = new BrownShoes();
+       else if (name.equals("redShoes"))  shoes = new RedShoes();
+       
+       return shoes;
+    }
+ 
+}
+```
+
+위 코드처럼 만들 수 있다. 그리고 사용은 아래처럼 할 수 있다.
+
+> ShoesStore.java
+
+```java
+public class ShoesStore {
+     
+    ShoesFactory factory;
+ 
+    public ShoesStore(ShoesFactory factory) {
+        this.factory = factory;
+    }
+   
+    Shoes orderShoes(String name) {
+        Shoes shoes = factory.makeShoes(name);
+        shoes.prepare(); 
+        shoes.packing(); 
+ 
+        return shoes;
+    }
+}
+```
+
+고객에게 특정 신발에 대한 주문이 들어 왔을 때 매장에서는 공장에 해당 신발 오더를 넣고 받으면 되고, 판매하는 신발이 늘어나거나 단종되면 신발 매장이 아닌 신발 공장에서 그 변화를 처리할 수 있다.
+
+위의 예시 코드는, 디자인 패턴까지는 아니고 프로그래밍에 사용하는 관용구정도로 보면 된다.
+
+그렇다면 이제 본격적으로 팩토리 메소드 패턴을 살펴보자. 
+
+위에서 봤던 신반 매장은 점점 성장하여 다른 나라로 진출하기 시작했다. 일본과 프랑스에도 진출을 하여 매장을 지었다고 하자.
+
+```java
+   JapanShoesStore jpStore= new JapanShoeStore (new JapanShoesFactory());
+   jpStore.order("blackShoes");
+    
+   FranceShoesStore  frStore = new FranceShoesStore (new FranceShoesFactory());
+   frStore.order("blackShoes");
+```
+
+그런데 이 해외 매장들이 본사에서 준 가이드라인 그대로 똑같이 만들지 않고, 현지 상황에 맞춰 일본에서는 약간 작게 만들고 프랑스에서는 신발 옆에 패턴을 넣기 시작했다. 
+뿐 만 아니라 포장까지도 자기 마음대로 하였다.
+
+그래서 본사는 매장과 신발 생산 과정 전체를 묶어주는 아래와 같은 프레임 워크를 만들어 모든 매장에서 이를 따르게 하였다.
+
+> ShoesStore.java
+
+```java
+   public abstract class ShoesStore {
+ 
+    public ShoesStore orderShoes(String name) {
+        Shoes shoes = makeShoes(name);
+        shoes.prepare();
+        shoes.packing();
+ 
+        return shoes;
+ 
+    }
+ 
+    abstract Shoes makeShoes(String name);
+ 
+}
+```
+ShoesStore 추상 클래스를 선언하면, 달라지는 부분은 추상메소드인 신발 제작 뿐이다. 
+
+각 현지 상황메 맞춰 makeShoes 메소드를 오버라이드하여 일본에서는 약간 작게 만들고, 프랑스에서는 패턴을 넣어 신발을 제작하면 된다.
+
+그대신 제작, 준비, 포장하는 공정은 ShoesStore를 상속하는 전 세계 모든 매장들에서 똑같은 시스템이 적용 될 수 있다.
+
+> JapanShoesStore.java
+
+```java
+class JapanShoesStore extends ShoesStore {
+ 
+    @Override
+    Shoes makeShoes(String name) {
+        if (name.equals("blackShoes")) return new JPStyleBlackShoes();  
+        else if (name.equals("brownShoes")) return new JPStyleBrownShoes();
+        else if (name.equals("redShoes")) return new JPStyleRedShoes();
+        else return null;
+   }
+
+}
+```
+
+> FranceShoesStore.java
+
+```java
+class FranceShoesStore extends ShoesStore {
+ 
+    @Override
+    Shoes makeShoes(String name) {
+        if (name.equals("blackShoes")) return new FRStyleBlackShoes();  
+        else if (name.equals("brownShoes")) return new FRStyleBrownShoes();
+        else if (name.equals("redShoes")) return new FRStyleRedShoes();
+        else return null;
+   }
+
+}
+```
+
+여기서 가장 중요한 점은 하위 클래스에서 메소드를 오버라이딩 하였기 때문에, 슈퍼클래스에 있는 orderShoes 메소드에서는 어떤 신발이 만들어 지는지 전혀 모르고 있다는 것이다. 
+동적 바인딩되는 그 메소드에서 주는 신발을 받아서 준비하고 포장할 뿐 이다.
+
+<p align="center"><img src="./img/factory2.png"></p>
+
+---
 
 ## Singleton
 #### 싱글턴 패턴(Singleton Pattern)이란 생성자가 여러 차례 호출되더라도 실제로 생성되는 객체는 하나이고 최초 생성 이후에 호출된 생성자는 최초의 생성자가 생성한 객체를 리턴하는 생성패턴이다. 
