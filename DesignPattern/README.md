@@ -42,6 +42,8 @@
 
 <p align="center"><img src="./img/factory1.gif"></p>
 
+팩토리는 공장이란 뜻이다. 따라서 팩토리 메소드 패턴도 무언가를 위한 공장이라고 보면 된다.
+
 팩토리 메소드 패턴을 이해하기 위해서는 먼저 아래와 코드와 같은 신발 매장 예시를 살펴보자.
 
 ```java
@@ -125,7 +127,7 @@ public class ShoesStore {
    frStore.order("blackShoes");
 ```
 
-그런데 이 해외 매장들이 본사에서 준 가이드라인 그대로 똑같이 만들지 않고, 현지 상황에 맞춰 일본에서는 약간 작게 만들고 프랑스에서는 신발 옆에 패턴을 넣기 시작했다. 
+그런데 이 해외 매장들이 본사에서 준 가이드라인 그대로 똑같이 만들지 않고, 현지 상황에 맞춰 일본에서는 약간 굽을 높게 만들고 프랑스에서는 신발 옆에 패턴을 넣기 시작했다. 
 뿐 만 아니라 포장까지도 자기 마음대로 하였다.
 
 그래서 본사는 매장과 신발 생산 과정 전체를 묶어주는 아래와 같은 프레임 워크를 만들어 모든 매장에서 이를 따르게 하였다.
@@ -150,7 +152,7 @@ public class ShoesStore {
 ```
 ShoesStore 추상 클래스를 선언하면, 달라지는 부분은 추상메소드인 신발 제작 뿐이다. 
 
-각 현지 상황메 맞춰 makeShoes 메소드를 오버라이드하여 일본에서는 약간 작게 만들고, 프랑스에서는 패턴을 넣어 신발을 제작하면 된다.
+각 현지 상황메 맞춰 makeShoes 메소드를 오버라이드하여 일본에서는 약간 굽을 높게 만들고, 프랑스에서는 패턴을 넣어 신발을 제작하면 된다.
 
 그대신 제작, 준비, 포장하는 공정은 ShoesStore를 상속하는 전 세계 모든 매장들에서 똑같은 시스템이 적용 될 수 있다.
 
@@ -189,7 +191,143 @@ class FranceShoesStore extends ShoesStore {
 여기서 가장 중요한 점은 하위 클래스에서 메소드를 오버라이딩 하였기 때문에, 슈퍼클래스에 있는 orderShoes 메소드에서는 어떤 신발이 만들어 지는지 전혀 모르고 있다는 것이다. 
 동적 바인딩되는 그 메소드에서 주는 신발을 받아서 준비하고 포장할 뿐 이다.
 
-<p align="center"><img src="./img/factory2.png"></p>
+<p align="center"><img src="./img/factory3.png"></p>
+
+#### 신발을 주문받고 생산하는 생산자 클래스
+
+<p align="center"><img src="./img/factory4.png"></p>
+
+#### 생산자 클래스에서 생산되는 제품 클래스
+
+팩토리 메소드 패턴의 클래스들은 크게 생산자 클래스와 제품 클래스로 구분할 수 있다.
+
+이제 생산자 클래스인 ShoesStore 클래스에서 사용될 제품 클래스 Shoes 클래스를 작성해 보자.
+
+> Shoes.java
+
+```java
+abstract class Shoes {
+ 
+    String name;
+    String bottom;
+    String leather;
+    boolean hasPattern;
+ 
+    void prepare() {
+        System.out.println("주문하신 신발을 준비중입니다.");
+    }
+ 
+    void packing() {
+        System.out.println("준비 완료된 신발을 포장중입니다.");
+    }
+ 
+    public String getName() {
+        return name;
+    }
+ 
+}
+```
+
+> JPStyleBlackShoes.java
+
+```java
+class JPStyleBlackShoes extends Shoes {
+ 
+    public JPStyleBlackShoes() { 
+        name = "일본 스타일의 검은 구두";
+        bottom = "굽이 높은 밑창";
+        leather = "스웨이드";
+        hasPattern = false;
+    }
+ 
+}
+
+```
+
+> FRStyleBlackShoes.java
+
+```java
+class FRStyleBlackShoes extends Shoes {
+ 
+    public FRStyleBlackShoes() { 
+        name = "프랑스 스타일의 검은 구두";
+        bottom = "일반 굽높이 밑창";
+        leather = "스웨이드";
+        hasPattern = true;
+    }
+ 
+}
+```
+
+추상 클래스로 Shoes 클래스를 설계하고, JPStyleBlackShoes, FRStyleBlackShoes에서 멤버변수를 초기화하며 구현해주었다.
+
+> __추상 메소드가 없는 추상 클래스가 여기서 등장한다.__
+> Shoes 클래스는 추상 메소드가 존재하지 않지만 추상 클래스로 선언되었기 때문에 new Shoes();로 직접 객체 생성은 불가능하고,
+> Shoes 클래스를 상속받는 클래스에서 Shoes를 참조변수로하여 객체 생성을 할 수 있다.
+> 추상 메소드 존재 O -> 무조건 클래스도 추상 클래스로 선언
+> 추상 메소드 존재 X -> 현재 클래스로 다이렉트 객체 생성을 막고 싶을 때, 추상 클래스로 선언
+
+여기까지 UML에 설계된 클래스들의 구현이 마무리 되었다. 
+이제 메인 클래스에서 위에서 설계한 팩토리 메소드 패턴이 어떻게 사용되는지 살펴 보자.
+
+> Main.java
+
+```java
+public class Main {
+ 
+    public static void main(String[] args) {
+        
+        // 일본과 프랑스에 현지 트렌드에 맞춰 매장을 열었음
+        ShoesStore jpStore = new JapanShoesStore();
+        ShoesStore frStore = new FranceShoesStore();
+      
+        // 일본 매장에서 검은 신발 주문
+        Shoes shoes = jpStore.orderShoes("blackShoes");
+        System.out.println("일본 매장에서 주문한 검은 신발 : " + shoes.getName());
+        
+        System.out.println();
+        
+        // 프랑스 매장에서 검은 신발 주문
+        shoes = frStore.orderShoes("blackShoes");
+        System.out.println("프랑스 매장에서 주문한 검은 신발  : " + shoes.getName());
+ 
+    }
+ 
+}
+
+위 코드를 실행해보면 아래와 같이 출력될 것이다.
+
+```text
+> 주문하신 신발을 준비중입니다.
+> 준비 완료된 신발을 포장중입니다.
+> 일본 매장에서 주문한 검은 신발 : 일본 스타일의 검은 구두
+> 
+> 주문하신 신발을 준비중입니다.
+> 준비 완료된 신발을 포장중입니다.
+> 프랑스 매장에서 주문한 검은 신발 : 프랑스 스타일의 검은 구두
+```
+
+위 메인 메소드의 프로세스는 아래와 같다. 참고로 일본 매장과 프랑스 매장에서의 프로세스는 동일하니 공통적인 프로세스로 묶어서 설명하겠다.
+
+1. 현지 신발 매장이 문을 열었음. (ShoesStore를 참조변수로 하는 현지 ShoesStore 객체 생성)
+2. 매장에 신발 종류를 통해 신발을 주문함. (ShoesStore의 orderShoes메소드)
+3. ShoesStore의 orderShoes 내부에서 생성된 객체에 맞게 동적바인딩되어 오버라이딩된 makeShoes 메소드가 실행됨
+4. 오버라이딩된 makeShoes 메소드에서 주문에 맞는 신발객체를 호출된 orderShoes메소드로 리턴함
+5. prepare(), packing() 메소드가 실행됨
+6. make, prepare, packing이 완료된 Shoes 객체를 리턴함
+7. 주문한 신발이 어떤 객체인지 출력하여 확인
+
+마무리로 다시 한번 팩토리 메소드 패턴을 정리하자면, 팩토리 메소드 패턴은 객체를 만들어내는 부분을 자식 클래스에 위임하는 패턴이다.
+
+new 키워드를 호출하는 부분을 서브 클래스에 위임하였기 때문에, 상위 클래스인 ShoesStore 클래스 내부에는 new 라는 키워드가 존재하지 않는다. 
+
+즉, 상위 클래스가 아닌 하위 클래스에서 어떤 클래스를 만들지 결정하게 하도록 하는 것이다. 
+
+하위 클래스에서 추상 메소드인 makeShoes메소드를 오버라이딩 하였기 때문에, 상위 클래스에 있는 orderShoes 메소드에서는 어떤 신발이 만들어 지는지 전혀 모르고 있다.
+
+동적 바인딩된 그 메소드에서 주는 신발을 받아서 준비하고 포장해서 내놓을 뿐 이다.
+
+> 객체 지향 프로그래밍 세계에서 자식은 부모를 알아도, 부모는 자식을 모른다. 
 
 ---
 
