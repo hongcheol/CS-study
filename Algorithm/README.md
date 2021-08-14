@@ -32,7 +32,7 @@
 6. [그래프](#그래프)
    1. [그래프의 표현과 정의](#그래프의-표현과-정의)
    2. [DFS](#DFS)
-   3. BFS
+   3. [BFS](#BFS)
    4. 최단 경로 알고리즘
       1. 다익스트라
       2. 벨만-포드
@@ -222,3 +222,52 @@ void dfsRecursive(int current, boolean[] isVisited) {
 ## 시간 복잡도
 
 일반적으로 DFS의 시간복잡도는 정점의 수를 V, 간선의 수를 E라고 할 때 O(V+E) 입니다.
+
+# BFS
+
+BFS(너비 우선 탐색)은 그래프를 탐색하는 방법 중 하나입니다.
+
+정점들과 같은 레벨에 있는 노드(형제 노드)들을 먼저 탐색하는 방법으로 다음의 순서를 따릅니다. 
+
+1. 현재 정점과 인접한 간선들을 하나씩 검사합니다.
+
+2. 현재 노드에서 방문할 수 있는 노드를 전부 방문합니다.
+
+3. 전부 방문한 후 그 다음 레벨의 노드를 방문합니다.
+
+4. 더 이상 방문할 곳이 없다면 탐색을 종료합니다.
+
+   
+
+   ![그래프_표](./img/graph_chart.png)
+
+<img src="./img/graph_BFS.png" alt="graph_BFS" style="zoom:50%;" />
+
+## BFS 알고리즘 구현
+
+queue와 배열을 이용해서 구현할 수 있습니다.
+
+```java
+//code
+static void bfs(Map graph,int start_node){
+  Queue<Integer> need_visit = new LinkedList<>();
+  Queue<Integer> visited = new LinkedList<>();
+  need_visit.add(start_node);
+
+  while(need_visit.isEmpty()==false){
+    int node = need_visit.poll();
+    if(!visited.contains(node)){
+      visited.add(node);
+      ArrayList<Integer> temp = (ArrayList<Integer>) graph.get(node);
+      for(int data : temp) need_visit.add(data);
+    }
+  }
+  for(int data : visited)System.out.print(data+" ");
+}
+```
+
+
+
+## 시간복잡도
+
+일반적으로 BFS의 시간복잡도는 정점의 수를 V, 간선의 수를 E라고 할 때 O(V+E) 입니다.
