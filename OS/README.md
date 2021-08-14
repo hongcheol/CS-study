@@ -2,7 +2,7 @@
 
 1. [운영체제란?](#운영체제란)
 2. [프로세스와 쓰레드](#프로세스와 쓰레드(Process & Thread))
-3. 인터럽트
+3. [인터럽트](# 인터럽트 (Interrupt))
 4. 시스템 콜
 5. PCB와 Context Switching
 6. IPC
