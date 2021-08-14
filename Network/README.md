@@ -1,10 +1,10 @@
 # Network 네트워크
 
 1. [OSI 7계층](#osi-7계층)
-2. [IP](#IP)
-   1. [IPv4](##IPv4)
-   2. [IPv6](##IPv4)
-3. [TCP/IP](#TCP/IP)
+2. [IP](#ip)
+   1. [IPv4](##ipv4)
+   2. [IPv6](##ipv4)
+3. [TCP/IP](#tcp/ip)
 4. UDP
 5. 대칭키 & 공개키
 6. HTTP & HTTPS
