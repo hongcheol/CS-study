@@ -318,7 +318,7 @@ while V–S != empty {
 
 S는 시작점을 포함해서 현재까지 최단 경로를 발견한 점들의 집합을 의미합니다.
 
-<img src="/Users/shinhongcheol/Desktop/CS-study/Algorithm/img/Dijkstra_0.png" alt="Dijkstra_0" style="zoom:75%;" />
+<img src="./img/Dijkstra_0.png" alt="Dijkstra_0" style="zoom:75%;" />
 
 u = min{distance[w], w 는 V-S의 원소}의 의미는 u까지의 최단 거리의 길이는 distance[u] 와 같다는 의미입니다. 
 
@@ -347,13 +347,13 @@ distance[ ]를 업데이트할 때 각각의 간선들이 2번씩 체크되는�
 
 1. 
 
-<img src="/Users/shinhongcheol/Desktop/CS-study/Algorithm/img/Dijkstra_3.png" alt="Dijkstra_3" style="zoom:75%;" />
+<img src="./img/Dijkstra_3.png" alt="Dijkstra_3" style="zoom:75%;" />
 
 아직 최단 경로를 찾지 못한 정점 중 u에 인접한 정점들의 거리를 업데이트 할 때 u와 w를 연결하는 간선이 체크가 됩니다. 
 
 2.
 
-<img src="/Users/shinhongcheol/Desktop/CS-study/Algorithm/img/Dijkstra_4.png" alt="Dijkstra_4" style="zoom:75%;" />
+<img src="./img/Dijkstra_4.png" alt="Dijkstra_4" style="zoom:75%;" />
 
 정점 w의 최단 경로가 찾아졌기 때문에, w는 S에 속하게됩니다. 아직 최단 경로를 찾기 못한 정점들에서 w까지의 거리를 업데이트하는 과정에서 u에서 w로의 간선이 다시 한 번 체크됩니다.
 
