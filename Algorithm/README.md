@@ -297,7 +297,7 @@ static void bfs(Map graph,int start_node){
 S = {v0}; distance[v0] = 0; 
 for (w 가 V - S에 속한다면)//V-S는 전체 정점에서 이미 방문한 정점을 뺀 차집합.
 	if ((v0, w)가 E에 속한다면) distance[w] = cost(v0,w); 
-	else distance[w] = ;
+	else distance[w] = inf;
 
 //algorithm
 S = {v0};
