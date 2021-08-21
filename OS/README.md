@@ -4,7 +4,7 @@
 2. [프로세스와 쓰레드](#프로세스와-쓰레드(Process-&-Thread))
 3. [인터럽트](#인터럽트-(Interrupt))
 4. 시스템 콜
-5. PCB와 Context Switching
+5. [PCB와 Context Switching](#PCB와-Context-Switching)
 6. IPC
 7. [CPU 스케줄링](#CPU-스케줄링-(CPU-Scheduling))
 8. [Deadlock 교착상태](#Deadlock-교착상태)
@@ -212,11 +212,98 @@ Data에는 전역 변수들이 저장되고 Stack에는 함수의 매개변수, 
 
 ## 인터럽트가 없다면?
 
-입출력 연산은 프로세서의 명령 수행 연산보다 훨씬 느립니다. 예를 들어 프로세서가 입력 장치를 주기적으로 검사하며 신호를 기다린다면(Polling 방식) 그 때 마다 프로세서는 다른 작업을 수행할 수 없기 때문에 프로세서의 오버헤드가 증가하여 시간이 낭비될 것입니다. 하지만, 인터럽트가 입출력 장치의 처리 신호를 보내준다면 프로세서가 다른 작업을 하고 있다가 그 작업을 처리할 수 있게 됩니다.
+입출력 연산은 프로세서의 명령 수행 연산보다 훨씬 느립니다. 
+
+예를 들어 프로세서가 입력 장치를 주기적으로 검사하며 신호를 기다린다면(Polling 방식) 그 때 마다 프로세서는 다른 작업을 수행할 수 없기 때문에 프로세서의 오버헤드가 증가하여 시간이 낭비될 것입니다. 
+
+하지만, 인터럽트가 입출력 장치의 처리 신호를 보내준다면 프로세서가 다른 작업을 하고 있다가 그 작업을 처리할 수 있게 됩니다.
 
 <br>
 
 
+
+# PCB와 Context Switching
+
+## PCB(Process Controll Block)
+
+PCB는 OS에서 **프로세스에 대한 중요 정보를 저장**하고 있는 자료구조입니다.  OS는 프로세스를 관리하기 위해 **프로세스의 생성과 동시에 고유한 PCB 를 생성**합니다.
+
+<p align="center"><img src="./img/pcb_create.png" width="400"></p>
+
+> 프로그램 실행 -> 프로세스 생성 -> 프로세스 주소 공간에 (stack, data, stack) 생성 -> 이 프로세스의 메타데이터들이 PCB에 저장
+
+CPU에서 프로세스 수행 중에 작업을 멈추고 다른 프로세스를 처리해야 하는 경우가 생깁니다. 그 때, 기존에 수행하고 있던 프로세스에 프로세스의 정보를 저장하는 곳이 PCB입니다.  
+
+OS는 PCB에 현재까지 수행한 프로세스의 상태를 저장하고 CPU를 반납합니다. 그래서 PCB에는 이전까지 수행하고 있던 **프로세스가 다음에 수행해야 할 상태값**이 저장됩니다.  
+
+**프로세스가 종료되면 OS는 해당 프로세스의 PCB를 제거**합니다.
+
+
+
+## PCB에 저장되는 정보
+
+<p align="center"><img src="./img/pcb.jpg" width="400"></p>
+
+- 프로세스 식별자(Process ID, PID) : 프로세스 식별번호
+- 프로세스 상태 : new, ready, running, waiting, terminated 등의 상태를 저장
+- 프로그램 카운터 : 프로세스가 다음에 실행할 명령어의 주소
+- CPU Register 정보
+- CPU 스케쥴링 정보 : 프로세스의 우선순위, 스케줄 큐에 대한 포인터 등
+- 메모리 관리 정보 : 페이지 테이블 또는 세그먼트 테이블 등과 같은 정보를 포함
+- Accounting 정보 : 사용된 CPU 시간, 시간제한, 계정번호 등
+- 입출력 상태 정보 : 프로세스에 할당된 입출력 장치들과 열린 파일 목록
+
+
+
+## Context Switching
+
+Context Switching은 **CPU가 현재 수행하고 있는 작업(Process, Thread)의 상태를 저장하고 다음 진행할 작업의 상태 및 Register 값들에 대한 정보(Context)를 읽어 새로운 작업의 Context 정보로 교체하는 과정**을 말합니다.  여기서 Context란 CPU가 다루는 작업에 대한 정보를 말하고, 대부분의 정보는 Register에 저장되고 PCB로 관리됩니다. 그래서 이를 위의 **PCB의 역할에 맞추어 말하면 CPU가 이전의 프로세스 상태를 PCB에 보관하고, 또 다른 프로세스의 정보를 PCB에서 읽어서 레지스터에 적재하는 과정**을 말합니다.
+
+Context Switching은 Interrupt가 발생하거나, 실행 중인 CPU 사용 시간을 모두 소모하거나, 입출력을 위해 대기해야 하는 경우 발생합니다.
+
+즉, Context Switching은 **프로세스가** Ready -> Running , Running -> Ready , Running -> Block 처럼 **상태 변경 시에 발생**합니다. 그러므로 **Context Switching을 하는 주체는 CPU 스케쥴러**입니다.
+
+
+
+## Context Switching 수행 과정
+
+<p align="center"><img src="./img/context-switching.jpg" width="500"></p>
+
+> 프로세스 P0과 P1이 존재하고 P0이 CPU를 점유 중이고, P1이 대기 중일 때 Interrupt나 System Call이 발생하여 P1이 CPU를 점유하게 된다면 위와 같은 Context Switching 과정이 수행 됩니다.
+
+
+
+## Context Switching Overhead
+
+Context Switching이 발생하게 되면 다음과 같은 과정이 필요합니다.
+
+- Cache 초기화
+
+- Memory Mapping 초기화
+
+- 메모리의 접근을 위해서 Kernel은 항상 실행되어야 합니다.
+
+이 과정에서 소요되는 시간을 Cost라고 표현합니다. **Cost는 낭비되는 시간**이라고 생각할 수 있습니다. 이렇게 어떤 과정을 할 때 소모되는 Cost들을 Overhead라고 합니다.  그러므로 **어떤 작업을 할 때 Overhead가 높다는 것은 그 과정을 수행하기 위해 필요한 다른 작업들의 Cost가 높다**고 할 수 있습니다.
+
+따라서 Context Switching은 Overhead가 높은 작업이고 잦은 Context Switching 는 성능 저하를 가져옵니다.
+
+Context Switching이 높은 Overhead를 갖음에도 수행하는 이유는 그것을 감안해도 더 이득이기 때문입니다. 예를들어 **프로세스를 수행하다가 I/O event가 발생하여 BLOCK 상태로 전환시켰을 때, CPU가 그냥 놀게 놔두는 것보다 다른 프로세스를 수행시키는 것이 효율적**이므로, Context Switching을 수행하여  CPU로 다른 프로세스를 실행시킵니다.
+
+
+
+> **Context Switching과 Interrupt**
+
+CPU는 하나의 프로세스 정보만을 기억합니다. 여러 개의 프로세스가 실행되는 다중 프로그래밍 환경에서 CPU는 각각의 프로세스의 정보를 저장했다 복귀하고 다시 저장했다 복귀하는 일을 반복합니다. 프로세스의 저장과 복귀는 프로세스의 중단과 실행을 의미합니다. 프로세스의 중단과 실행 시 Interrupt가 발생하므로, Context Switching이 많이 일어난다는 것은 Interrupt가 많이 발생한다는 것을 의미합니다.
+
+
+
+> **Context Switching과 시간 할당량**
+
+프로세스들의 시간 할당량은 시스템 성능의 중요한 역할을 합니다. 시간 할당량이 적을수록 사용자 입장에서는 여러 개의 프로세스가 거의 동시에 수행되는 느낌을 갖지만 Interrupt의 수와 Context Switching의 수가 늘어납니다. 
+
+
+
+<br>
 
 # CPU 스케줄링 (CPU Scheduling)
 
