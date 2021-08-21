@@ -1,7 +1,7 @@
 # Database
 
 - [키](#키)
-- [SQL - 기초 Query](#SQL - 기초 Query)
+- [SQL - 기초 Query](#sql---기초-query)
 - SQL - JOIN
 - SQL Injection
 - SQL vs NoSQL
