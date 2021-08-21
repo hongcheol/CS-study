@@ -333,9 +333,49 @@ new 키워드를 호출하는 부분을 서브 클래스에 위임하였기 때�
 
 ## Abstract Factory
 #### 추상 팩토리 패턴(Abstract-Factory Pattern)이란 인터페이스를 이용하여 서로 연관된, 또는 의존하는 객체를 구현 클래스를 지정 하지 않고도 생성할 수 있는 패턴이다.
-#### 바로 위 팩토리 메소드 편에 보았던 JPStyleBrownShoes, FRStyleRedShoes와 같이 추상 클래스에 의존 하는 구현 클래스를 만들지 않고도 생성할 수 있다는 뜻이죠. 
+#### 바로 위 팩토리 메소드 편에 보았던 JPStyleBrownShoes, FRStyleRedShoes와 같이 추상 클래스에 의존 하는 구현 클래스를 만들지 않고도 생성할 수 있다. 
 
+```java
+class DependentShoesStore {
+ 
+    public Shoes makeShoes(String style, String name) {
+        Shoes shoes = null;
+        if (style.equals("Japan")) {
+            if (name.equals("blackShoes")) shoes = new JPStyleBlackShoes();
+            else if (name.equals("brownShoes")) shoes = new JPStyleBrownShoes();
+            else if(name.equals("redShoes")) shoes = new JPStyleRedShoes();
+        }
+        else if(style.equals("france")) {  
+            if (name.equals("blackShoes")) shoes = new FRStyleBlackShoes();
+            else if (name.equals("brownShoes")) shoes = new FRStyleBrownShoes();
+            else if(name.equals("redShoes")) shoes = new FRStyleRedShoes(); 
+        }
+        shoes.prepare();
+        shoes.packing();
+        return shoes;
+    }
 
+}
+```
+만약 위와 같이 스타일과 신발 이름을 입력받아 해당 신발을 제작하고 준비, 포장해서 돌려주는 클래스가 있다고 하자.
+
+직전 팩토리 메소드 패턴을 정리할 때 이미 한번 생각해본 적이 있었는데, 
+
+<p align="center"><img src="./img/AbFactory2.png"></p>
+
+지금 코드는 몇 줄 되지 않는데도 이와 같이 복잡하고 관리 하기 힘든 모습인데, 만약 나라가 수십개국에 신발종류도 각 나라마다 무수히 많다면 어떻게 될까??
+
+그리고 나중에 수정해야 할 일이 생긴다면 정말 생각만 해도 끔찍하다...
+
+구두를 만드는 스토어 객체는 스토어 객체는 구두 객체들을 가지고 있으면서, 이 객체들을 사용해서 구두를 준비하고, 포장하게 된다.
+
+이때 스토어 객체는 고수준 컴포넌트라고 하고, 구두 객체들을 저수준 컴포넌트라고 한다. 고수준 컴포넌트(스토어)는 저수준 컴포넌트(구두들)를 가지고 사용 할 수 있다.
+
+그래서 위에 있는 다이어그램을 보면, 고수준의 컴포넌트가 저수준의 컴포넌트에 심하게 의존한다는 것을 볼 수 있다.
+
+의존한다는 것은 나중에 새로운 구두가 추가 되면, 스토어 객체까지 손봐야 할 일이 생긴다는 의미라서 이 의존성을 뒤집을 필요가 있다.
+
+> 의존성 뒤집기 원칙 : 구상 클래스에 의존하도록 만들지 않고, 추상화 된 것에 의존하도록 만든다.
 
 ## Singleton
 #### 싱글턴 패턴(Singleton Pattern)이란 생성자가 여러 차례 호출되더라도 실제로 생성되는 객체는 하나이고 최초 생성 이후에 호출된 생성자는 최초의 생성자가 생성한 객체를 리턴하는 생성패턴이다. 
