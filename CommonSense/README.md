@@ -12,7 +12,7 @@
 - Git , Github, Gitlab
 - REST API
 - Parameter vs Argument
-- [Sync vs Async](#동기, 비동기)
+- [Sync vs Async](#동기vs비동기)
 - XSS
 - [도커와 쿠버네티스](#도커란)
 
@@ -221,7 +221,7 @@ OCP와 마찬가지로 다형성만으로는 구현 객체를 변경할 때, 클
 
 <hr>
 
-# 동기, 비동기
+# 동기vs비동기
 
 ## 동기
 
