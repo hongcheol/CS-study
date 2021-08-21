@@ -10,7 +10,7 @@
    - Builder
    - Prototype
    - [Factory Method](#factory-method)
-   - Abstract Factory
+   - [Abstract Factory](#abstract-method)
    - [Singleton](#singleton)
    
 **2. 구조 패턴**
@@ -37,7 +37,7 @@
    
 # 1. 생성패턴 
 ## Factory Method
-#### 팩토리 메소드 패턴(Factory Method Pattern)이란 상위 클래스에 알려지지 않은 구체 클래스를 생성하는 패턴이다.
+#### 팩토리 메소드 패턴(Factory Method Pattern)이란 상위 클래스에 알려지지 않은 구현 클래스를 생성하는 패턴이다.
 #### 또한 하위 클래스가 어떤 객체를 생성할지 결정하도록 하는 패턴이기도 하다. 그리고 상위 클래스 코드에 구체적인 클래스 이름을 감추기 위한 방법으로도 사용한다.
 
 <p align="center"><img src="./img/factory1.gif"></p>
@@ -330,6 +330,12 @@ new 키워드를 호출하는 부분을 서브 클래스에 위임하였기 때�
 > 객체 지향 프로그래밍 세계에서 자식은 부모를 알아도, 부모는 자식을 모른다. 
 
 ---
+
+## Abstract Factory
+#### 추상 팩토리 패턴(Abstract-Factory Pattern)이란 인터페이스를 이용하여 서로 연관된, 또는 의존하는 객체를 구현 클래스를 지정 하지 않고도 생성할 수 있는 패턴이다.
+#### 바로 위 팩토리 메소드 편에 보았던 JPStyleBrownShoes, FRStyleRedShoes와 같이 추상 클래스에 의존 하는 구현 클래스를 만들지 않고도 생성할 수 있다는 뜻이죠. 
+
+
 
 ## Singleton
 #### 싱글턴 패턴(Singleton Pattern)이란 생성자가 여러 차례 호출되더라도 실제로 생성되는 객체는 하나이고 최초 생성 이후에 호출된 생성자는 최초의 생성자가 생성한 객체를 리턴하는 생성패턴이다. 
