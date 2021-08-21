@@ -1014,7 +1014,7 @@ CPU에서 나오는 모든 주소는 **페이지 번호(p)**와 **페이지 변�
 - 프로그램을 메모리에 올리고 스왑할 때 발생하는 입/출력 비용이 감소합니다
 - 페이지 공유를 통해 파일이나 메모리가 둘 이상의 프로세스들에 의해 공유되는 것이 가능합니다.
 
-![Virtual-Memory](./img/virtual memory.png)
+![Virtual-Memory](./img/virtual-memory.png)
 
 <br>
 
@@ -1054,7 +1054,7 @@ CPU에서 나오는 모든 주소는 **페이지 번호(p)**와 **페이지 변�
 
 ### FIFO 페이지 교체(First-In-First-Out)
 
-![FIFO-page-replacement](./img/fifo page replace.png)
+![FIFO-page-replacement](./img/fifo-page-replace.png)
 
 - 메모리에 올라온 페이지 중 **가장 오래된 페이지**를 교체하는 방법
 - 페이지가 올라온 시간을 기록하거나, 페이지가 올라온 순서대로 큐(queue)를 생성하여 관리
@@ -1067,7 +1067,7 @@ CPU에서 나오는 모든 주소는 **페이지 번호(p)**와 **페이지 변�
 
 ### 최적 페이지 교체(OPT, Optimal page replacement)
 
-![OPT-page-replacement](./img/opt page replace.png)
+![OPT-page-replacement](./img/opt-page-replace.png)
 
 - 앞으로 가장 오랜 동안 **사용되지 않을** 페이지를 찾아 교체하는 방법
 - 장점 : 가장 낮은 페이지 부재율을 보장하는 최적의 알고리즘
@@ -1077,7 +1077,7 @@ CPU에서 나오는 모든 주소는 **페이지 번호(p)**와 **페이지 변�
 
 ### LRU 페이지 교체(Least-Recently-Used)
 
-![LRU-page-replacement](./img/lru page replace.png)
+![LRU-page-replacement](./img/lru-page-replace.png)
 
 - 가장 오랜 기간 동안 **사용되지 않은** 페이지를 교체하는 방법
 - 최적 알고리즘의 근사 알고리즘으로 최근의 과거를 가까운 미래의 근사치로 생각함
