@@ -59,6 +59,18 @@
     
     참조 무결성 제약조건: 외래키는 참조할 수 없는 값을 가질 수 없다.
 
+<br>
+
+# SQL - 기초 Query
+
+## SQL이란?
+## SQL 데이터 종류
+## 데이터 정의어(DDL) - CREATE, ALTER, DROP문
+## 데이터 조작어(DML) - SELECT, INSERT, DELETE, UPDATE문
+### CRUD란?
+## 데이터 제어어(DCL) - GRANT, REVOKE문
+
+<br>
 
 # 인덱스
 
