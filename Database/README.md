@@ -304,6 +304,8 @@ WHERE custid=5;
 DELETE FROM Customer;
 ```
 
+<br>
+
 ### SELETE 문
 
 * 테이블에 저장된 데이터를 검색하는 명령어이다.
