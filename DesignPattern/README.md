@@ -552,11 +552,11 @@ abstract class Shoes {
     abstract void assembling(); // 신발을 조립하는 추상 메소드
  
     void prepare() {
-        System.out.println("완성된 신발을 준비 중");
+        System.out.println("완성된 신발을 준비 중입니다.");
     }
  
     void packing() {
-        System.out.println("준비된 신발을 포장 중");
+        System.out.println("준비된 신발을 포장 중입니다.");
     }
  
     public String getName(){
@@ -610,10 +610,10 @@ class BlackShoes extends Shoes {
  
     @Override
     void assembling() { 
-        System.out.println("신발을 만들고 있습니다.. " + name);
+        System.out.println("신발을 제작중입니다. " + name);
         leather = shoesIngredientFactory.makeLeather();
         bottom = shoesIngredientFactory.makeBottom();
-        System.out.println("신발 정보 : 밑창은 " + bottom.getName() + " 사용 하였으며 가죽은 " + leather.getName() + " 사용하였음");
+        System.out.println("신발 정보 : 밑창은 " + bottom.getName() + " 사용 하였으며, 가죽은 " + leather.getName() + " 사용하였습니다.");
     }
  
 }
@@ -632,10 +632,10 @@ class BrownShoes extends Shoes {
  
     @Override
     void assembling() {
-        System.out.println("신발을 만들고 있습니다.. " + name);
+        System.out.println("신발을 제작중입니다. " + name);
         leather = shoesIngredientFactory.makeLeather();
         bottom = shoesIngredientFactory.makeBottom();
-        System.out.println("신발 정보 : 밑창은 " + bottom.getName() + " 사용 하였으며 가죽은 " + leather.getName() + " 사용하였음");
+        System.out.println("신발 정보 : 밑창은 " + bottom.getName() + " 사용 하였으며, 가죽은 " + leather.getName() + " 사용하였습니다.");
     }
  
 }
@@ -654,10 +654,10 @@ class RedShoes extends Shoes {
  
     @Override
     void assembling() { 
-        System.out.println("신발을 만들고 있습니다.. " + name);
+        System.out.println("신발을 제작중입니다. " + name);
         leather = shoesIngredientFactory.makeLeather();
         bottom = shoesIngredientFactory.makeBottom();
-        System.out.println("신발 정보 : 밑창은 " + bottom.getName() + " 사용 하였으며 가죽은 " + leather.getName() + " 사용하였음");
+        System.out.println("신발 정보 : 밑창은 " + bottom.getName() + " 사용 하였으며, 가죽은 " + leather.getName() + " 사용하였습니다.");
     }
  
 }
@@ -714,15 +714,15 @@ class JPShoesStore extends ShoesStore {
         
         if(name.equals("blackShoes")) {
             shoes = new BlackShoes(shoesIngredientFactory);
-            shoes.setName("일본 스타일의 검은 구두");
+            shoes.setName("일본 스타일의 검은 신발");
         }
         else if(name.equals("brownShoes")) {
             shoes = new BrownShoes(shoesIngredientFactory);
-            shoes.setName("일본 스타일의 갈색 구두");
+            shoes.setName("일본 스타일의 갈색 신발");
         }
         else if (name.equals("redShoes")) {
             shoes = new RedShoes(shoesIngredientFactory);
-            shoes.setName("일본 스타일의 빨간 구두");
+            shoes.setName("일본 스타일의 빨간 신발");
         }
  
         return shoes;
@@ -743,15 +743,15 @@ class FRShoesStore extends ShoesStore {
         
         if(name.equals("blackShoes")) {
             shoes = new BlackShoes(shoesIngredientFactory);
-            shoes.setName("프랑스 스타일의 검은 구두");
+            shoes.setName("프랑스 스타일의 검은 신발");
         }
         else if(name.equals("brownShoes")) {
             shoes = new BrownShoes(shoesIngredientFactory);
-            shoes.setName("프랑스 스타일의 갈색 구두");
+            shoes.setName("프랑스 스타일의 갈색 신발");
         }
         else if(name.equals("redShoes")) {
             shoes = new RedShoes(shoesIngredientFactory);
-            shoes.setName("프랑스 스타일의 빨간 구두");
+            shoes.setName("프랑스 스타일의 빨간 신발");
         }
  
         return shoes;
@@ -774,7 +774,7 @@ makeShoes 메소드에서 재료를 공장에서 모두 받아왔다면, 이제�
 
 이제는 신발공장과 매장, 신발까지 모든 설계가 마무리 되었다.
 
-마지막으로 실제 주문을 하는 과정을 살펴 보며 이번 추상 팩토리 패턴을 마무리하려고 한다.
+실제 주문을 하는 과정을 살펴 보며 이번 추상 팩토리 패턴을 마무리하려고 한다.
 
 > Main.class
 
@@ -794,9 +794,16 @@ public class Main {
 }
 ```
 
+위 주문 코드를 실행해보면 출력은 아래와 같을 것이다.
 ```
-> 
-> 
+> 신발을 제작중입니다. 일본 스타일의 검은 신발
+> 신발 정보 : 밑창은 고무 사용 하였으며, 가죽은 소가죽 사용하였습니다.
+> 완성된 신발을 준비 중입니다.
+> 준비된 신발을 포장 중입니다.
+> 신발을 제작중입니다. 프랑스 스타일의 검은 신발
+> 신발 정보 : 밑창은 플라스틱, 고무 사용 하였으며, 가죽은 양가죽 사용하였습니다.
+> 완성된 신발을 준비 중입니다.
+> 준비된 신발을 포장 중입니다.
 ```
 일본 매장과 프랑스 매장으로 가서 신발를 주문을 한다고 하자.
 
@@ -812,7 +819,11 @@ public class Main {
 
 6. 프랑스 매장도 마찬가지로 일본 매장과 완전히 동일한 프로세스를 거쳐 고객에게 신발을 제공한다.
 
-추상 팩토리 패턴을 사용하면 DIP 원칙을 준수하게되어 객체들 간의 결합도 낮아져서 유지 보수가 아주 용이해진다.
+<p align="center"><img src="./img/AbFactory1.png"></p>
+
+마지막으로 위 이미지를 그동안 예시를 들었던 신발 매장 패턴을 대입하여 추상 팩토리 패턴을 이해하고 정리하면 좋을 것같다.
+
+결과적으로, 추상 팩토리 패턴을 사용하면 DIP 원칙을 준수하게되어 객체들 간의 결합도 낮아져서 유지 보수가 아주 용이해진다.
 
 ---
 
