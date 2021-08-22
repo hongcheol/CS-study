@@ -605,7 +605,7 @@ class BlackShoes extends Shoes {
  
     ShoesIngredientFactory shoesIngredientFactory;
  
-    public BlackShoes(factory_abstract_factory.ShoesIngredientFactory shoesIngredientFactory) {
+    public BlackShoes(ShoesIngredientFactory shoesIngredientFactory) {
         this.shoesIngredientFactory = shoesIngredientFactory;
     }
  
@@ -627,7 +627,7 @@ class BrownShoes extends Shoes {
  
     ShoesIngredientFactory shoesIngredientFactory;
  
-    public BrownShoes(factory_abstract_factory.ShoesIngredientFactory shoesIngredientFactory) {
+    public BrownShoes(ShoesIngredientFactory shoesIngredientFactory) {
         this.shoesIngredientFactory = shoesIngredientFactory;
     }
  
@@ -649,7 +649,7 @@ class RedShoes extends Shoes {
  
     ShoesIngredientFactory shoesIngredientFactory;
  
-    public RedShoes(factory_abstract_factory.ShoesIngredientFactory shoesIngredientFactory) {
+    public RedShoes(ShoesIngredientFactory shoesIngredientFactory) {
         this.shoesIngredientFactory = shoesIngredientFactory;
     }
  
