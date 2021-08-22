@@ -10,7 +10,7 @@
    - Builder
    - Prototype
    - [Factory Method](#factory-method)
-   - [Abstract Factory](#abstract-method)
+   - [Abstract Factory](#abstract-factory)
    - [Singleton](#singleton)
    
 **2. 구조 패턴**
@@ -365,7 +365,7 @@ class DependentShoesStore {
 
 지금 코드는 몇 줄 되지 않는데도 이와 같이 복잡하고 관리 하기 힘든 모습인데, 만약 나라가 수십개국에 신발종류도 각 나라마다 무수히 많다면 어떻게 될까??
 
-그리고 나중에 수정해야 할 일이 생긴다면 정말 생각만 해도 끔찍하다...
+그리고 나중에 이것들을 수정해야 할 일이 생긴다면 정말 생각만 해도 끔찍하다...
 
 구두를 만드는 스토어 객체는 스토어 객체는 구두 객체들을 가지고 있으면서, 이 객체들을 사용해서 구두를 준비하고, 포장하게 된다.
 
@@ -373,9 +373,448 @@ class DependentShoesStore {
 
 그래서 위에 있는 다이어그램을 보면, 고수준의 컴포넌트가 저수준의 컴포넌트에 심하게 의존한다는 것을 볼 수 있다.
 
-의존한다는 것은 나중에 새로운 구두가 추가 되면, 스토어 객체까지 손봐야 할 일이 생긴다는 의미라서 이 의존성을 뒤집을 필요가 있다.
+의존한다는 것은 나중에 새로운 구두가 추가 되면, 스토어 객체까지 손봐야 할 일이 생긴다는 의미라서 이 의존관계를 뒤집을 필요가 있다.
 
-> 의존성 뒤집기 원칙 : 구상 클래스에 의존하도록 만들지 않고, 추상화 된 것에 의존하도록 만든다.
+그래서 위 설계는 객체지향 설계 5대 원칙 [SOLID](../../../tree/main/CommonSense#oop의-5가지-설계-원칙)중, 5번째 [DIP](../../../tree/main/CommonSense#dip)를 따르는 설계가 필요하다.
+
+> DIP (Dependency-Inversion Principle) : 구상 클래스에 의존하도록 만들지 않고, 추상화 된 것에 의존하도록 만들어야 한다.
+
+이 원칙을 제대로 적용하려면, 구현 클래스처럼 구체적인 것이 아니라 추상 클래스나 인터페이스같이 추상적인 것에 의존 하는 코드를 만들어서 고수준 컴포넌트와 저수준 컴포넌트 모두에 적용하여야 한다.
+
+그래서 방금 말한 의존관계 역전 원칙을 구두 가게에 다시 적용해보자면 아래와 같은 UML처럼 설계가 가능하다.
+
+<p align="center"><img src="./img/AbFactory3.png"></p>
+
+이렇게 하면 고수준 컴포넌트 ShoesStore와 저수준 컴포넌트인 각종 구두 객체들 모두 추상클래스인 Shoes에 의존 하게 된다. 
+
+하지만 설계를 하다보면 의존관계 역전 원칙을 지키도록 설계하기가 쉽지 않다. 
+
+그래서 의존 관계 역전원칙을 지키는데 도움이 될만한 가이드 라인을 가져와봤다.
+
+> 1. 어떤 변수라도 구상 클래스에 대한 레퍼런스를 저장하지 말것
+> - new 연산자 사용 하면 구상 클래스 레퍼런스를 저장하는 것, 이것 대신 팩토리를 사용하라!
+> 
+> 2. 구상 클래스에서 유도된 클래스를 만들지 말 것.
+> - 구상 클래스에서 유도 된 클래스를 만들면 특정 구상 클래스에 의존 하게 된다.
+> 
+> 3. 베이스 클래스에 이미 구현되어 있던 메소드를 오버라이드 하지 말 것. 
+> - 이미 구현되어 있는 메소드를 오버라이드 하는 것은, 애초부터 베이스 클래스가 잘 추상화 되어 있는 것이 아니다!
+> - 베이스 클래스에서 메소드를 정의 할때는 모든 서브클래스에서 공유할 수 있는 것들만 정의 해야 함.
+
+하지만 위 가이드 라인들은 지향하면 좋다는 것이고, 꼭 지켜져야 하는 것은 아니라고 한다. 
+
+실제로 자바 프로그램 가운데 이것을 완벽하게 지키는 것은 거의 없다. 
+
+위와 같이 설계하는 것이 바람직하다는 것을 알고 넘어가면 좋을 것 같다.
+
+<br>
+다시 구두 가게로 돌아와서, 우려했던 대로 신발매장이 더 많은 나라에 진출해서 인도, 이태리, 중국 등등 많은 곳에 매장이 생겼다고 가정해보자.
+
+일단 팩토리 메소드 패턴을 이용해 프레임워크를 잘 잡아 놓았기 때문에, 나라별로 같은 서비스를 제공 할 수는 있다.
+
+하지만 몇몇 분점에서는 각 현지 공장에서 싸구려 재료들을 몰래 사용해서 본사에서 의도하지 않은 마진을 몰해 올리고 있다는 소식을 듣고 무언가 조치를 취하려고 한다.
+
+그래서 본사에서 원재료를 사용해서 신발을 만들어서 분점으로 배송하려고 했는데 지난 팩토리 메소드를 정리한 부분에서 먼저 보았듯이, 같은 검은 구두라고 하더라도 일본매장의 검은 신발과 프랑스 매장의 검은 신발의 밑창은 서로 다르게 만들어야하고 따라서 재료들도 달라져서 문제가 생긴다.
+
+그래서 다시 생각해낸 해결 방법이 지역 별로 소규모 신발재료 공장을 나누어서 신발을 만드는 것이다.
+
+```java
+interface ShoesIngredientFactory {
+ 
+    public Bottom makeBottom();
+    
+    public Leather makeLeather();
+ 
+    public boolean hasPattern();
+ 
+}
+```
+그래서 위와 같은 공통 기능을 제공할 신발재료 공장 인터페이스를 만들어 주었다.
+
+> JPShoesIngredientFactory.class
+
+```java
+class JPShoesIngredientFactory implements ShoesIngredientFactory {
+ 
+    @Override
+    public Bottom makeBottom() return new RubberBottom();
+ 
+    @Override
+    public Leather makeLeather() return new LeatherOfCows();
+    
+    @Override
+    public boolean hasPattern() return false;
+ 
+}
+```
+
+> FRShoesIngredientFactory.class
+
+```java
+class FRShoesIngredientFactory implements ShoesIngredientFactory {
+ 
+    @Override
+    public Bottom makeBottom() return new PlasticAndRubberBottom();
+ 
+    @Override
+    public Leather makeLeather() return new LeatherOfSheeps();
+ 
+    @Override
+    public boolean hasPattern() return true;
+ 
+}
+```
+
+이번에도 지난 팩토리 메소드때와 동일하게 일본과 프랑스를 기준으로 설명하려고 한다.
+
+일본 매장으로 가는 신발재료 공장 클래스와 프랑스 매장으로 가는 신발재료 공장 클래스 처럼 재료 공장 인터페이스를 구현하는 클래스를 만들었다.
+
+그리고 공장에서 각 메소드들이 return 해주는 각가의 신발 재료들이 구현해야하는 인터페이스는 아래와 같다.
+
+```java
+interface Bottom {
+ 
+    public String getName();
+ 
+}
+```
+
+```java
+interface Leather {
+ 
+    public String getName();
+ 
+}
+```
+
+위 재료 인터페이스를 구현한 클래는 아래와 같다. 
+
+> RubberBottom.class
+
+```java
+// 고무 밑창
+class RubberBottom implements Bottom {
+ 
+    @Override
+    public String getName() return "고무";
+ 
+}
+```
+
+> PlasticAndRubberBottom.class
+
+```java
+// 플라스틱과 고무 혼한 밑창
+class PlasticAndRubberBottom implements Bottom {
+ 
+    @Override
+    public String getName() return "플라스틱, 고무";
+ 
+}
+```
+
+> LeatherOfCows.class
+
+```java 
+// 소가죽
+class LeatherOfCows implements Leather {
+ 
+    @Override
+    public String getName() return "소가죽";
+ 
+}
+```
+
+> LeatherOfSheeps.class
+
+```java 
+// 양가죽
+class LeatherOfSheeps implements Leather {
+ 
+    @Override
+    public String getName() return "양가죽";
+ 
+}
+```
+
+이제는 공장은 완성됐고, 공장에서 만드는 신발 클래스를 살펴보도록 하자.
+
+> Shoes.class
+
+```java
+abstract class Shoes {
+ 
+    String name;
+    Bottom bottom;
+    Leather leather;
+    boolean hasPattern;
+ 
+    abstract void assembling(); // 신발을 조립하는 추상 메소드
+ 
+    void prepare() {
+        System.out.println("완성된 신발을 준비 중");
+    }
+ 
+    void packing() {
+        System.out.println("준비된 신발을 포장 중");
+    }
+ 
+    public String getName(){
+        return name;
+    }
+ 
+    public void setName(String name) {
+        this.name = name;
+    }
+ 
+}
+```
+
+위 Shoes 클래스에서 주목할 점은, 원재료 들을 조립하는 assembling 이라는 추상 메소드이다.
+
+```java
+abstract class Shoes {
+ 
+    String name;
+    String bottom;
+    String leather;
+    boolean hasPattern;
+ 
+    void prepare() {
+        System.out.println("주문하신 신발을 준비중입니다.");
+    }
+ 
+    void packing() {
+        System.out.println("준비 완료된 신발을 포장중입니다.");
+    }
+ 
+    public String getName() {
+        return name;
+    }
+ 
+}
+```
+
+지난번 팩토리 메소드에서 사용했던 Shoes.class에서는 존재하지 않는 메소드이다.
+
+> BlackShoes.class
+
+```java
+class BlackShoes extends Shoes {
+ 
+    ShoesIngredientFactory shoesIngredientFactory;
+ 
+    public BlackShoes(factory_abstract_factory.ShoesIngredientFactory shoesIngredientFactory) {
+        this.shoesIngredientFactory = shoesIngredientFactory;
+    }
+ 
+    @Override
+    void assembling() { 
+        System.out.println("신발을 만들고 있습니다.. " + name);
+        leather = shoesIngredientFactory.makeLeather();
+        bottom = shoesIngredientFactory.makeBottom();
+        System.out.println("신발 정보 : 밑창은 " + bottom.getName() + " 사용 하였으며 가죽은 " + leather.getName() + " 사용하였음");
+    }
+ 
+}
+```
+
+> BrownShoes.class
+
+```java 
+class BrownShoes extends Shoes {
+ 
+    ShoesIngredientFactory shoesIngredientFactory;
+ 
+    public BrownShoes(factory_abstract_factory.ShoesIngredientFactory shoesIngredientFactory) {
+        this.shoesIngredientFactory = shoesIngredientFactory;
+    }
+ 
+    @Override
+    void assembling() {
+        System.out.println("신발을 만들고 있습니다.. " + name);
+        leather = shoesIngredientFactory.makeLeather();
+        bottom = shoesIngredientFactory.makeBottom();
+        System.out.println("신발 정보 : 밑창은 " + bottom.getName() + " 사용 하였으며 가죽은 " + leather.getName() + " 사용하였음");
+    }
+ 
+}
+```
+
+> RedShoes.class
+
+```java 
+class RedShoes extends Shoes {
+ 
+    ShoesIngredientFactory shoesIngredientFactory;
+ 
+    public RedShoes(factory_abstract_factory.ShoesIngredientFactory shoesIngredientFactory) {
+        this.shoesIngredientFactory = shoesIngredientFactory;
+    }
+ 
+    @Override
+    void assembling() { 
+        System.out.println("신발을 만들고 있습니다.. " + name);
+        leather = shoesIngredientFactory.makeLeather();
+        bottom = shoesIngredientFactory.makeBottom();
+        System.out.println("신발 정보 : 밑창은 " + bottom.getName() + " 사용 하였으며 가죽은 " + leather.getName() + " 사용하였음");
+    }
+ 
+}
+```
+
+위 클래스들은 보다시피 Shoes 추상 클래스를 구현한 각 컬러들의 Shoes 클래스이다. 
+
+이제는 더 이상 각 국가별로 BlackShoes, BrownShoes, RedShoes 각각 다 만들어주지 않아도 된다.
+
+이 클래스들은 ShoesIngredientFactory 인스턴스를 생성자로 받아서 이 인스턴스로부터 원재료를 직접 받게된다. 
+
+추상 메소드여서 오버라이딩하여 구현해준 assembling 메소드를 보면 가죽과 밑창을 각각 공장 인스턴스에서 받아 조립하고 있음을 볼 수 있다.
+
+여기에서 주목할점은 Shoes 클래스는 그냥 공장에서 건네주는 재료로 신발을 조립만하기 때문에, 어떤 지역의 팩토리를 사용하든 Shoes 클래스는 언제든 재활용 할 수 있다는 것이다. 
+
+<br>
+> ShoesStore.class
+
+```java
+abstract class ShoesStore {
+ 
+    public Shoes orderShoes(String name) {
+ 
+        Shoes shoes;
+ 
+        shoes = makeShoes(name);
+        shoes.assembling();
+        shoes.prepare();
+        shoes.packing();
+ 
+        return shoes;
+ 
+    }
+ 
+    abstract Shoes makeShoes(String name);
+ 
+}
+```
+고객에게 주문을 받을 수 있는 Store 클래스를 만들어 보았다.
+
+각 나라의 스토어들은 이 Store 추상 클래스를 상속받아 추상 메소드인 makeShoes 메소드를 각 나라에 맞게 오버라이드하여 구현해주면 된다.
+
+orderShoes는 전세계 공통 프레임워크이고, orderShoes안에 있는 makeShoes 단계만 각 나라의 특징에 맞게 바뀌는 것 뿐이다.
+
+> JPShoesStore.class
+
+```java
+class JPShoesStore extends ShoesStore {
+ 
+    @Override
+    Shoes makeShoes(String name) { 
+        Shoes shoes = null;
+        ShoesIngredientFactory shoesIngredientFactory = new JPShoesIngredientFactory();
+        
+        if(name.equals("blackShoes")) {
+            shoes = new BlackShoes(shoesIngredientFactory);
+            shoes.setName("일본 스타일의 검은 구두");
+        }
+        else if(name.equals("brownShoes")) {
+            shoes = new BrownShoes(shoesIngredientFactory);
+            shoes.setName("일본 스타일의 갈색 구두");
+        }
+        else if (name.equals("redShoes")) {
+            shoes = new RedShoes(shoesIngredientFactory);
+            shoes.setName("일본 스타일의 빨간 구두");
+        }
+ 
+        return shoes;
+    }
+ 
+}
+```
+
+> FRShoesStore.class
+
+```java
+class FRShoesStore extends ShoesStore {
+ 
+    @Override
+    Shoes makeShoes(String name) { 
+        Shoes shoes = null;
+        ShoesIngredientFactory shoesIngredientFactory = new FRShoesIngredientFactory();
+        
+        if(name.equals("blackShoes")) {
+            shoes = new BlackShoes(shoesIngredientFactory);
+            shoes.setName("프랑스 스타일의 검은 구두");
+        }
+        else if(name.equals("brownShoes")) {
+            shoes = new BrownShoes(shoesIngredientFactory);
+            shoes.setName("프랑스 스타일의 갈색 구두");
+        }
+        else if(name.equals("redShoes")) {
+            shoes = new RedShoes(shoesIngredientFactory);
+            shoes.setName("프랑스 스타일의 빨간 구두");
+        }
+ 
+        return shoes;
+    }
+ 
+}
+
+```
+일본과 프랑스 신발 매장을 ShoesStore클래스를 상속받아 만들어 주었다.
+
+각 매장은 makeShoes를 오버라이딩 하여 현지 상황에 맞게 재정의한다. 
+
+makeShoes내부 프로세스를 살펴보면, 먼저 매장으로 신발 주문이 들어오면 현지 공장 인스턴스를 생성한다. 
+
+그리고 매장에서 신발 재료 팩토리 인스턴스를 보내서 원재료 공장으로부터 재료들를 모두 받아오는 것이다. 
+
+makeShoes 메소드에서 재료를 공장에서 모두 받아왔다면, 이제는 매장에서 받은 재료를 가지고 조립하고, 준비, 포장하여 작업을 마무리 하는 것이다.
+
+위 과정이 전세계 공통 orderShoes 프레임워크이다.
+
+이제는 신발공장과 매장, 신발까지 모든 설계가 마무리 되었다.
+
+마지막으로 실제 주문을 하는 과정을 살펴 보며 이번 추상 팩토리 패턴을 마무리하려고 한다.
+
+> Main.class
+
+```java
+public class Main {
+ 
+    public static void main(String[] args) {
+ 
+        JPShoesStore jpStore = new JPShoesStore();
+        jpStore.orderShoes("blackShoes");
+ 
+        FRShoesStore frStore = new FRShoesStore();
+        frStore.orderShoes("redShoes");
+ 
+    }
+ 
+}
+```
+
+```
+> 
+> 
+```
+일본 매장과 프랑스 매장으로 가서 신발를 주문을 한다고 하자.
+
+1. 먼저 주문하는 일본 매장에서 검은 신발을 주문하면, 매장에서는 주문을 받고 (orderShoes) 
+
+2. 주문을 받은 직원은 일본 매장을 담당하는 원재료 공장에 해당 신발에 알맞는 재료를 요청한다. (makingShoes)
+
+3. 원재료 공장이 가동되고, 구두의 재료를 제작하여 보내준다.
+
+4. 매장에서 재료들을 받아서 조립을 해서 구두를 만든다.
+
+5. 준비, 포장을 해서 고객들에게 제공한다.
+
+6. 프랑스 매장도 마찬가지로 일본 매장과 완전히 동일한 프로세스를 거쳐 고객에게 신발을 제공한다.
+
+추상 팩토리 패턴을 사용하면 DIP 원칙을 준수하게되어 객체들 간의 결합도 낮아져서 유지 보수가 아주 용이해진다.
+
+---
 
 ## Singleton
 #### 싱글턴 패턴(Singleton Pattern)이란 생성자가 여러 차례 호출되더라도 실제로 생성되는 객체는 하나이고 최초 생성 이후에 호출된 생성자는 최초의 생성자가 생성한 객체를 리턴하는 생성패턴이다. 
