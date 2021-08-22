@@ -675,6 +675,7 @@ class RedShoes extends Shoes {
 여기에서 주목할점은 Shoes 클래스는 그냥 공장에서 건네주는 재료로 신발을 조립만하기 때문에, 어떤 지역의 팩토리를 사용하든 Shoes 클래스는 언제든 재활용 할 수 있다는 것이다. 
 
 <br>
+
 > ShoesStore.class
 
 ```java
