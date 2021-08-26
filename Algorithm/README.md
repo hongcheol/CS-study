@@ -111,7 +111,7 @@ parametric_search(min, max){
 }
 
 isPossible(x){
-	// 일반적으로 결정 판단을 위한 값을 구할때, 아래와 같이 간단히 구할 수 있기보다 따로 메소드를 만들어서 답을 구해야 할 정도의 난이도가 많다.
+	// 일반적으로 결정 판단을 위한 값을 구할때, 이 문제보다 훨씬 난이도가 높고 복잡하다.
 	count = 0; // 결정 판단을 위한 값
 	for(rope_length : rope_list) 
 		count += rope_length / x; // x로 몇개의 줄을 만들 수 있는지
