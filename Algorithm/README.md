@@ -253,6 +253,7 @@ euclid(A, B){
 	}
 	return A;
 }
+```
 
 A와 B의 최대공약수를 구했으면, A와 B의 최소공배수는 A * B / (A와B의 최대공약수)로 구할 수 있다
 
@@ -261,8 +262,6 @@ A와 B의 최대공약수를 구했으면, A와 B의 최소공배수는 A * B / 
 [백준 1934번 : 최소공배수](https://www.acmicpc.net/problem/1934)
 
 [백준 2981번 : 검문](https://www.acmicpc.net/problem/2981)
-
-```
 
 # 그래프
 # 그래프의 표현과 정의
