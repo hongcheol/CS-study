@@ -951,7 +951,7 @@ arr[x2][y2] - arr[x1-1][y2] - arr[x2][y1-1] + arr[x1-1][y1-1]
 [골드2 구간 합 최대](https://www.acmicpc.net/problem/14706)
 
 <hr>
-# 선형 자료 구조
+## 선형 자료 구조
 
 <img src="https://user-images.githubusercontent.com/53392870/131146547-12f8c43f-4d66-47d9-8721-1fc924084ddb.png" width="50%">
 출처: https://lee-mandu.tistory.com/462
@@ -1026,7 +1026,7 @@ arr[x2][y2] - arr[x1-1][y2] - arr[x2][y1-1] + arr[x1-1][y1-1]
 
 <hr>
 
-# 큐와 스택, 데크
+## 큐와 스택, 데크
 ## 큐
 
 <img src="https://user-images.githubusercontent.com/53392870/131144364-fab07492-1de5-4ac8-bbc8-b10df285175d.png" width="50%">
