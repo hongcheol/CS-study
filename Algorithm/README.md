@@ -563,6 +563,383 @@ __(A mod M) = (B mod M) => A ≡ B (mod M)__
 결국 2^90 mod 13 = 12 mod 13 = 12라는 사실을 알 수 있다.
 
 
+<br>
+
+# 트리
+
+# 트리의 구현과 순회
+
+## 트리(Tree)
+
+**계층적인 구조**의 자료를 표현하는 **비선형 자료구조(1:n)**
+
+뿌리부터 잎까지의 나무를 거꾸로 뒤집어 놓은 형태를 띄며, 회사의 조직도, 파일 디렉토리 구조, 기계 학습에서의 결정 트리(decision tree) 등이 트리 구조로 표현될 수 있다.
+
+## 트리 관련 용어
+
+- 노드(node)와 간선(edge) : 트리의 구성 요소, 트리의 각 노드에는 데이터가 저장되고 이러한 데이터들의 연결 관계는 간선으로 나타낸다.
+    - 루트(root) : 계층적인 구조에서 가장 높은 곳에 있는 노드. 한 트리에는 하나의 루트만이 존재한다.
+    - 리프(leaf, 단말 노드) : 자식 노드가 존재하지 않는, 더 이상 아래로 뻗어나갈 수 없는 노드
+    - 부모(parent) : 현재 노드에서 간선으로 연결된 위쪽에 있는 노드. 트리의 각 노드는 무조건 1개의 부모 노드만 가질 수 있다.
+    - 자식(child) : 현재 노드에서 가지로 연결된 아래쪽 노드. 트리의 각 노드는 자식 노드를 가지지 않을 수도, 여러개의 자식 노드를 가질 수도 있다.
+    - 형제(sibling) : 부모 노드가 동일한 노드들
+    - 조상(ancestor) : 현재 노드에서 간선을 따라 루트노드까지 올라갈 때 연결된 모든 노드
+    - 자손(descendant) : 서브 트리에 있는 하위 레벨의 노드들
+- 서브 트리(subtree) : 부모 노드와 연결된 간선을 끊으면 새롭게 생성되는 트리. 하나의 트리는 여러개의 서브 트리를 포함하고 있다.
+
+<p align="center"><img src="https://github.com/hongcheol/CS-study/blob/main/Algorithm/img/tree-degree-level.png?raw=true" alt="Tree degree and level" width="500"></p>
+
+- 레벨(level)과 높이(height) : 루트 노드로부터 현재 노드에 이르기까지 연결된 간선의 수. 트리의 레벨의 최댓값이 트리의 높이가 된다.
+- 차수(degree) : 현재 노드에 연결된 자식 노드의 수. 트리의 차수는 트리의 차수의 최댓값이다.
+
+## 이진 트리(Binary Tree)
+
+모든 노드가 2개의 서브 트리를 가지고 있는 트리.
+
+## 이진 트리의 특징 
+
+- 모든 노드는 왼쪽 자식 노드와 오른쪽 자식 노드를 각각 1개씩, 최대 2개의 노드만을 자식 노드로 가질 수 있다.(최대 차수 2)
+- 공집합도 이진트리이다.
+- 서브 트리 간 순서(왼쪽, 오른쪽)가 존재한다.
+- 노드의 개수가 `n`개인 이진트리의 간선 개수는 `n-1`개
+- 높이가 h인 이진트리의 최소 노드 개수는 `h+1`개, 최대 노드 개수는 `2^(h+1) - 1`개
+
+## 이진 트리의 종류
+
+![Binary Tree](https://github.com/hongcheol/CS-study/blob/main/Algorithm/img/binary-tree.png?raw=true)
+
+### 포화 이진 트리(Full Binary Tree)
+
+- 모든 높이에 노드가 최대로 차 있는 이진 트리
+- 따라서 노드 개수는 이진 트리의 최대 노드 개수인 `2^(h+1) - 1`개
+- 루트 노드를 1번으로 하여 모든 노드가 순서대로 노드 번호를 가진다.
+
+### 완전 이진 트리(Complete Binary Tree)
+
+- 루트 노드를 1번으로 하여 n개의 노드를 갖는 이진 트리에서 1번부터 n번까지 빈 자리가 없는 이진 트리
+- 낮은 높이에서 시작하여 왼쪽 자식 노드부터 채워야 한다.
+
+### 편향 이진 트리(Skewed Binary Tree)
+
+- 높이 h에 대한 최소 개수의 노드를 가지며 한 쪽 방향의 자식 노드만을 가진 이진 트리
+- 따라서 노드 개수는 이진 트리의 최소 노드 개수인 `h+1`개
+
+## 이진 트리 표현
+
+### 배열을 이용한 표현
+
+n개의 노드를 갖는 이진 트리의 경우 루트 노드부터 마지막 노드까지 1번 ~ n번 번호를 매긴 뒤, 배열의 1번 인덱스부터 n번 인덱스까지 순서대로 노드를 삽입하여 구현
+
+- 높이가 h인 이진 트리를 구현하기 위해서는 배열의 크기가 `2^(h+1)`가 되어야 한다.
+    - 배열의 1번 인덱스부터 사용하므로 이진 트리의 최대 노드 개수인 `2^(h+1) - 1`개보다 1개 많은 크기
+- 배열을 이용한 이진 트리는 구현이 쉽지만, 배열 원소에 대한 메모리 공간 낭비가 발생할 수 있다.
+    - 편향 이진 트리의 경우 사용하지 않는 배열의 영역이 많아진다.
+- 트리의 중간에 새로운 노드를 삽입하거나 삭제할 경우 배열의 크기 변경이 어려워 비효율적이다.
+
+#### Java를 이용한 완전 이진 트리 구현 - 배열 표현법
+
+```java
+// 완전 이진 트리
+class CompleteBinaryTreeArray {
+    char[] nodes;         // 트리의 노드를 저장한 배열
+    final int SIZE;             // 노드 개수 + 1
+    int lastIndex;        // 마지막에 추가된 노드의 인덱스
+
+    public CompleteBinaryTreeArray(int size) {
+        this.SIZE = size;
+        nodes = new char[SIZE+1];          // 1 ~ SIZE 번의 노드들을 저장하는 배열
+    }
+
+    public void add(char c) {
+        if (lastIndex == SIZE) return;     // 배열 포화 상태
+        nodes[++latIndex] = c;             // 배열에 노드 추가
+    }
+}
+```
+
+### 링크를 이용한 표현
+
+이진 트리 노드 번호 성질을 이용해 각 부모 노드에 왼쪽 자식 노드와 오른쪽 자식 노드를 연결하여 표현한다. 한 노드가 두 개의 링크 필드를 갖는 형태이다.
+
+> 💡 이진 트리 노드 번호의 성질
+>- 노드 번호가 i인 노드의 부모 노드 번호 : `i/2`
+>- 노드 번호가 i인 노드의 왼쪽 자식 노드 번호 : `2*i`
+>- 노드 번호가 i인 노드의 오른쪽 자식 노드 번호 : `2*i + 1`
+>- 레벨 n인 노드의 시작 번호 : `2^n`
+
+- 배열 표현법의 한계인 메모리 낭비를 막을 수 있다. 이진 트리의 노드 개수만큼 노드를 생성하면 된다.
+- 특정 노드를 탐색하기 위해 루트 노드부터 탐색을 시작해야 하므로 탐색이 비효율적이다.
+
+#### Java를 이용한 완전 이진 트리 구현 - 링크 표현법
+
+```java
+// 트리의 노드
+class Node {
+    char data;         // 데이터 필드
+    Node left;         // 왼쪽 자식 노드 링크 필드
+    Node right;        // 오른쪽 자식 노드 링크 필드
+
+    public Node(char data) {
+        this.data = data;
+        left = null;             // 리프 노드를 위한 초기화
+        right = null;            // 리프 노드를 위한 초기화
+    }
+}
+
+// 완전 이진 트리
+class LinkedCompleteBinaryTree {
+    Node[] binaryTree;
+
+    public LinkedCompleteBinaryTree(int nodeCnt) {
+        binaryTree = new Node[nodeCnt+1];                 // 노드 개수 + 1
+    }
+
+    public void add(int nodeCnt) {
+        for (int i=1; i<=nodeCnt; i++) {
+            binaryTree[i] = new Node(i);                  // 노드 생성 및 데이터 삽입
+        }
+
+        for (int i=1; i<=nodeCnt/2; i++) {
+            binaryTree[i].left = binaryTree[2*i];         // 왼쪽 자식 노드 연결
+            binaryTree[i].right = binaryTree[2*i+1];      // 오늘쪽 자식 노드 연결
+        }
+    }
+}
+```
+
+## 트리의 탐색
+
+비선형 자료구조인 트리에서 각 노드를 중복되지 않게 완전 탐색하기 위한 기법
+
+### 너비 우선 탐색(BFS, Breadth First Search)
+
+- 루트 노드의 자식 노드들을 우선적으로 모두 방문한 뒤, 방문했던 자식 노드들의 자식노드들을 또 다시 차례대로 방문하는 방식
+- 인접한 노드에 대한 탐색이 끝나야 해당 노드들의 인접한 노드를 방문할 수 있으므로 **선입 선출 형태의 자료구조인 큐**(Queue)를 사용하여 구현할 수 있음
+
+```java
+public void bfs() {
+    int lastIndex;                              // 노드의 개수 + 1
+    Queue<Integer> q = new LinkedList<>();      // 탐색을 기다리는 노드를 저장할 큐
+    q.offer(1);                 // 루트 노드의 인덱스
+
+    int level = 0, size = 0;
+
+    while(!q.isEmpty()) {
+        size = q.size();        // 현재 높이(너비)에서의 모든 노드 개수
+
+        while(size-->0) {       // 높이 별 노드들을 단계적으로 탐색
+            int current = q.poll();
+            
+            System.out.println(current + " ");
+
+            // 왼쪽 자식 노드 유효성 검사 후 큐에 삽입
+            if (current*2 <= lastIndex) q.offer(current*2);
+            // 오른쪽 자식 노드 유효성 검사 후 큐에 삽입
+            if (current*2+1 <= lastIndex) q.offer(current*2+1);
+        }
+
+        level++;     // 현재 높이, 한 높이(너비) 별 탐색이 끝나면 크기 하나씩 증가
+    }
+}
+```
+
+### 깊이 우선 탐색(DFS, Depth First Search)
+
+- 루트 노드에서 출발하여 한 방향으로 갈 수 있는 경로가 존재할 때까지 계속해서 깊이 탐색. 더 이상 방문할 수 있는 경로가 없으면 마지막으로 만났던 갈림길이 있던 노드로 돌아와 다른 방향의 노드를 같은 방식으로 계속해서 깊게 탐색하는 방식
+- 자식의 자식의 자식 노드까지 깊게 탐색했다가 방문할 노드가 없을 경우 돌아와서 다른 자식 노드로 깊게 들어가야 하므로 **재귀**적으로 구현하거나, **후입 선출 형태의 자료구조인 스택**(Stack)을 사용하여 구현할 수 있음
+
+```java
+public void dfs(int current) {
+    System.out.println(current + " ");      // 전위 순회 dfs로, 중위, 후위 순위의 경우 현재 라인의 위치만 자식 노드 중간과 마지막으로 바꿔주면 됨
+
+    // 왼쪽 자식 노드 유효성 검사 후 재귀적 탐색
+    if (current*2 <= lastIndex) dfs(current*2);
+    // 오른쪽 자식 노드 유효성 검사 후 재귀적 탐색
+    if (current*2+1 <= lastIndex) dfs(current*2+1);
+}
+```
+
+## 트리의 순회
+
+깊이 우선 탐색 시 트리의 노드를 순회하는 순서
+
+### 전위 순회(preorder traversal) : VLR
+
+노드 방문 -> 왼쪽 자식 -> 오른쪽 자식
+
+```java
+public void dfsByPreOrder() {
+    System.out.print("Preorder : ");
+    dfsByPreOrder(1);
+    System.out.println();
+}
+	
+private void dfsByPreOrder(int current) {
+    // 현재 노드 처리
+    System.out.print(nodes[current] + " ");
+    // 왼쪽 자식 노드 방문
+    if (current*2<=lastIndex) dfsByPreOrder(current*2);
+    // 오른쪽 자식 노드 방문
+    if (current*2+1<=lastIndex) dfsByPreOrder(current*2+1);
+}
+```
+
+### 중위 순회(inorder traversal) : LVR
+
+왼쪽 자식 -> 노드 방문 -> 오른쪽 자식
+
+```java
+public void dfsByInOrder() {
+    System.out.print("Inorder : ");
+    dfsByInOrder(1);
+    System.out.println();
+}
+
+private void dfsByInOrder(int current) {
+    // 왼쪽 자식 노드 방문
+    if (current*2<=lastIndex) dfsByInOrder(current*2);
+    // 현재 노드 처리
+    System.out.print(nodes[current] + " ");
+    // 오른쪽 자식 노드 방문
+    if (current*2+1<=lastIndex) dfsByInOrder(current*2+1);
+}
+```
+
+### 후위 순회(postorder traversal) :LRV
+
+왼쪽 자식 -> 오른쪽 자식 -> 노드 방문
+
+```java
+public void dfsByPostOrder() {
+    System.out.print("Postorder : ");
+    dfsByPostOrder(1);
+    System.out.println();
+}
+
+private void dfsByPostOrder(int current) {
+    // 왼쪽 자식 노드 방문
+    if (current*2<=lastIndex) dfsByPostOrder(current*2);
+    // 오른쪽 자식 노드 방문
+    if (current*2+1<=lastIndex) dfsByPostOrder(current*2+1);
+    // 현재 노드 처리
+    System.out.print(nodes[current] + " ");
+}
+```
+
+## PS 문제 추천
+
+[Baekjoon Online Judge > 트리의 부모 찾기](https://www.acmicpc.net/problem/11725)
+[2019 KAKAO BLIND RECRUITMENT > 길 찾기 게임](https://www.welcomekakao.com/learn/courses/30/lessons/42892)
+
+
+<br>
+
+
+# 트라이(Trie)
+
+키와 값을 쌍으로 갖는 연관 배열 데이터를 저장하는 트리 자료 구조
+
+주로 자연어 처리(NLP) 분야에서 문자열 탐색을 위해 사용한다. 문자열의 각각의 문자 단위로 색인을 구축한 형태이다.
+
+## 트라이 원리
+
+### 트라이를 이용한 문자열 저장
+
+![Trie Principle](https://github.com/hongcheol/CS-study/blob/main/Algorithm/img/trie-principle.png?raw=true)
+
+<p align="center"><img src="https://github.com/hongcheol/CS-study/blob/main/Algorithm/img/trie-search.png?raw=true" alt="Trie Search" width="500"></p>
+
+> 1. 각 노드가 배열로 구성된 트리를 생성한다.
+> 2. 저장하려는 문자열의 모든 문자들을 확인하며 아래 과정을 시행한다.
+> 3. 루트 노드(문자 배열)에서 문자열의 첫번째 문자에 해당하는 인덱스로 이동한다.
+> 4. 해당 인덱스에 연결된 자식 노드가 존재하지 않는다면 새로운 노드(문자 배열)를 할당한다. 이후 새로운 노드에서 두번째 문자에 해당하는 인덱스로 이동한다.
+> 5. 해당 인덱스에 연결된 자식 노드가 존재한다면 해당 노드의 두번째 문자에 해당하는 인덱스로 이동한다.
+> 6. 문자열의 모든 문자를 다 저장할 때까지(즉, 문자열 길이만큼) 위의 과정을 반복한다. 마지막 문자를 저장하고 나서는 배열 값을 `true`로 설정하여 하나의 문자열이 완전히 저장됨을 표시한다.
+
+위의 과정에서 주목할 점은 **접두사가 동일한 문자열**을 저장할 경우 **최소 하나 이상의 노드를 공유**한다는 것이다!
+
+## 트라이의 시간 복잡도
+
+위의 방식대로 문자열을 저장할 경우 **한 문자열을 탐색할 때 고작 `O(1)`의 연산**만 필요하게 된다.
+
+아무리 트리 노드가 많이 존재하더라도, 심지어는 전세계 모든 인구인 80억명의 이름이 저장된 트라이라고 할지라도, 오직 `O(1)`의 시간만이 걸린다. 그 이유는 한 문자열을 탐색하기 위해서는 해당 문자열이 갖고 있는 문자 노드만을 탐색하기 때문이다. 루트 노드에서부터 **해당 문자열의 길이** 만큼의 자식 노드만 타고 들어가기 때문에, 다른 탐색 알고리즘과 달리 **저장된 문자열의 개수에 영향을 받지 않는다**는 점이 트라이의 큰 특장점이다.
+
+## 트라이의 공간 복잡도
+
+우수한 시간적 성능을 자랑하는 트라이의 치명적인 한계는 바로 메모리를 많이 사용한다는 것이다.
+
+트라이를 이용해 한국의 5천만 인구의 이름을 저장한다고 생각해보자. 한국에서 가장 긴 이름은 `"박하늘별님구름햇님보다사랑스러우리"`로 17자이다. 이 이름을 저장하기 위해서는 한글의 모든 음절을 배열로 담은, 길이가 `11,172인 배열`이 `17개`가 필요하고 총 `189,924`만큼의 메모리(1음절을 1byte로 가정)가 필요하다. 이름의 길이가 길어서 생긴 문제라고 말할 수도 있겠지만, 가장 보편적인 3자 이름 역시 `11,172인 배열`이 `3개`가 필요하고 총 `33,516`만큼의 메모리가 필요하다. 한 명의 이름을 저장하는데도 이렇게 많은 메모리를 사용하는데 이런 방식으로 `5천만`명의 이름을 저장한다면 어마어마한 크기의 메모리가 필요하게 될 것이다.(물론 같은 성을 사용하거나 돌림자를 사용하는 이름은 노드를 같이 사용할 수 있어 조금은 효율적이라고 말할 수 있다.)
+
+트라이의 공간 복잡도는 대략 `O(포인터 크기 * 포인터 배열의 길이 * 전체 노드 개수)`가 된다. 따라서 트라이는 **시간적 성능과 공간적 성능을 맞바꾼** 대표적인 예로 볼 수 있다.
+
+## Java를 이용한 트라이 구현
+
+```java
+class Trie {
+    final int ALPHABET_SIZE = 26;         // 포인터 배열의 길이(표현할 수 있는 문자 개수)
+
+    class Node {
+        Node[] children = new Node[ALPHABET_SIZE];     
+        boolean isEndOfWord;              // 저장하려는 문자열의 마지막 문자 여부
+
+        public Node() {
+            for (int i=0; i<ALPHABET_SIZE; i++) {
+                children[i] = null;       // 포인터 배열 초기화
+            }
+
+            isEndOfWord = false;          // 마지막 문자 여부 초기화
+        }
+    }
+
+    Node root;                            // 문자열의 첫번째 문자
+
+    public void insert(String key) {
+        int length = key.length();        // 탐색하려는 문자열 길이
+        int alphabetIdx;                  // 문자열의 각 문자의 인덱스
+        Node curAlphabet = root;          // 현재 탐색중인 문자열의 문자
+
+        for (int level=0; level<length; level++) {
+            alphabetIdx = key.charAt(level) - 'a';                    // 문자열의 각 문자의 인덱스 구하기
+            Node nextAlphabet = curAlphabet.children[alphabetIdx];    // 문자열의 다음 문자
+
+            if (nextAlphabet == null) {         // 찾으려는 문자에 연결된 자식 노드가 없을 경우
+                nextAlphabet = new Node();      // 새로운 노드 생성 뒤 자식 노드로 연결
+            }
+
+            curAlphabet = nextAlphabet;         // 찾으려는 문자의 자식 노드를 현재 노드로
+        }
+
+        curAlphabet.isEndOfWord = true;         // 문자열의 모든 문자에 대해 삽입이 끝났다면 마지막 문자의 노드는 true로 변경하여 하나의 문자열이 저장됐음을 표시
+    }
+
+    public boolean search(String key) {
+        int length = key.length();        // 탐색하려는 문자열 길이
+        int alphabetIdx;                  // 문자열의 각 문자의 인덱스
+        Node curAlphabet = root;          // 현재 탐색중인 문자열의 문자
+
+        for (int level=0; level<length; level++) {
+            alphabetIdx = key.charAt(level) - 'a';
+            Node nextAlphabet = curAlphabet.children[alphabetIdx];
+
+            if (nextAlphabet == null) {         // 탐색하려는 문자열이 존재하지 않는 경우
+                return false;
+            }
+
+            curAlphabet = nextAlphabet;         // 찾으려는 문자의 자식 노드를 현재 노드로
+        }
+
+        return (curAlphabet.isEndOfWord);       // 탐색하려는 문자열이 존재하는 경우
+    }
+}
+```
+
+## PS 문제 추천
+
+[2020 KAKAO BLIND RECRUITMENT > 가사검색](https://programmers.co.kr/learn/courses/30/lessons/60060)
+
+<br>
+
+
 
 # 그래프
 # 그래프의 표현과 정의
@@ -586,7 +963,7 @@ __(A mod M) = (B mod M) => A ≡ B (mod M)__
 
 ## 그래프의 종류
 
-<img width="731" alt="그래프_종류" src="https://user-images.githubusercontent.com/16794320/127731827-67d5dabf-871b-4b8c-a150-07b1749593a8.png">
+<img width="731" alt="그래프_종류" src="https://user-images.githubusercontent.com/16794320/127731827-67d5dabf-871b-4b8c-a150-07b1749593a8.png">
 
 ### 방향 그래프
 
@@ -617,7 +994,7 @@ __(A mod M) = (B mod M) => A ≡ B (mod M)__
 ## 그래프의 경로
 
 그래프에서 경로란 끝과 끝이 연결된 간선들을 순서대로 나열한 것
-<img width="303" alt="그래프_경로" src="https://user-images.githubusercontent.com/16794320/127731829-9ac04786-3ff6-4711-b67f-0e3f7f12233c.png">
+<img width="303" alt="그래프_경로" src="https://user-images.githubusercontent.com/16794320/127731829-9ac04786-3ff6-4711-b67f-0e3f7f12233c.png">
 
 주어진 그림에서 1에서 5로 가는 경로는 
 (1,2),(2,4),(4,5)와 같이 표현.
@@ -664,11 +1041,11 @@ DFS(Depth-First Search,깊이 우선 탐색)은 그래프의 모든 노드를 �
 각 정점이 정수형인 경우를 예시로 설명하겠습니다.
 
 
-![그래프_표](./img/graph_chart.png)
+![그래프_표](./img/graph_chart.png)
 
 위와 같이 만들어진 그래프를 DFS로 탐색하는 그림은 다음과 같습니다.
 
-<img src="./img/graph_DFS.png" alt="그래프_DFS" style="zoom:50%;" />
+<img src="./img/graph_DFS.png" alt="그래프_DFS" style="zoom:50%;" />
 
 
 ## Java로 그래프를 표현하는 방법
@@ -757,7 +1134,7 @@ BFS(너비 우선 탐색)은 그래프를 탐색하는 방법 중 하나입니�
 
    
 
-   ![그래프_표](./img/graph_chart.png)
+   ![그래프_표](./img/graph_chart.png)
 
 <img src="./img/graph_BFS.png" alt="graph_BFS" style="zoom:50%;" />
 
