@@ -432,31 +432,60 @@ N과 K의 이항계수는 nCk = N!/(K!*(N-K)!) 로 구할 수 있다.
 
 위 표현식을 다시 응용하면, A^(P-1) ≡ 1 (mod P) => A * A^(P-2) ≡ 1 (mod P)로 변형이 가능하다.
 
-놀랍게도, A (mod P)에 대한 역원은 a^(P-2) (mod P)라는 것이다.
+놀랍게도, A (mod P)에 대한 역원은 A^(P-2) (mod P)라는 것이다.
 
 그렇다면 다시 문제로 돌아와서 해당 분수의 역원을 페르마의 소정리로 구해보면,
 
-(K!*(N-K)!)^(-1)
+A는 (K! * (N-K)!) , P는 1,000,000,007 로 대입할 수 있다.
 
+A^(-1) = A^(P-2) = (K! * (N-K)!)^(-1) = (K! * (N-K)!)^1,000,000,005 가 된다.
+
+이제는 더 이상 역원이 분수가 아닌 정수로 표현되니, 모듈라 곱셈 분배 법칙 적용할 수 있게 되었다.
+
+최종적으로 도출되는 식은 아래와 같다.
+
+  N! / (K!*(N-K)!) mod M
+= (N! * (K!*(N-K)!)^(-1)) mod M 
+= (N! * (K!*(N-K)!)^(M-2)) mod M 
+= ((N! mod M) * (K! * (N-K)!)^(M-2) mod M) mod M
+
+이렇게 정리가 된다.
+
+이제 곱셈 분배법칙이 적용되니 분할 정복을 하여야 한다.
+
+분할 정복은 (K! * (N-K)!)^(M-2)에서 지수 M-2를 계속 절반씩 나눠서 지수가 짝수일 때와 홀수일 때를 구분하여 리턴해주면 된다.
+
+아래는 위 문제의 수도코드이다.
 ```
+// 수도코드
 M = 1,000,000,007
+A = factorial(N); // N!
+B = factorial(K) * factorial(N-K) % M; // K!*(N-K)!
 
-binomial_coefficient(N, K){
-    	K = Min(N, N-K); // K를 나눈 값을 리턴하지 않기 때문에 작은 수를 고른다.
-    	A = 1, B = 1; // A는 분자, B는 분모
-	
-    	for(i = 0; i < K; i++){
-        	A = A * (N-i) % M
-        	B = B * (i+1) % M
+print(A * pow(B, M-2) % M); // (N! * (K!*(N-K)!)^(M-2)) mod M  
+
+// 팩토리얼 구하면서 mod M을 계속 해줌
+factorial(num){
+	result = 1;
+	while(num > 1){
+		result = (result * num--) % M
 	}
 	
-    	B = pow(B, p-2) % M
+	return result;
+}
+
+// num : 밑수, exp : 지수
+divide_conquer(num, exp){
+    	if(exp == 1) return num % M; // 지수가 1일 경우 num^1 이므로 num % M 리턴
     	
-	return A * B % M
+	temp = divide_conquer(num, exp/2); // 모듈라 연산 곱셈 분배법칙을 이용한 분할 정복
+	
+	if(exp % 2 == 1) return (temp * temp) * num % M; // 분할 정복이 끝나고 지수가 홀수가 남으면 ex)A^5 = A^2 * A^2 * A
+	else return temp * temp % M; // 지수가 짝수면 A^4 = A^2 * A^2
 }
 ```
 
-
+---
 
 # 그래프
 # 그래프의 표현과 정의
