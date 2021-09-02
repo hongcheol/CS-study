@@ -683,7 +683,7 @@ M = 1,000,000,007
 A = factorial(N); // N!
 B = factorial(K) * factorial(N-K) % M; // K!*(N-K)!
 
-print(A * pow(B, M-2) % M); // (N! * (K!*(N-K)!)^(M-2)) mod M  
+print(A * divide_conquer(B, M-2) % M); // (N! * (K!*(N-K)!)^(M-2)) mod M  
 
 // 팩토리얼 구하면서 mod M을 계속 해줌
 factorial(num){
