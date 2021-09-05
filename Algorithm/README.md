@@ -28,7 +28,7 @@
 	2. [이진 탐색트리](#이진-탐색트리)
 	3. [우선순위 큐와 힙](#우선순위-큐와-힙)
 	4. 구간 트리
-	5. 상호 배타적 집합
+	5. [상호 배타적 집합](#상호-배타적-집합)
 	6. [트라이](#트라이-Trie)
 6. [그래프](#그래프)
    1. [그래프의 표현과 정의](#그래프의-표현과-정의)
@@ -48,7 +48,7 @@
 7. [정렬](#정렬)
 	1. 삽입 정렬, 선택 정렬, 버블 정렬
 	2. [병합 정렬](#병합-정렬)
-	3. 힙 정렬
+	3. [힙 정렬](#힙-정렬)
 	4. 퀵 정렬
 	5. [기수 정렬](#기수-정렬)
 	6. 계수 정렬
@@ -730,9 +730,9 @@ N과 K의 이항계수는 nCk = N!/(K!*(N-K)!) 로 구할 수 있다.
 > A는 정수, P는 소수이며 A가 P로 나눠지지 않을 때, (A는 P의 배수가 아니라는 뜻)
 >
 > A^P ≡ A (mod P)이다. (P에 대해 모듈라 합동이다 : P를 나눈 나머지가 같다.)
- 
+
 이는 이렇게 표현이 가능하다 -> A^P mod M ≡ A mod M
- 
+
 다시 말하지만 우리는 위 공식이 어떻게 증명되는지에 대해서는 관심없고 증명된 공식들을 잘 써먹는데에 관심이 있는 공학자들이다.
 
 위 표현식을 다시 응용하면, A^(P-1) ≡ 1 (mod P) => A * A^(P-2) ≡ 1 (mod P)로 변형이 가능하다.
@@ -750,7 +750,7 @@ A^(-1) = A^(P-2) = (K! * (N-K)!)^(-1) = (K! * (N-K)!)^1,000,000,005 가 된다.
 최종적으로 도출되는 식은 아래와 같다.
 
   N! / (K!*(N-K)!) mod M
-  
+
 = (N! * (K!*(N-K)!)^(-1)) mod M 
 
 = (N! * (K!*(N-K)!)^(M-2)) mod M 
@@ -825,7 +825,7 @@ divide_conquer(num, exp){
 - 벡터의 내적
 
   내적은 벡터를 수처럼 곱하는 개념입니다. 벡터의 내적이 의미있는 이유는 벡터의 내적을 통해서 두 벡터 사이의 각도를 알 수 있기 때문입니다.
-   
+  
    ![inner_product](https://user-images.githubusercontent.com/16794320/132115655-42e42789-af3a-45ef-b3f8-2a94d36b91ab.png)
 
 
@@ -961,7 +961,7 @@ divide_conquer(num, exp){
    동작 원리는 간단하지만 구현은 생각보다 어렵습니다.
 
   그래서 구현을 할 때는 반직선의 개념보다는 반직선이 닿은 점 p가 주어질 때 모든 점을 확인하는 방식으로 작동합니다. p에서 각 점으로 가는 벡터들 중에서 가장 왼쪽에 있는 벡터에 대응되는 점이 다음으로 반직선이 닿을 점이 됩니다. 그 이유는 p가 볼록 껍질 상의 점이기 때문에 다른 점까지 벡터를 그리면 그 벡터는 p를 기준으로 180도 범위내에 반드시 존재하기 때문에 가장 왼쪽임을 정의할 수 있습니다.
-  
+
   ![사진 2021  9  5  오후 20909](https://user-images.githubusercontent.com/16794320/132116362-1dced251-a260-455c-92c5-20f12c5353d0.jpg)
 
   위의 그림에서 확인할 수 있듯, 볼록 껍질 위의 점을 기준으로 다른 점까지 그린 벡터는 시작점 기준으로 180도 범위내에 존재합니다. 
@@ -1507,7 +1507,7 @@ arr[x2][y2] - arr[x1-1][y2] - arr[x2][y1-1] + arr[x1-1][y1-1]
 - 원소의 개수가 많고 삽입/삭제 연산이 빈번하게 일어날수록 작업에 소요되는 시간이 크게 증가한다.
 
 ## 연결 리스트
- 
+
 ![image](https://user-images.githubusercontent.com/53392870/131145206-ff2a9346-46fb-4df7-8419-eef0cd3dbd3a.png)
 출처: https://lipcoder.tistory.com/entry/%EB%A6%AC%EC%8A%A4%ED%8A%B8
 
@@ -2249,6 +2249,184 @@ private Node getRightMinNode(Node rightChildRoot) {
 [백준 1655 가운데를 말해요](https://www.acmicpc.net/problem/1655)
 
 [백준 11000 강의실 배정](https://www.acmicpc.net/problem/11000)
+
+
+
+# 상호 배타적 집합
+
+상호 배타적 집합(disjoint set)은 서로소 집합 또는 Union-Find라고도 합니다. 전체 집합에서 공통 원소를 가지지 않는 여러 부분 집합들을 저장하고 조작하는 자료구조입니다. 
+
+
+
+## 상호 배타적 집합 연산
+
+- Make(initialize): n개의 원소가 각각의 집합에 포함되어 있도록 초기화 한다.
+
+  ```java
+  	private static void make() {
+  		for (int i = 0; i < N; i++) {
+  			parents[i] = i;
+  		}
+  	}
+  ```
+
+- find: 어떤 원소 a가 속한 집합을 반환한다.
+
+  - find 연산의 결과 값 비교로 두 원소가 현재 같은 집합에 속하는지 알 수 있다.
+
+  ```java
+  	private static int find(int a) {
+  		if(a==parents[a]) return a;
+  		return find(parents[a]);
+  	}
+  ```
+
+- union: 두 원소 a,b 가 주어질 때 이들이 속한 두 집합을 하나로 합친다.
+
+  ```java
+  	private static void union(int a , int b) {
+  		int aRoot = find(a);
+  		int bRoot = find(b);
+  		if(aRoot == bRoot) return; // 둘은 같은 집합
+  		
+  		parents[bRoot] = aRoot;
+  	}
+  ```
+
+  
+
+## 상호 배타적 집합 표현
+
+1. 배열
+
+   - 1차원 배열 belongsTo[i] = i번 원소가 속하는 집합의 번호라고 둔다.
+
+   - make 연산을 하면  belongsTo[i]  = i가 될 것이다.
+
+   - find 연산을 하면 i가 속하는 집합의 번호를 O(1)로 구할 수 있다.
+
+   - 하지만 union 연산을 했을 때 배열을 순회하면서 i가 속하는 집합을 갱신해주어야 하므로 O(N)이 걸린다. 
+
+     
+
+2. 트리
+
+   - 한 집합에 속하는 원소들을 하나의 트리로 묶어 주기 때문에 트리들의 집합으로 표현한다.
+   - make 연산을 하면 각 노드들이 자기 자신을 root로 가리킬 것이다.
+   - find 연산을 하면 노드가 가리키는 값들을 루트가 나올 때 까지 타고 가서 root값을 가져오게 된다. 트리의 높이만큼의 시간이 걸리므로 일반적으로 O(logN)로 구할 수 있다.
+   - union 연산을 하면 노드 중 한 쪽이 가리키는 root노드가 다른 한쪽의 root 노드를 가리키게 하면 된다. 이 연산 자체는 O(1)이지만 내부적으로 find를 사용하기 때문에 O(logN)으로 구할 수 있다.
+   - 그래서 **상호 배타적 집합은 트리로 표현**한다.
+
+
+
+## 최적화
+
+하지만 트리로 표현했을 때 union연산의 결과로 트리의 구조가 한 쪽으로 기울어지는 문제가 생길 수 있습니다. 이 때 트리의 높이가 n이라면 find와 union 모두 O(n)의 시간 복잡도를 가지게 됩니다.
+
+이 문제를 해결하는 방법은 크게 두 가지 입니다.
+
+
+
+1. 랭크에 의한 합치기(Union by rank)
+
+   - 항상 높이가 더 낮은 트리를 높은 트리에 붙이는 방법입니다. 그러면 트리의 높이가 계속해서 높아지는 것을 막을 수 있습니다.
+
+   - 구현할 때 높이 정보를 저장하는 rank 배열을 만들어서 해당 노드가 한 트리의 root인 경우 해당 트리의 높이를 저장하도록 합니다.
+
+   - 높이가 같은 트리끼리 합치면 트리의 높이를 1 높여 줍니다.
+
+   - (a)에서 6과 1를 union 할 때 6를 1에 연결합니다. 만약 반대가 된다면 트리의 rank가 증가했을 것입니다.
+
+   <p align="center"><img src="./img/disjoint_set_union_by_rank.png" width="600"></p>
+
+   ```java
+   	private static void union(int a , int b) {
+   		int aRoot = find(a);
+   		int bRoot = find(b);
+   		if(aRoot == bRoot) return; // 둘은 같은 집합
+           
+           //a와 b의 rank를 비교하여 더 낮은 값이 a로 오게 한다.
+           if(rank[a] > rank[b]) swap(a, b); 
+           
+           parent[a] = b; //a를 b에 연결한다.
+           //a와 b의 rank가 같다면 b의 rank를 증가시킨다.
+           if(rank[a] == rank[b]) rank[b]++; 
+       }
+   ```
+
+   
+
+2. 경로 압축(path compression)
+
+   - find 연산을 할 때 해당 노드가 연결되어 있는 경로를 따라 root를 찾아갑니다.
+   - 이 때 연산으로 얻어낸 root를 해당 노드에 바로 연결한다면 다음에 find 연산을 할 때 해당 노드의  root를 한 번에 찾을 수 있게 됩니다.
+   - (a)에서 find(0)을 수행하면 트리의 형태가 (b)로 바뀝니다.
+
+   <p align="center"><img src="./img/disjoint_set_path_compression.png" width="500"></p>
+
+   ```java
+   private static int find(int a) {
+   	if(a==parents[a]) return a;
+   	return parents[a] = find(parents[a]);
+   }
+   ```
+
+
+
+## 사용 예
+
+- 그래프의 연결성 확인하기
+
+  - 서로 연결된 노드는 같은 집합에 포함되어 있다고 할 수 있다.
+  - 각 노드의 루트를 비교하여 문제를 해결한다.
+  - [크루스칼 최소 스패닝 알고리즘](##크루스칼의-최소-스패닝-트리-알고리즘)
+
+  
+
+- 가장 큰 집합 찾기
+
+  - 루트 노드에 현재 트리에 속한 노드의 개수를 저장한다면 가장 큰 집합을 찾을 수 있다.
+
+    ```java
+        private static void make() {
+        	parents = new int[V+1];
+        	for (int i = 1; i < V+1; i++) {
+                //root가 음수이면 음수의 크기 만큼 노드를 갖고 있다고 표현 할 수 있다. 
+    			parents[i] = -1; 
+    		}
+        }
+        
+        private static int find(int a) {
+            //parents[a]가 음수이면 root이므로 그 값을 리턴한다.
+        	if(parents[a] < 0) return a;
+        	return parents[a] = find(parents[a]);
+        }
+        
+        private static void union(int a, int b) {
+        	int aRoot = find(a);
+        	int bRoot = find(b);
+        	
+            // aRoot가 -1이면 자기 자신만 있는 집합이므로 구별해줍니다.
+        	if(aRoot != -1 && aRoot == bRoot) return;
+        	
+            //연결하는 root의 parents값을 더해서 새로운 트리의 크기를 저장할 수 있다.
+        	parents[aRoot] += parents[bRoot];
+        	parents[bRoot] = aRoot;
+        	return;
+        }
+    ```
+
+
+
+### 관련 문제
+
+[백준 1717 집합의 표현](https://www.acmicpc.net/problem/1717)
+
+[백준 10775 공항](https://www.acmicpc.net/problem/10775)
+
+
+
+<br>
 
 
 
@@ -3186,6 +3364,124 @@ public static void mergeSort(int start, int end) {
 
 ### 관련 문제
 [백준 1517번 버블 소트](https://www.acmicpc.net/problem/1517)
+
+<br>
+
+
+
+# 힙 정렬
+
+힙 정렬(Heap Sorting)은 최대 힙 트리나 최소 힙 트리를 구성해 힙의 특성을 이용하여 정렬 하는 알고리즘입니다.
+
+최대 힙과 최소 힙에 대한 자세한 설명은 [힙](## 힙)을 참고하세요.
+
+
+
+## 특징
+
+힙 정렬의 가장 큰 특징은 힙 트리 구조를 만들어야 한다는 점입니다.
+
+힙 트리를 만드는 알고리즘(Heapify Algorithm)은 하나의 노드를 선택해서 두 자식 중에서 더 큰 자식과 자신의 위치를 바꾸는 과정을 힙 구조를 만족할 때 까지 전체 노드에 대해 반복하는 작업입니다. 
+
+
+
+## 과정
+
+1. 정렬해야 할 n개의 요소들로 최대 또는 최소 힙(완전 이진 트리 형태)을 만든다.
+
+2. 힙의 루트 값과 마지막 index 값을 교환한다.
+3. 정렬이 필요한 index를 1 줄인다.
+4. index가 0이 될 때까지 2~3을 반복한다.
+
+
+
+예를 들어 {7, 6, 5, 8, 3, 5, 9, 1, 6}을 최대 힙으로 오름차순으로 정렬한다면 다음과 같은 과정을 거칩니다.
+
+<p align="center"><img src="./img/heap_sort1.png" width="400"></p>
+
+- 처음 최대 힙 구조를 만들면 9가 root로 오게 됩니다.
+
+
+<p align="center"><img src="./img/heap_sort2.png" width="400"></p>
+
+- 그러므로 root와 가장 마지막 노드의 값을 교환하면 다음과 같아집니다. 이 때 9는 정렬 된 index이므로 heap의 마지막 index는 1의 값이 있는 곳으로 감소합니다. 
+
+<p align="center"><img src="./img/heap_sort3.png" width="400"></p>
+
+
+
+- 다시 최대 힙 구조를 만들면 root에 8이 오게 됩니다.
+
+
+
+<p align="center"><img src="./img/heap_sort4.png" width="400"></p>
+
+- 위의 과정을 반복합니다.
+
+  
+
+## 구현
+
+```java
+//최대 힙을 이용한 오름차순 정렬 구현
+
+
+public void sort(int arrA[]) {
+    int size = arrA.length;
+
+    // 힙 트리 생성
+    // i: 각 서브 트리의 루트 노드
+    for (int i = size / 2 - 1; i >= 0; i--)
+        heapify(arrA, size, i);
+
+    // heap의 root값(최댓값)을 배열의 마지막 값과 swap. 
+    // i값을 뒤에서부터 0까지 반복하여 뒤에 값부터 최댓값이 채워진다.
+    for (int i=size-1; i>=0; i--) {
+
+        //arrA[0]이 root, arrA[i]가 배열의 마지막 값
+        int x = arrA[0];
+        arrA[0] = arrA[i];
+        arrA[i] = x;
+
+        // 힙 트리 생성
+        heapify(arrA, i, 0);
+    }
+}
+
+// node i의 서브트리 간에 최대 힙의 조건을 만족하도록 트리를 생성한다.
+// heapSize는 배열의 아직 정렬되지 않은 index 범위를 의미합니다.
+void heapify(int arrA[], int heapSize, int i) {
+    int largest = i; // node i가 최대 값이라고 가정
+    int leftChildIdx  = 2*i + 1; // left = 2*i + 1
+    int rightChildIdx  = 2*i + 2; // right = 2*i + 2
+
+    // 왼쪽 자식 노드가 루트 노드보다 크다면 자식 노드의 index를 저장한다.
+    if (leftChildIdx  < heapSize && arrA[leftChildIdx ] > arrA[largest])
+        largest = leftChildIdx ;
+
+    // 오른쪽 자식 노드가 루트 노드보다 크다면  자식 노드의 index를 저장한다.
+    if (rightChildIdx  < heapSize && arrA[rightChildIdx ] > arrA[largest])
+        largest = rightChildIdx ;
+
+    // 최대 값 노드의 index가 변경되었다면 값을 swap한다.
+    if (largest != i) {
+        int swap = arrA[i];
+        arrA[i] = arrA[largest];
+        arrA[largest] = swap;
+
+        // swap한 구조가 최대 힙 트리를 만족할 때 까지 위의 과정을 반복한다.
+        heapify(arrA, heapSize, largest);
+    }
+}
+```
+
+
+
+## 시간 복잡도
+
+데이터 갯수가 n개이고, 힙 구조를 만들 때 완전 이진 트리에 데이터를 삽입하는데 O(log n) 이므로  O(N*logN)의 시간 복잡도를 가집니다. 
+
+
 
 <br>
 
