@@ -2337,7 +2337,7 @@ private Node getRightMinNode(Node rightChildRoot) {
 
    - (a)에서 6과 1를 union 할 때 6를 1에 연결합니다. 만약 반대가 된다면 트리의 rank가 증가했을 것입니다.
 
-   <p align="center"><img src="./img/disjoint_set_union_by_rank.png" width="600"></p>
+   <p align="center"><img src="./img/disjoint_set_union_by_rank.PNG" width="600"></p>
 
    ```java
    	private static void union(int a , int b) {
@@ -2362,7 +2362,7 @@ private Node getRightMinNode(Node rightChildRoot) {
    - 이 때 연산으로 얻어낸 root를 해당 노드에 바로 연결한다면 다음에 find 연산을 할 때 해당 노드의  root를 한 번에 찾을 수 있게 됩니다.
    - (a)에서 find(0)을 수행하면 트리의 형태가 (b)로 바뀝니다.
 
-   <p align="center"><img src="./img/disjoint_set_path_compression.png" width="500"></p>
+   <p align="center"><img src="./img/disjoint_set_path_compression.PNG" width="500"></p>
 
    ```java
    private static int find(int a) {
@@ -3373,7 +3373,7 @@ public static void mergeSort(int start, int end) {
 
 힙 정렬(Heap Sorting)은 최대 힙 트리나 최소 힙 트리를 구성해 힙의 특성을 이용하여 정렬 하는 알고리즘입니다.
 
-최대 힙과 최소 힙에 대한 자세한 설명은 [힙](## 힙)을 참고하세요.
+최대 힙과 최소 힙에 대한 자세한 설명은 [힙](##힙) 을 참고하세요.
 
 
 
@@ -3397,16 +3397,16 @@ public static void mergeSort(int start, int end) {
 
 예를 들어 {7, 6, 5, 8, 3, 5, 9, 1, 6}을 최대 힙으로 오름차순으로 정렬한다면 다음과 같은 과정을 거칩니다.
 
-<p align="center"><img src="./img/heap_sort1.png" width="400"></p>
+<p align="center"><img src="./img/heap_sort1.PNG" width="400"></p>
 
 - 처음 최대 힙 구조를 만들면 9가 root로 오게 됩니다.
 
 
-<p align="center"><img src="./img/heap_sort2.png" width="400"></p>
+<p align="center"><img src="./img/heap_sort2.PNG" width="400"></p>
 
 - 그러므로 root와 가장 마지막 노드의 값을 교환하면 다음과 같아집니다. 이 때 9는 정렬 된 index이므로 heap의 마지막 index는 1의 값이 있는 곳으로 감소합니다. 
 
-<p align="center"><img src="./img/heap_sort3.png" width="400"></p>
+<p align="center"><img src="./img/heap_sort3.PNG" width="400"></p>
 
 
 
@@ -3414,7 +3414,7 @@ public static void mergeSort(int start, int end) {
 
 
 
-<p align="center"><img src="./img/heap_sort4.png" width="400"></p>
+<p align="center"><img src="./img/heap_sort4.PNG" width="400"></p>
 
 - 위의 과정을 반복합니다.
 
