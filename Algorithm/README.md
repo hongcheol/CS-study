@@ -27,7 +27,7 @@
 	1. [트리의 구현과 순회](#트리의-구현과-순회)
 	2. [이진 탐색트리](#이진-탐색트리)
 	3. [우선순위 큐와 힙](#우선순위-큐와-힙)
-	4. 구간 트리
+	4. [구간 트리](#구간-트리)
 	5. [상호 배타적 집합](#상호-배타적-집합)
 	6. [트라이](#트라이-Trie)
 6. [그래프](#그래프)
@@ -49,7 +49,7 @@
 	1. 삽입 정렬, 선택 정렬, 버블 정렬
 	2. [병합 정렬](#병합-정렬)
 	3. [힙 정렬](#힙-정렬)
-	4. 퀵 정렬
+	4. [퀵 정렬](#퀵-정렬)
 	5. [기수 정렬](#기수-정렬)
 	6. 계수 정렬
 	7. 셸 정렬
@@ -2257,13 +2257,13 @@ private Node getRightMinNode(Node rightChildRoot) {
 
 
 
-# 구간 트리(Segment Tree)
+# 구간 트리
 
 일차원 배열의 특정 구간에 대한 질문을 빠르게 대답하는 데 활용되는 자료구조
 
 대표적으로 구간 원소들의 합, 구간 원소들의 최솟값(RMQ, Range Minimum Query) 등에 대한 질의를 지원한다.
 
-## 구간 트리 초기화
+## 구간 트리(Segment Tree) 초기화
 
 ![구간 트리 구간 범위](https://github.com/hongcheol/CS-study/blob/main/Algorithm/img/segment-tree-range.png?raw=true)
 
@@ -2413,6 +2413,7 @@ void updateTree(int treeStart, int treeEnd, int node, int newValue) {
 ### PS 문제 추천
 
 [Baekjoon Online Judge > 2042-구간 합 구하기](https://www.acmicpc.net/problem/2042)
+
 [2021 카카오 채용연계형 인턴십 > 표 편집](https://programmers.co.kr/learn/courses/30/lessons/81303)
 
 
