@@ -2251,6 +2251,177 @@ private Node getRightMinNode(Node rightChildRoot) {
 [백준 11000 강의실 배정](https://www.acmicpc.net/problem/11000)
 
 
+<br />
+
+---
+
+
+
+# 구간 트리(Segment Tree)
+
+일차원 배열의 특정 구간에 대한 질문을 빠르게 대답하는 데 활용되는 자료구조
+
+대표적으로 구간 원소들의 합, 구간 원소들의 최솟값(RMQ, Range Minimum Query) 등에 대한 질의를 지원한다.
+
+## 구간 트리 초기화
+
+![구간 트리 구간 범위](https://github.com/hongcheol/CS-study/blob/main/Algorithm/img/segment-tree-range.png?raw=true)
+
+- 배열의 각 구간을 표현하는 **이진 트리** 형태
+- 구간 트리의 루트는 배열의 전체 구간(`[0, n-1`)을 표현
+- 각 트리(i)의 왼쪽 자식(2*i)과 오른쪽 자식(2*i+1)은 해당 구간을 반으로 나눈 왼쪽 부분와 오른쪽 부분을 표현
+- 리프 노드는 구간의 크기가 1인 경우
+- 전체 구간 크기가 2의 제곱꼴이라면 노드가 `2*(h+1)-1`개인 **완전 이진 트리**가 완성되겠지만, 2의 제곱꼴이 아니더라도 남는 노드는 빈 공간으로 남겨두고 `2*(h+1)-1` 크기의 배열로 표현하는 것이 편함.
+- **구간 트리의 각 노드는 해당하는 구간의 계산 결과를 저장**해둔다. 따라서 최소 구간 문제의 경우 각 구간의 최솟값을, 구간의 합 문제의 경우 각 구간의 원소들의 합을 노드에 저장해둔다.
+- 어떤 구간이 주어지더라도 해당 구간은 **구간트리 노드에 포함된 구간들의 합집합**으로 표현할 수 있다.
+
+<br />
+
+
+## 구간 트리 질의
+
+![구간 트리 구간 최소, 구간 합](https://github.com/hongcheol/CS-study/blob/main/Algorithm/img/segment-tree.png?raw=true)
+
+구간 트리로 해결하는 가장 대표적인 문제인 구간 최소 문제(RMQ, Range Minimum Query)를 보자. 
+
+### 원리
+
+원하는 구간을 포함하는 구간 집합 중 집합의 크기가 최소인 구간을 찾는다.
+1. 만약 현재 구간이 원하는 구간을 전혀 포함하지 않는다면 무한대를 반환한다.
+2. 만약 현재 구간이 원하는 구간에 완전히 포함된다면 현재 노드(구간의 최솟값을 저장한 상태)를 반환한다.
+3. 위의 두 경우가 아닌 경우(즉, 현재 구간이 원하는 구간을 포함하되 전부를 포함하지 않거나 아니면 최소 크기가 보장되지 않은 경우)에는 현재 구간을 반으로 나눠 위의 과정을 다시 반복하고 난 뒤 결과 중 최솟값을 반환한다.
+
+### 시간 복잡도
+
+구간 트리의 레벨은 `O(log n)`이며 질의를 위해 최대 구간 트리의 레벨 만큼 확인하면 되므로 `O(log n)`의 연산이 필요하다.
+
+### 구현
+
+```java
+class SegmentTreeRMQ
+{
+    static int sTree[];             // 세그먼트 트리
+
+        // 두 값을 비교해 더 작을 값을 반환하는 함수
+	static int minVal(int x, int y) {
+		return (x < y) ? x : y;
+	}
+
+        // 구간의 중간 위치를 인덱스로 구하는 함수
+	static int getMid(int s, int e) { 
+		return s + (e - s) / 2;
+	}
+
+	// 주어진 배열(전체 구간)에 맞는 완전 이진 트리 만들기
+	static void treeInit(int arr[], int n)
+	{
+		// 트리의 높이
+		int x = (int) (Math.ceil(Math.log(n) / Math.log(2)));
+		// 트리 최대 크기 (이렇게 직접 계산하지 않고 n*4를 하게되면 쉽게 모든 배열 원소를 포함하는 트리를 만들 수 있지만 메모리 낭비가 발생할 수 있음)
+		int max_size = 2 * (int) Math.pow(2, x) - 1;
+		sTree = new int[max_size];
+
+		// 생성한 트리에 배열의 원소 삽입
+		nodeInit(arr, 0, n-1, 0);
+	}
+
+        // 세그먼트 트리 초기화(각 노드에 각 구간의 최솟값을 저장)
+	static int nodeInit(int arr[], int treeStart, int treeEnd, int node)
+	{
+		// 리프노드 혹은 자식 노드들이 이미 각자 구간의 최솟값을 계산하여 저장하고 있는 경우 
+		if (treeStart == treeEnd) {
+			return sTree[node] = arr[treeStart];
+		}
+
+		// 구간을 반으로 나눠가며 재귀적으로 자식 노드들에 각 노드가 포함하는 구간의 최솟값을 저장
+		int mid = getMid(treeStart, treeEnd);
+		return sTree[node] 
+                = minVal(nodeInit(arr, treeStart, mid, node*2),
+				         nodeInit(arr, mid+1, treeEnd, node*2+1));
+	}
+
+        // 구간 최소를 구하는 메서드
+        static int RMQ(int treeStart, int treeEnd, int queryStart, int queryEnd, int node) {
+		// 현재 노드에 표현된 구간이 탐색을 원하는 구간을 완전히 배제한다면 무한대 반환
+		if (treeStart > queryEnd || treeEnd < queryStart)
+			return Integer.MAX_VALUE;
+
+                // 현재 노드에 표현된 구간이 탐색을 원하는 구간에 포함된다면 노드(구간의 최솟값)에 저장된 값 반환
+		if (queryStart <= treeStart && queryEnd >= treeEnd)
+			return sTree[node];
+
+		// 현재 노드에 표현된 구간이 탐색을 원하는 구간을 일부 포함할 경우 현재 구간을 왼쪽 부분와 오른쪽 부분으로 나눠 다시 질의
+		int mid = getMid(treeStart, treeEnd);      // 현재 노드의 구간을 나눔
+                // 왼쪽 구간에 대해 질의한 결과와 오른쪾 구간에 대해 질의한 결과 중 최솟값을 채택
+		return minVal(RMQ(treeStart, mid, queryStart, queryEnd, 2*node), RMQ(mid+1, treeEnd, queryStart, queryEnd, 2*node+1));
+	}
+
+	public static void main(String args[])
+	{
+		int arr[] = {1, 3, 2, 7, 9, 11};
+
+		// 주어진 배열에 맞는 트리 생성
+		initTree(arr, arr.length);
+
+		int queryStart = 1;    // 탐색 원하는 구간 시작 지점
+		int queryEnd = 5;      // 탐색 원하는 구간 종료 지점
+
+		System.out.println(
+            "Minimum of values in range [" + queryStart + ", " + queryEnd + "] is = " 
+            + 
+            RMQ(0, n-1, queryStart, queryEnd, 0));
+	}
+}
+```
+
+> 만약 구간 합을 구하는 문제로 바꾸어 풀고싶다면 `nodeInit()` 메서드에서 각 노드에 구간의 최솟값을 저장하지 말고 구간합을 계산해서 저장하면 된다.
+
+<br />
+
+## 구간 트리 갱신
+
+구간 트리 초기화 단계에서 주어진 배열대로 트리를 만들었다. 하지만 이후 배열의 원소를 바꾸어 트리에 다시 반영해야할 수 있다. 구간 트리를 갱신하는 방법에 대해 보자.
+
+### 원리
+
+원하는 구간을 포함하는 구간 집합 중 집합의 크기가 최소인 구간을 찾는다.
+1. 만약 현재 구간이 원하는 구간을 전혀 포함하지 않는다면 pass
+2. 만약 현재 구간이 원하는 구간에 완전히 포함된다면 현재 노드의 값을 갱신한다.
+3. 위의 두 경우가 아닌 경우(즉, 현재 구간이 원하는 구간을 포함하되 전부를 포함하지 않거나 아니면 최소 크기가 보장되지 않은 경우)에는 현재 구간을 반으로 나눠 위의 과정을 다시 반복하며 값을 갱신한다.
+
+### 시간 복잡도
+
+변경을 원하는 원소를 포함하는 구간은 구간 트리에 `O(log n)`개 존재하므로 특정 원소를 변경할 때도 `O(log n)`만큼의 연산만 수행하면 된다.
+
+### 구현
+
+```java
+void updateTree(int treeStart, int treeEnd, int node, int newValue) {
+	// 현재 노드에 표현된 구간이 탐색을 원하는 구간을 완전히 배제한다면 pass
+	if (treeStart > node || treeEnd < node) return;
+
+        // 현재 노드에 표현된 구간이 탐색을 원하는 구간에 포함된다면 노드에 저장된 값 갱신
+	if (queryStart <= treeStart && queryEnd >= treeEnd) return sTree[node] = newValue;
+
+	// 현재 노드에 표현된 구간이 탐색을 원하는 구간을 일부 포함할 경우 현재 구간을 왼쪽 부분와 오른쪽 부분으로 나눠 다시 갱신 시도
+	int mid = getMid(treeStart, treeEnd);      // 현재 노드의 구간을 나눔
+        // 값의 변경을 원하는 원소가 포함된 구간의 최솟값을 모두 바꿔줌
+	return minVal(updateTree(treeStart, mid, 2*node, newValue), updateTree(mid+1, treeEnd, 2*node+1, newValue));
+}
+```
+
+### PS 문제 추천
+
+[Baekjoon Online Judge > 2042-구간 합 구하기](https://www.acmicpc.net/problem/2042)
+[2021 카카오 채용연계형 인턴십 > 표 편집](https://programmers.co.kr/learn/courses/30/lessons/81303)
+
+
+<br />
+
+---
+
+
+
 
 # 상호 배타적 집합
 
@@ -3486,6 +3657,116 @@ void heapify(int arrA[], int heapSize, int i) {
 <br>
 
 ----
+
+
+
+# 퀵 정렬
+
+## 퀵 정렬(Quick Sort)의 개념
+
+임의의 피봇(pivot)을 기준으로 해당 피봇 값보다 작은 데이터는 피봇의 왼쪽에, 큰 데이터는 피봇의 오른쪽에 배치한 뒤, 왼쪽 부분과 오른쪽 부분을 다시 퀵 정렬 방법으로 정렬하는 알고리즘
+
+전체 데이터를 2개의 부분으로 분할한 뒤, 각각의 부분을 다시 퀵정렬하는 전형적인 `분할-정복 알고리즘`
+
+중복적인 데이터에 대해 정렬 후에 정렬 전의 순서가 유지되지 않는 불안정 정렬이다.
+
+**접근법**
+
+```java
+quick_sort(int[] list, int left, int right) {
+    if (left < right) {
+        int pivot = partition(list, left, right);
+        quick_sort(list, left, pivot-1);
+        quick_sort(list, pivot+1, right);
+    }
+}
+
+```
+
+### 피봇을 기준으로 분할하기
+
+퀵 정렬 구현의 핵심은 위 알고리즘의 `partition()`부분인 전체 배열을 피봇을 기준으로 두 부분으로 분할하는 것이다. 분할의 원리는 다음과 같다.
+
+![QuickSort](https://github.com/hongcheol/CS-study/blob/main/Algorithm/img/quicksort-partition.png?raw=true)
+
+> 1. 배열의 임의의 원소를 `pivot`, 가장 첫번째 원소를 `low`, 가장 마지막 원소를 `high`이라고 지정한다.
+> 2. `low` 값이 `pivot` 보다 작을 동안 `low` 인덱스를 증가시킨다. 반복문이 계속될 때까지 조건에 부합하는 원소들은 `pivot`의 왼쪽 부분 리스트가 된다.
+> 3. `high` 값이 `pivot` 보다 클 동안 `high` 인덱스를 감소시킨다. 반복문이 계속될 때까지 조건에 부합하는 원소들은 `pivot`의 오른쪽 부분 리스트가 된다.
+> 4. 2와 3의 반복문을 탈출하여 도달한 위치는 각각 `low` 값이 `pivot` 보다 크고, `high` 값이 `pivot` 보다 작은 경우이므로, 이 때 멈춘 두 원소 자리를 교환한다.
+> 5. `low`와 `high`의 위치가 엇갈리지 않을 때까지 2~3의 과정을 반복한다.
+> 6. `low`와 `high`의 위치가 엇갈리는 때 `high`와 `pivot`의 자리를 교환한다. 최종적으로 `pivot`의 위치를 기준으로 왼쪽에는 `pivot`보다 작은 원소들이, 오른쪽에는 `pivot`보다 큰 원소들이 위치하게 된다.
+
+### 퀵 정렬 시간 복잡도
+
+- 분할
+    n개의 원소를 가진 배열을 정렬한다고 하면, 배열은 각 단계에서 `partition()`을 거칠 때마다 `n/2`, `n/4`, `n/8` ..., `n/(2^k)` 의 크기로 분할된다. 이 과정은 배열의 원소 개수가 1개가 될 때까지 반복되므로 `n/(2^k) = 1`일 때까지 반복된다. 따라서 `k = log n`만큼의 연산이 수행된다.
+- 원소 교환
+    각 왼쪽 부분와 오른쪽 부분에서는 교환을 위해 거의 부분의 모든 원소들을 확인해야 하므로 각 부분의 원소 개수만큼(`n`) 연산이 수행된다.
+
+위 계산 결과 최종적으로 평균 `O(n log n)`의 시간복잡도를 보이게 된다.
+
+하지만 매번 단 하나의 원소를 가진 부분와 나머지 원소들을 가진 부분으로 나뉘는 경우 등, 배열의 초기값이나 피봇의 선택 방법에 따라 최악의 경우 `O(n^2)`의 시간 복잡도를 보일 수 있다.
+
+### 구현
+
+```java
+class QuickSort {
+    static int low;       // 왼쪽 커서
+    static int high;     // 오른쪽 커서
+    static int pivot;    // 피봇
+
+    // 원소 교환
+    static void swap(int[] arr, int i, int j) {
+        int temp = arr[i];
+        arr[i] = arr[j];
+        arr[j] = temp;
+    }
+
+    // 분할
+    static void partition(int[] arr, int left, int right) {
+        low = left;                               // 왼쪽 커서
+        high = right;                           // 오른쪽 커서
+        pivot = arr[(low+high)/2];     // 피봇
+
+        do {
+            while(arr[low] < pivot) low++;
+            while(arr[high] > pivot) high--;
+            if (low <= high) swap(arr, low++, high--);
+        } while(low <= high);
+    }
+
+    // 퀵 정렬
+    static void quickSort(int[] arr, int left, int right) {
+        partition(arr, left, right);
+        if (left < high) quickSort(arr, left, high);
+        if (low < right) quickSort(arr, low, right);
+    }
+}
+```
+
+<br />
+
+## 듀얼 피봇 퀵 정렬(Dual Pivot Quick Sort)
+
+피봇 1개를 기준으로 삼아 정렬하는 퀵 정렬에서 나아가 피봇 2개를 기준으로 정렬하는 알고리즘
+
+임의의 피봇 2개를 기준으로 `pivot1` 보다 작은 부분, `pivot1` ~ `pivot2` 사이의 부분, `pivot2` 보다 큰 부분으로 나눈 뒤 각 부분을 다시 듀얼 피봇 퀵 정렬 방법으로 정렬한다.
+
+`pivot2`는 항상 `pivot1`보다 크도록 설정해야함을 주의한다.
+
+![Dual Pivot QuickSort](https://github.com/hongcheol/CS-study/blob/main/Algorithm/img/dual-pivot-quicksort.png?raw=true)
+
+### 듀얼 피봇 퀵 정렬 시간 복잡도
+
+퀵 정렬과 달리 3부분으로 나누기때문에 `Θ(nlog3n)`정도의 연산이 기대된다. 하지만 최악의 경우에는 퀵 정렬과 같이 `O(n^2)`의 시간 복잡도를 피할 수 없다.
+
+<br />
+
+---
+
+
+
+
 
 # 기수 정렬
 기수 정렬은 흔히 말하는 n진법으로 나타낸 수에서 각 자릿수별로 **비교 없이** 수행하는 정렬 알고리즘입니다.
