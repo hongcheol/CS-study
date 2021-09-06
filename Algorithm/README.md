@@ -2718,17 +2718,21 @@ class SegmentTreeRMQ
 ### 구현
 
 ```java
-void updateTree(int treeStart, int treeEnd, int node, int newValue) {
-	// 현재 노드에 표현된 구간이 탐색을 원하는 구간을 완전히 배제한다면 pass
-	if (treeStart > node || treeEnd < node) return;
+void updateTree(int[] arr, int treeStart, int treeEnd, int node, int index, int diff) {
+    // 현재 노드에 표현된 구간이 탐색을 원하는 구간을 완전히 배제한다면 pass
+    if (treeStart > index || treeEnd < index) return;
 
-        // 현재 노드에 표현된 구간이 탐색을 원하는 구간에 포함된다면 노드에 저장된 값 갱신
-	if (queryStart <= treeStart && queryEnd >= treeEnd) return sTree[node] = newValue;
-
-	// 현재 노드에 표현된 구간이 탐색을 원하는 구간을 일부 포함할 경우 현재 구간을 왼쪽 부분와 오른쪽 부분으로 나눠 다시 갱신 시도
-	int mid = getMid(treeStart, treeEnd);      // 현재 노드의 구간을 나눔
-        // 값의 변경을 원하는 원소가 포함된 구간의 최솟값을 모두 바꿔줌
-	return minVal(updateTree(treeStart, mid, 2*node, newValue), updateTree(mid+1, treeEnd, 2*node+1, newValue));
+    // 값을 변경할 배열 원소와 해당 원소 변화가 영향을 미치는 모든 부모 노드의 값을 변경(최솟값 변경)
+    sTree[node] += diff;
+    
+    // 최종 배열 원소까지 값을 변경했다면 재귀 종료
+    if (start == end) return;
+    
+    // 값의 변경을 원하는 원소가 포함된 모든 구간의 최솟값을 바꿔주기 위해 재귀적으로 탐색
+    int mid = getMid(treeStart, treeEnd);      // 현재 트리의 구간을 나눔
+    // 값의 변경을 원하는 원소가 포함된 구간의 최솟값을 모두 바꿔줌
+    updateTree(arr, treeStart, mid, 2*node, index, diff);
+    updateTree(arr, mid+1, treeEnd, 2*node+1, index, diff);
 }
 ```
 
