@@ -2635,12 +2635,12 @@ class SegmentTreeRMQ
 {
     static int sTree[];             // 세그먼트 트리
 
-        // 두 값을 비교해 더 작을 값을 반환하는 함수
+	// 두 값을 비교해 더 작을 값을 반환하는 함수
 	static int minVal(int x, int y) {
 		return (x < y) ? x : y;
 	}
 
-        // 구간의 중간 위치를 인덱스로 구하는 함수
+	// 구간의 중간 위치를 인덱스로 구하는 함수
 	static int getMid(int s, int e) { 
 		return s + (e - s) / 2;
 	}
@@ -2658,34 +2658,34 @@ class SegmentTreeRMQ
 		nodeInit(arr, 0, n-1, 0);
 	}
 
-        // 세그먼트 트리 초기화(각 노드에 각 구간의 최솟값을 저장)
-	static int nodeInit(int arr[], int treeStart, int treeEnd, int node)
+	// 세그먼트 트리 초기화(각 노드에 각 구간의 최솟값을 저장)
+	static int nodeInit(int arr[], int arrStart, int arrEnd, int node)
 	{
 		// 리프노드 혹은 자식 노드들이 이미 각자 구간의 최솟값을 계산하여 저장하고 있는 경우 
-		if (treeStart == treeEnd) {
-			return sTree[node] = arr[treeStart];
+		if (arrStart == arrEnd) {
+			return sTree[node] = arr[arrStart];
 		}
 
 		// 구간을 반으로 나눠가며 재귀적으로 자식 노드들에 각 노드가 포함하는 구간의 최솟값을 저장
-		int mid = getMid(treeStart, treeEnd);
+		int mid = getMid(arrStart, arrEnd);
 		return sTree[node] 
-                = minVal(nodeInit(arr, treeStart, mid, node*2),
-				         nodeInit(arr, mid+1, treeEnd, node*2+1));
+		= minVal(nodeInit(arr, arrStart, mid, node*2),
+			 nodeInit(arr, mid+1, arrEnd, node*2+1));
 	}
 
-        // 구간 최소를 구하는 메서드
-        static int RMQ(int treeStart, int treeEnd, int queryStart, int queryEnd, int node) {
+	// 구간 최소를 구하는 메서드
+	static int RMQ(int treeStart, int treeEnd, int queryStart, int queryEnd, int node) {
 		// 현재 노드에 표현된 구간이 탐색을 원하는 구간을 완전히 배제한다면 무한대 반환
 		if (treeStart > queryEnd || treeEnd < queryStart)
 			return Integer.MAX_VALUE;
 
-                // 현재 노드에 표현된 구간이 탐색을 원하는 구간에 포함된다면 노드(구간의 최솟값)에 저장된 값 반환
+		// 현재 노드에 표현된 구간이 탐색을 원하는 구간에 포함된다면 노드(구간의 최솟값)에 저장된 값 반환
 		if (queryStart <= treeStart && queryEnd >= treeEnd)
 			return sTree[node];
 
 		// 현재 노드에 표현된 구간이 탐색을 원하는 구간을 일부 포함할 경우 현재 구간을 왼쪽 부분와 오른쪽 부분으로 나눠 다시 질의
 		int mid = getMid(treeStart, treeEnd);      // 현재 노드의 구간을 나눔
-                // 왼쪽 구간에 대해 질의한 결과와 오른쪾 구간에 대해 질의한 결과 중 최솟값을 채택
+		// 왼쪽 구간에 대해 질의한 결과와 오른쪾 구간에 대해 질의한 결과 중 최솟값을 채택
 		return minVal(RMQ(treeStart, mid, queryStart, queryEnd, 2*node), RMQ(mid+1, treeEnd, queryStart, queryEnd, 2*node+1));
 	}
 
@@ -2700,9 +2700,9 @@ class SegmentTreeRMQ
 		int queryEnd = 5;      // 탐색 원하는 구간 종료 지점
 
 		System.out.println(
-            "Minimum of values in range [" + queryStart + ", " + queryEnd + "] is = " 
-            + 
-            RMQ(0, n-1, queryStart, queryEnd, 0));
+	    "Minimum of values in range [" + queryStart + ", " + queryEnd + "] is = " 
+	    + 
+	    RMQ(0, n-1, queryStart, queryEnd, 0));
 	}
 }
 ```
