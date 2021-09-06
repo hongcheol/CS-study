@@ -2655,7 +2655,7 @@ class SegmentTreeRMQ
 		sTree = new int[max_size];
 
 		// 생성한 트리에 배열의 원소 삽입
-		nodeInit(arr, 0, n-1, 0);
+		nodeInit(arr, 1, n-1, 0);
 	}
 
 	// 세그먼트 트리 초기화(각 노드에 각 구간의 최솟값을 저장)
