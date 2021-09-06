@@ -4211,37 +4211,49 @@ public class radixSort {
 
 1. 배열 내에 원소 값들의 개수를 저장하는 Counting Array를 만든다.
 
-<img src="https://user-images.githubusercontent.com/53392870/132098458-ef055ded-ba35-4fc4-84b4-cbcc69bbdabd.png" width="75%"/>
-<img src="https://user-images.githubusercontent.com/53392870/132098462-2e17d4fd-ea2e-4c89-9aa9-869a7a95298c.png" width="75%"/>
+<img src="https://user-images.githubusercontent.com/53392870/132098458-ef055ded-ba35-4fc4-84b4-cbcc69bbdabd.png" width="50%"/>
+<img src="https://user-images.githubusercontent.com/53392870/132098462-2e17d4fd-ea2e-4c89-9aa9-869a7a95298c.png" width="50%"/>
 
 2. Counting Array의 요소들에 대해서 직전 요소들의 값을 더해준다.
 <img src="https://user-images.githubusercontent.com/53392870/132098600-010f14fe-41a8-4247-b2c1-423566f6785d.png" width="50%"/>
-<img src="https://user-images.githubusercontent.com/53392870/132098563-cfee650d-c499-48e6-8942-a47c3a3d6907.png" width=50%"/>
+<img src="https://user-images.githubusercontent.com/53392870/132098563-cfee650d-c499-48e6-8942-a47c3a3d6907.png" width="50%"/>
 <img src="https://user-images.githubusercontent.com/53392870/132098611-0d6b9547-0828-4246-8313-60d75ce88a04.png" width="50%"/>
 
 3. 입력 배열과 동일한 크기의 출력 배열을 생성하고 입력 배열 순서대로 출력 배열에 요소들을 채워넣는다.
 
 (1) arr의 index 0부터 시작한다. sorted_arr[count_arr[arr[i]] - 1]에 arr[i]삽입한다. count_arr[arr[i]]에서 1을 뺀다.
-<img src="https://user-images.githubusercontent.com/53392870/132099152-df422969-1023-4af3-92c0-3a90e8574305.png" width="50%"/>
+
+<img src="https://user-images.githubusercontent.com/53392870/132214944-67598d79-6b7c-4cc1-8684-7a7ce3faf3c2.png" width="50%"/>
 <br/>
+
 (2) arr의 index 1로 이동한다.
-<img src="https://user-images.githubusercontent.com/53392870/132099177-a596558a-b482-4af4-b37c-871957834e94.png" width="50%"/>
+
+<img src="https://user-images.githubusercontent.com/53392870/132214776-4a564548-f3f1-427f-8c07-b187f6bf3557.png" width="50%"/>
 <br/>
+
 (3) arr의 index 2로 이동한다.
-<img src="https://user-images.githubusercontent.com/53392870/132099225-eda739b8-9a19-48d1-9a89-463cb795767a.png" width="50%"/>
+
+<img src="https://user-images.githubusercontent.com/53392870/132215207-045f95be-e612-4096-b06c-8ae99e1ff5be.png" width="50%"/>
 <br/>
+
 (4) arr의 index 3로 이동한다.
-<img src="https://user-images.githubusercontent.com/53392870/132099245-a38332d8-da58-41a3-a7da-d43346855f9d.png" width="50%"/>
+
+<img src="https://user-images.githubusercontent.com/53392870/132215392-2ba62567-f127-4fef-a6a5-66e828021529.png" width="50%"/>
 <br/>
+
 (5) arr의 index 4로 이동한다.
-<img src="https://user-images.githubusercontent.com/53392870/132099261-51c71d62-7b0a-4d07-84de-c22b8df888d1.png" width="50%"/>
+
+<img src="https://user-images.githubusercontent.com/53392870/132215577-be946288-e180-4173-aaaf-a07a236da85d.png" width="50%"/>
 <br/>
+
 (6) arr의 index 5로 이동한다.
-<img src="https://user-images.githubusercontent.com/53392870/132099281-68cb2373-90eb-4ce2-ad9c-61b30b2e4373.png" width="50%"/>
+
+<img src="https://user-images.githubusercontent.com/53392870/132215704-ef2e78a6-5ad1-45dd-84de-ade4b832798b.png" width="50%"/>
 <br/>
 (7)  arr의 index 6로 이동한다.
-<img src="https://user-images.githubusercontent.com/53392870/132099293-a8347f4e-604b-4014-8e62-b80bf32e9cd5.png" width="50%"/>
 
+<img src="https://user-images.githubusercontent.com/53392870/132215857-9a9065c9-0018-434a-a251-6a2bc1664910.png" width="50%"/>
+															    
 ## 코드
 
 ```java
