@@ -4215,9 +4215,9 @@ public class radixSort {
 <img src="https://user-images.githubusercontent.com/53392870/132098462-2e17d4fd-ea2e-4c89-9aa9-869a7a95298c.png" width="50%"/>
 
 2. Counting Array의 요소들에 대해서 직전 요소들의 값을 더해준다.
-<img src="https://user-images.githubusercontent.com/53392870/132098600-010f14fe-41a8-4247-b2c1-423566f6785d.png" width="50%"/>
-<img src="https://user-images.githubusercontent.com/53392870/132098563-cfee650d-c499-48e6-8942-a47c3a3d6907.png" width="50%"/>
-<img src="https://user-images.githubusercontent.com/53392870/132098611-0d6b9547-0828-4246-8313-60d75ce88a04.png" width="50%"/>
+<img src="https://user-images.githubusercontent.com/53392870/132098600-010f14fe-41a8-4247-b2c1-423566f6785d.png" width="30%"/>
+<img src="https://user-images.githubusercontent.com/53392870/132098563-cfee650d-c499-48e6-8942-a47c3a3d6907.png" width="30%"/>
+<img src="https://user-images.githubusercontent.com/53392870/132098611-0d6b9547-0828-4246-8313-60d75ce88a04.png" width="30%"/>
 
 3. 입력 배열과 동일한 크기의 출력 배열을 생성하고 입력 배열 순서대로 출력 배열에 요소들을 채워넣는다.
 
