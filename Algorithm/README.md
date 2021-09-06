@@ -2633,77 +2633,66 @@ private Node getRightMinNode(Node rightChildRoot) {
 ```java
 class SegmentTreeRMQ
 {
-    static int sTree[];             // 세그먼트 트리
-
-	// 두 값을 비교해 더 작을 값을 반환하는 함수
-	static int minVal(int x, int y) {
-		return (x < y) ? x : y;
-	}
-
-	// 구간의 중간 위치를 인덱스로 구하는 함수
-	static int getMid(int s, int e) { 
-		return s + (e - s) / 2;
-	}
-
-	// 주어진 배열(전체 구간)에 맞는 완전 이진 트리 만들기
-	static void treeInit(int arr[], int n)
-	{
-		// 트리의 높이
-		int x = (int) (Math.ceil(Math.log(n) / Math.log(2)));
-		// 트리 최대 크기 (이렇게 직접 계산하지 않고 n*4를 하게되면 쉽게 모든 배열 원소를 포함하는 트리를 만들 수 있지만 메모리 낭비가 발생할 수 있음)
-		int max_size = 2 * (int) Math.pow(2, x) - 1;
-		sTree = new int[max_size];
-
-		// 생성한 트리에 배열의 원소 삽입
-		nodeInit(arr, 1, n-1, 0);
-	}
-
-	// 세그먼트 트리 초기화(각 노드에 각 구간의 최솟값을 저장)
-	static int nodeInit(int arr[], int arrStart, int arrEnd, int node)
-	{
-		// 리프노드 혹은 자식 노드들이 이미 각자 구간의 최솟값을 계산하여 저장하고 있는 경우 
-		if (arrStart == arrEnd) {
-			return sTree[node] = arr[arrStart];
-		}
-
-		// 구간을 반으로 나눠가며 재귀적으로 자식 노드들에 각 노드가 포함하는 구간의 최솟값을 저장
-		int mid = getMid(arrStart, arrEnd);
-		return sTree[node] 
-		= minVal(nodeInit(arr, arrStart, mid, node*2),
-			 nodeInit(arr, mid+1, arrEnd, node*2+1));
-	}
-
-	// 구간 최소를 구하는 메서드
-	static int RMQ(int treeStart, int treeEnd, int queryStart, int queryEnd, int node) {
-		// 현재 노드에 표현된 구간이 탐색을 원하는 구간을 완전히 배제한다면 무한대 반환
-		if (treeStart > queryEnd || treeEnd < queryStart)
-			return Integer.MAX_VALUE;
-
-		// 현재 노드에 표현된 구간이 탐색을 원하는 구간에 포함된다면 노드(구간의 최솟값)에 저장된 값 반환
-		if (queryStart <= treeStart && queryEnd >= treeEnd)
-			return sTree[node];
-
-		// 현재 노드에 표현된 구간이 탐색을 원하는 구간을 일부 포함할 경우 현재 구간을 왼쪽 부분와 오른쪽 부분으로 나눠 다시 질의
-		int mid = getMid(treeStart, treeEnd);      // 현재 노드의 구간을 나눔
-		// 왼쪽 구간에 대해 질의한 결과와 오른쪾 구간에 대해 질의한 결과 중 최솟값을 채택
-		return minVal(RMQ(treeStart, mid, queryStart, queryEnd, 2*node), RMQ(mid+1, treeEnd, queryStart, queryEnd, 2*node+1));
-	}
-
-	public static void main(String args[])
-	{
-		int arr[] = {1, 3, 2, 7, 9, 11};
-
-		// 주어진 배열에 맞는 트리 생성
-		initTree(arr, arr.length);
-
-		int queryStart = 1;    // 탐색 원하는 구간 시작 지점
-		int queryEnd = 5;      // 탐색 원하는 구간 종료 지점
-
-		System.out.println(
-	    "Minimum of values in range [" + queryStart + ", " + queryEnd + "] is = " 
-	    + 
-	    RMQ(0, n-1, queryStart, queryEnd, 0));
-	}
+    static int sTree[];        // 세그먼트 트리
+    
+    // 두 값을 비교해 더 작을 값을 반환하는 함수
+    static int minVal(int x, int y) {
+    	return (x < y) ? x : y;
+    }
+    
+    // 구간의 중간 위치를 인덱스로 구하는 함수
+    static int getMid(int s, int e) { 
+    	return (s + e) / 2;
+    }
+    
+    // 주어진 배열(전체 구간)에 맞는 완전 이진 트리 만들기
+    static void treeInit(int arr[], int n) {
+    	// 트리의 높이
+    	int x = (int) (Math.ceil(Math.log(n) / Math.log(2)));
+    	// 트리 최대 크기 (이렇게 직접 계산하지 않고 n*4를 하게되면 쉽게 모든 배열 원소를 포함하는 트리를 만들 수 있지만 메모리 낭비가 발생할 수 있음)
+    	int max_size = 2 * (int) Math.pow(2, x) - 1;
+    	sTree = new int[max_size];
+    
+    	// 생성한 트리에 배열의 원소 삽입
+    	nodeInit(arr, 0, n-1, 1);
+    }
+    
+    // 세그먼트 트리 초기화(각 노드에 각 구간의 최솟값을 저장)
+    static int nodeInit(int arr[], int arrStart, int arrEnd, int node) {
+    	// 리프노드 혹은 자식 노드들이 이미 각자 구간의 최솟값을 계산하여 저장하고 있는 경우 
+    	if (arrStart == arrEnd) return sTree[node] = arr[arrStart];
+    
+    	// 구간을 반으로 나눠가며 재귀적으로 자식 노드들에 각 노드가 포함하는 구간의 최솟값을 저장
+    	int mid = getMid(arrStart, arrEnd);
+    	return sTree[node] = minVal(nodeInit(arr, arrStart, mid, 2*node), nodeInit(arr, mid+1, arrEnd, 2*node+1));
+    }
+    
+    // 구간 최소를 구하는 메서드
+    static int RMQ(int treeStart, int treeEnd, int queryStart, int queryEnd, int node) {
+    	// 현재 노드에 표현된 구간이 탐색을 원하는 구간을 완전히 배제한다면 무한대 반환
+    	if (treeStart > queryEnd || treeEnd < queryStart) return Integer.MAX_VALUE;
+    
+    	// 현재 노드에 표현된 구간이 탐색을 원하는 구간에 포함된다면 노드(구간의 최솟값)에 저장된 값 반환
+    	if (queryStart <= treeStart && queryEnd >= treeEnd) return sTree[node];
+    
+    	// 현재 노드에 표현된 구간이 탐색을 원하는 구간을 일부 포함할 경우 현재 구간을 왼쪽 부분와 오른쪽 부분으로 나눠 다시 질의
+    	int mid = getMid(treeStart, treeEnd);      // 현재 노드의 구간을 나눔
+    	// 왼쪽 구간에 대해 질의한 결과와 오른쪾 구간에 대해 질의한 결과 중 최솟값을 채택
+    	return minVal(RMQ(treeStart, mid, queryStart, queryEnd, 2*node), RMQ(mid+1, treeEnd, queryStart, queryEnd, 2*node+1));
+    }
+    
+    public static void main(String args[]) {
+    	int arr[] = {1, 3, 2, 7, 9, 11};
+    
+    	// 주어진 배열에 맞는 트리 생성
+    	treeInit(arr, arr.length);
+    
+    	int queryStart = 2;    // 탐색 원하는 구간 시작 지점
+    	int queryEnd = 3;      // 탐색 원하는 구간 종료 지점
+    
+    	System.out.println(
+    	"Minimum of values in range [" + queryStart + ", " + queryEnd + "] is = " + RMQ(0, arr.length-1, queryStart, queryEnd, 1));
+    }
 }
 ```
 
