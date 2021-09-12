@@ -2,8 +2,8 @@
 
 1. [OSI 7계층](#osi-7계층)
 2. [IP](#ip)
-   1. IPv4
-   2. IPv6
+   1. [IPv4](#ipv4)
+   2. [IPv6](#ipv6)
 3. [TCP/IP](#tcp/ip)
 4. [UDP](#udp)
 5. 대칭키 & 공개키
