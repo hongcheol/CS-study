@@ -1007,7 +1007,7 @@ WHERE COL1=1 AND COL2=2 AND COL3=3;
 
 
 # 데이터베이스 튜닝 3단계
-- DB 설계 튜닝
+
 <table>
   <tr>
     <td>튜닝 단계</td>
@@ -1139,4 +1139,5 @@ WHERE COL1=1 AND COL2=2 AND COL3=3;
 
 #### 참고
 한국데이터산업진흥원, “SQL 전문가 가이드”
+
 한국데이터산업진흥원, “DAP 전문가 가이드”
