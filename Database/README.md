@@ -51,55 +51,46 @@ Hint는 크게 2가지로 구분할 수 있다.
 
 |힌트 명|힌트 설명|적용 범위|
 |:------------------------------------------------------------:|:------------------------------------------:|:---------------------:|
-| <a href="https://dev.mysql.com/doc/refman/8.0/en/optimizer-hints.html#optimizer-hints-table-level">BKA</a><strong>,</strong> <a href="https://dev.mysql.com/doc/refman/8.0/en/optimizer-hints.html#optimizer-hints-table-level">NO_BKA</a> | 일괄 처리된 키 액세스 조인 처리에 영향을 줌.| 쿼리 블록, 테이블   |
-| <a href="https://dev.mysql.com/doc/refman/8.0/en/optimizer-hints.html#optimizer-hints-table-level">BNL</a><strong>,</strong> <a href="https://dev.mysql.com/doc/refman/8.0/en/optimizer-hints.html#optimizer-hints-table-level">NO_BNL</a> | MySQL 8.0.20 이전: 블록 중첩-루프 조인 처리,  MySQL 8.0.18 이상: 해시 조인 최적화,  MySQL 8.0.20 이상: 해시 조인 최적화에만 영향을 줍니다. | 쿼리 블록, 테이블   |
+| <a href="https://dev.mysql.com/doc/refman/8.0/en/optimizer-hints.html#optimizer-hints-table-level">BKA</a><strong>,</strong> <a href="https://dev.mysql.com/doc/refman/8.0/en/optimizer-hints.html#optimizer-hints-table-level">NO_BKA</a> | 일괄 처리된 키 액세스 조인 처리에 영향| 쿼리 블록, 테이블   |
+| <a href="https://dev.mysql.com/doc/refman/8.0/en/optimizer-hints.html#optimizer-hints-table-level">BNL</a><strong>,</strong> <a href="https://dev.mysql.com/doc/refman/8.0/en/optimizer-hints.html#optimizer-hints-table-level">NO_BNL</a> | MySQL 8.0.20 이전: 블록 중첩-루프 조인 처리,  MySQL 8.0.18 이상: 해시 조인 최적화,  MySQL 8.0.20 이상: 해시 조인 최적화에만 영향 | 쿼리 블록, 테이블   |
 | <a href="https://dev.mysql.com/doc/refman/8.0/en/optimizer-hints.html#optimizer-hints-table-level">DERIVED_CONDITION_PUSHDOWN</a><strong>,</strong> <a href="https://dev.mysql.com/doc/refman/8.0/en/optimizer-hints.html#optimizer-hints-table-level">NO_DERIVED_CONDITION_PUSHDOWN</a> | 구체화된 파생 테이블에 대한 파생 조건 푸시다운 최적화 사용 또는 무시(MySQL 8.0.22에 추가) | 쿼리 블록, 테이블|
-| <a href="https://dev.mysql.com/doc/refman/8.0/en/optimizer-hints.html#optimizer-hints-index-level">GROUP_INDEX</a><strong>,</strong> <a href="https://dev.mysql.com/doc/refman/8.0/en/optimizer-hints.html#optimizer-hints-index-level">NO_GROUP_INDEX</a> | GROUP BY 작업(MySQL 8.0.20에 추가)에서 인덱스 검색에 대해 지정된 인덱스를 사용하거나 무시합니다. | 인덱스 |
-| <a href="https://dev.mysql.com/doc/refman/8.0/en/optimizer-hints.html#optimizer-hints-table-level">HASH_JOIN</a><strong>,</strong> <a href="https://dev.mysql.com/doc/refman/8.0/en/optimizer-hints.html#optimizer-hints-table-level">NO_HASH_JOIN</a> | 해시 조인 최적화에 영향을 미칩니다(MySQL  8.0.18만 해당).    | 쿼리 블록, 테이블   |
-| <a href="https://dev.mysql.com/doc/refman/8.0/en/optimizer-hints.html#optimizer-hints-index-level">INDEX</a><strong>,</strong> <a href="https://dev.mysql.com/doc/refman/8.0/en/optimizer-hints.html#optimizer-hints-index-level">NO_INDEX</a> | JOIN_INDEX,  GROUP_INDEX 및 ORDER_INDEX의 조합으로  작동하거나 NO_JOIN_INDEX, NO_GROUP_INDEX 및 NO_ORDER_INDEX(MySQL 8.0.20에 추가됨)의  조합으로 작동합니다. | 인덱스 |
-| <a href="https://dev.mysql.com/doc/refman/8.0/en/optimizer-hints.html#optimizer-hints-index-level">INDEX_MERGE</a><strong>,</strong> <a href="https://dev.mysql.com/doc/refman/8.0/en/optimizer-hints.html#optimizer-hints-index-level">NO_INDEX_MERGE</a> | 인덱스 병합 최적화에 영향을 줍니다.| 테이블,  인덱스 |
-| <a href="https://dev.mysql.com/doc/refman/8.0/en/optimizer-hints.html#optimizer-hints-join-order">JOIN_FIXED_ORDER</a> | 조인 순서에 대해 FROM 절에  지정된 테이블 순서 사용          | 쿼리 블록 |
-| <a href="https://dev.mysql.com/doc/refman/8.0/en/optimizer-hints.html#optimizer-hints-index-level">JOIN_INDEX</a><strong>,</strong> <a href="https://dev.mysql.com/doc/refman/8.0/en/optimizer-hints.html#optimizer-hints-index-level">NO_JOIN_INDEX</a> | 모든 액세스 방법에 대해 지정된 인덱스 또는 인덱스를 사용하거나 무시(MySQL 8.0.20에 추가됨) | 인덱스 |
-| <a href="https://dev.mysql.com/doc/refman/8.0/en/optimizer-hints.html#optimizer-hints-join-order">JOIN_ORDER</a> | 조인 순서에 힌트에 지정된 테이블 순서 사용| 쿼리 블록|
-| <a href="https://dev.mysql.com/doc/refman/8.0/en/optimizer-hints.html#optimizer-hints-join-order">JOIN_PREFIX</a> | 조인 순서의 첫 번째 테이블에 대해 힌트에 지정된 테이블 순서 사용 | 쿼리 블록|
-| <a href="https://dev.mysql.com/doc/refman/8.0/en/optimizer-hints.html#optimizer-hints-join-order">JOIN_SUFFIX</a> | 조인 순서의 마지막 테이블에 대해 힌트에 지정된 테이블 순서 사용 | 쿼리 블록|
+| <a href="https://dev.mysql.com/doc/refman/8.0/en/optimizer-hints.html#optimizer-hints-index-level">GROUP_INDEX</a><strong>,</strong> <a href="https://dev.mysql.com/doc/refman/8.0/en/optimizer-hints.html#optimizer-hints-index-level">NO_GROUP_INDEX</a> | GROUP BY 작업(MySQL 8.0.20에 추가)에서 인덱스 검색에 대해 지정된 인덱스를 사용하거나 무시 | 인덱스 |
+| <a href="https://dev.mysql.com/doc/refman/8.0/en/optimizer-hints.html#optimizer-hints-table-level">HASH_JOIN</a><strong>,</strong> <a href="https://dev.mysql.com/doc/refman/8.0/en/optimizer-hints.html#optimizer-hints-table-level">NO_HASH_JOIN</a> | 해시 조인 최적화에 영향 (MySQL8.0.18만 해당)| 쿼리 블록, 테이블|
+| <a href="https://dev.mysql.com/doc/refman/8.0/en/optimizer-hints.html#optimizer-hints-index-level">INDEX</a><strong>,</strong> <a href="https://dev.mysql.com/doc/refman/8.0/en/optimizer-hints.html#optimizer-hints-index-level">NO_INDEX</a> | JOIN_INDEX,  GROUP_INDEX 및 ORDER_INDEX의 조합으로  작동하거나 NO_JOIN_INDEX, NO_GROUP_INDEX 및 NO_ORDER_INDEX(MySQL 8.0.20에 추가)의 조합으로 작동| 인덱스 |
+| <a href="https://dev.mysql.com/doc/refman/8.0/en/optimizer-hints.html#optimizer-hints-index-level">INDEX_MERGE</a><strong>,</strong> <a href="https://dev.mysql.com/doc/refman/8.0/en/optimizer-hints.html#optimizer-hints-index-level">NO_INDEX_MERGE</a> | 인덱스 병합 최적화에 영향| 테이블,  인덱스 |
+| <a href="https://dev.mysql.com/doc/refman/8.0/en/optimizer-hints.html#optimizer-hints-index-level">JOIN_INDEX</a><strong>,</strong> <a href="https://dev.mysql.com/doc/refman/8.0/en/optimizer-hints.html#optimizer-hints-index-level">NO_JOIN_INDEX</a> | 모든 액세스 방법에 대해 지정된 인덱스 또는 인덱스를 사용하거나 무시(MySQL 8.0.20에 추가) | 인덱스 |
+| <a href="https://dev.mysql.com/doc/refman/8.0/en/optimizer-hints.html#optimizer-hints-join-order">JOIN_FIXED_ORDER</a> | FROM절에 지정된 순서대로(FIXED) 테이블을 조인하도록 지시          | 쿼리 블록 |
+| <a href="https://dev.mysql.com/doc/refman/8.0/en/optimizer-hints.html#optimizer-hints-join-order">JOIN_ORDER</a> |  가능하다면 힌트에 지정된 순서대로 조인하도록 지시| 쿼리 블록|
+| <a href="https://dev.mysql.com/doc/refman/8.0/en/optimizer-hints.html#optimizer-hints-join-order">JOIN_PREFIX</a> | 가장 먼저 조인을 시작 할 테이블 지정 | 쿼리 블록|
+| <a href="https://dev.mysql.com/doc/refman/8.0/en/optimizer-hints.html#optimizer-hints-join-order">JOIN_SUFFIX</a> | 가장 마지막으로 조인 할 테이블 지정 | 쿼리 블록|
 | <a href="https://dev.mysql.com/doc/refman/8.0/en/optimizer-hints.html#optimizer-hints-execution-time">MAX_EXECUTION_TIME</a> | 구문 실행 시간 제한| 전역 범위|
-| <a href="https://dev.mysql.com/doc/refman/8.0/en/optimizer-hints.html#optimizer-hints-table-level">MERGE</a><strong>,</strong> <a href="https://dev.mysql.com/doc/refman/8.0/en/optimizer-hints.html#optimizer-hints-table-level">NO_MERGE</a> | 외부 쿼리 블록으로 병합되는 파생 테이블/뷰에  영향을 줍니다. | 테이블|
-| <a href="https://dev.mysql.com/doc/refman/8.0/en/optimizer-hints.html#optimizer-hints-index-level">MRR</a><strong>,</strong> <a href="https://dev.mysql.com/doc/refman/8.0/en/optimizer-hints.html#optimizer-hints-index-level">NO_MRR</a> | 다중 범위 읽기 최적화에 영향을 줍니다.| 테이블,  인덱스|
-| <a href="https://dev.mysql.com/doc/refman/8.0/en/optimizer-hints.html#optimizer-hints-index-level">NO_ICP</a> | 인덱스 조건 푸시다운 최적화에 영향을 줍니다.| 테이블,  인덱스|
-| <a href="https://dev.mysql.com/doc/refman/8.0/en/optimizer-hints.html#optimizer-hints-index-level">NO_RANGE_OPTIMIZATION</a> | 범위 최적화에 영향을 줍니다.| 테이블,  인덱스|
-| <a href="https://dev.mysql.com/doc/refman/8.0/en/optimizer-hints.html#optimizer-hints-index-level">ORDER_INDEX</a><strong>,</strong> <a href="https://dev.mysql.com/doc/refman/8.0/en/optimizer-hints.html#optimizer-hints-index-level">NO_ORDER_INDEX</a> | 행을 정렬하기 위해 지정된 인덱스 또는 인덱스 사용하거나 또는 무시(MySQL 8.0.20에 추가됨) | 인덱스 |
+| <a href="https://dev.mysql.com/doc/refman/8.0/en/optimizer-hints.html#optimizer-hints-table-level">MERGE</a><strong>,</strong> <a href="https://dev.mysql.com/doc/refman/8.0/en/optimizer-hints.html#optimizer-hints-table-level">NO_MERGE</a> | 외부 쿼리 블록으로 병합되는 파생 테이블/뷰에  영향 | 테이블|
+| <a href="https://dev.mysql.com/doc/refman/8.0/en/optimizer-hints.html#optimizer-hints-index-level">MRR</a><strong>,</strong> <a href="https://dev.mysql.com/doc/refman/8.0/en/optimizer-hints.html#optimizer-hints-index-level">NO_MRR</a> | 다중 범위 읽기 최적화에 영향| 테이블,  인덱스|
+| <a href="https://dev.mysql.com/doc/refman/8.0/en/optimizer-hints.html#optimizer-hints-index-level">NO_ICP</a> | 인덱스 조건 푸시다운 최적화에 영향| 테이블,  인덱스|
+| <a href="https://dev.mysql.com/doc/refman/8.0/en/optimizer-hints.html#optimizer-hints-index-level">NO_RANGE_OPTIMIZATION</a> | 범위 최적화에 영향| 테이블,  인덱스|
+| <a href="https://dev.mysql.com/doc/refman/8.0/en/optimizer-hints.html#optimizer-hints-index-level">ORDER_INDEX</a><strong>,</strong> <a href="https://dev.mysql.com/doc/refman/8.0/en/optimizer-hints.html#optimizer-hints-index-level">NO_ORDER_INDEX</a> | 행을 정렬하기 위해 지정된 인덱스 또는 인덱스 사용하거나 또는 무시(MySQL 8.0.20에 추가) | 인덱스 |
 | <a href="https://dev.mysql.com/doc/refman/8.0/en/optimizer-hints.html#optimizer-hints-query-block-naming">QB_NAME</a> | 쿼리 블록에 이름 할당                                        |쿼리 블록|
 | <a href="https://dev.mysql.com/doc/refman/8.0/en/optimizer-hints.html#optimizer-hints-resource-group">RESOURCE_GROUP</a> | 구문을 실행하는 동안 리소스 그룹 설정                        | 전역 범위|
-| <a href="https://dev.mysql.com/doc/refman/8.0/en/optimizer-hints.html#optimizer-hints-subquery">SEMIJOIN</a><strong>,</strong> <a href="https://dev.mysql.com/doc/refman/8.0/en/optimizer-hints.html#optimizer-hints-subquery">NO_SEMIJOIN</a> | Semijoin 전략에 영향을 줍니다. MySQL 8.0.17부터는 안티조인에도  적용됩니다. | 쿼리 블록 |
-| <a href="https://dev.mysql.com/doc/refman/8.0/en/optimizer-hints.html#optimizer-hints-index-level">SKIP_SCAN</a><strong>,</strong> <a href="https://dev.mysql.com/doc/refman/8.0/en/optimizer-hints.html#optimizer-hints-index-level">NO_SKIP_SCAN</a> | 스킵 검색 최적화에 영향을 줍니다.| 테이블,  인덱스|
+| <a href="https://dev.mysql.com/doc/refman/8.0/en/optimizer-hints.html#optimizer-hints-subquery">SEMIJOIN</a><strong>,</strong> <a href="https://dev.mysql.com/doc/refman/8.0/en/optimizer-hints.html#optimizer-hints-subquery">NO_SEMIJOIN</a> | Semijoin 전략에 영향, MySQL 8.0.17부터는 anti조인에도 적용 | 쿼리 블록 |
+| <a href="https://dev.mysql.com/doc/refman/8.0/en/optimizer-hints.html#optimizer-hints-index-level">SKIP_SCAN</a><strong>,</strong> <a href="https://dev.mysql.com/doc/refman/8.0/en/optimizer-hints.html#optimizer-hints-index-level">NO_SKIP_SCAN</a> | 스킵 검색 최적화에 영향| 테이블,  인덱스|
 | <a href="https://dev.mysql.com/doc/refman/8.0/en/optimizer-hints.html#optimizer-hints-set-var">SET_VAR</a> | 구문을 실행하는 동안 변수 설정| 전역 범위|
-| <a href="https://dev.mysql.com/doc/refman/8.0/en/optimizer-hints.html#optimizer-hints-subquery">SUBQUERY</a> | 구체화에 영향을 미침,  IN-to-EXISTS 하위 쿼리 전략| 쿼리 블록|
+| <a href="https://dev.mysql.com/doc/refman/8.0/en/optimizer-hints.html#optimizer-hints-subquery">SUBQUERY</a> | 구체화에 영향,  IN-to-EXISTS 하위 쿼리 전략| 쿼리 블록|
 
 ```sql
 /*+ BKA(table1) */ 
-// 일괄 키 액세스 조인 처리에 영향을 줌
-// 적용 범위 : 쿼리 블록, 테이블
 
 /*+ BNL(table1, table2) */
-// MySQL 8.0.20 이전: 블록 중첩 루프 조인 처리에 영향을 줌
-// MySQL 8.0.18 이상: 해시 조인 최적화에도 영향을 줌
-// MySQL 8.0.20 이상부터 해시 조인 최적화에만 영향을 줌
-// 적용 범위 : 쿼리 블록, 테이블
 
 /*+ NO_RANGE_OPTIMIZATION(table3 PRIMARY) */
-// 범위 최적화에 영향
-// 적용 범위 : 테이블, 인덱스
 
 /*+ QB_NAME(queryblock1) */
-// 쿼리 블록에 이름 할당
-// 적용 범위 : 쿼리 블록
 
 SELECT /*+ BNL(t1) BKA(t2) */ ...
 // 하나의 쿼리 블록에서 여러 힌트를 사용할 땐, 하나의 힌트 주석안에 여러개의 힌트를 선언하여 사용해야 한다.
 // 즉, SELECT /*+ BNL(t1) */ /* BKA(t2) */ ... 는 안됨.
+```
 
-옵티마이저 힌트는 SELECT, UPDATE, INSERT, REPLACE, DELETE문에서 허용된다.
+옵티마이저 힌트는 SELECT, UPDATE, INSERT, REPLACE, DELETE문에서 아래와 같이 사용할 수 있다.
 
 ```sql
 SELECT /*+ HINT */ ...
@@ -119,23 +110,58 @@ INSERT ... SELECT /*+ ... */ ...
 ```
 
 ## 조인 순서 최적화 힌트
-조인 순서 최적화 힌트는 옵티마이저가 테이블을 조인하는 순서에 영향을 준다.
+MySQL 8.0은 이전 버전보다 훨씬 강력하고 편의성이 강한 Optimizer hint를 제공한다.<br>
+그 중 하나가 조인 순서 최적화 힌트이다.
+
+조인 순서 최적화 힌트는 옵티마이저가 테이블을 조인하는 순서에 영향을 준다.<br>
+기존의 join 순서를 제어하던 STRAIGHT_JOIN 구문등은 사용상의 여러 문제를 만들어 냈지만, 조인 순서 최적화 힌트를통해 그러한 문제를 해결하게 되었다.
 
 ### 사용 방법
 ```sql
 HINT_NAME([@query_block_name])
-
 HINT_NAME([@query_block_name] TABLE_NAME [, tbl_name] ...)
 HINT_NAME(TABLE_NAME[@query_block_name] [, TABLE_NAME[@query_block_name]] ...)
 ```
 
 HINT_NAME에 올 수 있는 조인 순서 최적화 힌트는 4가지가 있다.
-- JOIN_FIXED_ORDER: FROM절에 나타나는 순서대로(FIXED) 테이블을 조인하도록 지시
-- JOIN_ORDER: 가능하다면 나타나는 순서대로 조인하도록 지시
-- JOIN_PREFIX: 조인 순서의 첫 번째 테이블에 대해 힌트에 지정된 테이블 순서를 사용하도록 지시
-- JOIN_SUFFIX: 조인 순서의 마지막 테이블에 대해 힌트에 지정된 테이블 순서를 사용하도록 지시
+- JOIN_FIXED_ORDER: FROM절에 지정된 순서대로(FIXED) 테이블을 조인하도록 지시 (STRAIGHT_JOIN의 힌트화)
+- JOIN_ORDER: 가능하다면 힌트에 지정된 순서대로 조인하도록 지시
+- JOIN_PREFIX: 가장 먼저 조인을 시작 할 테이블 지정
+- JOIN_SUFFIX: 가장 마지막으로 조인 할 테이블 지정
+<br>
+
+지정한 TABLE_NAME의 모든 테이블에 힌트가 적용되며, TABLE_NAME은 스키마 이름으로 한정할 수 없다.<br>
+TABLE_NAME에 별칭이 있는 경우 힌트는 테이블 이름이 아니라 별칭을 참조해야 한다.
+
+```sql
+SELECT
+/*+ JOIN_PREFIX(t2, t5@subq2, t4@subq1)
+    JOIN_ORDER(t4@subq1, t3)
+    JOIN_SUFFIX(t1) */
+COUNT(*) 
+FROM t1 JOIN t2 JOIN t3
+WHERE t1.f1 IN (SELECT /*+ QB_NAME(subq1) */ f1 FROM t4)
+  AND t2.f1 IN (SELECT /*+ QB_NAME(subq2) */ f1 FROM t5);
+```
+- (SELECT /*+ QB_NAME(subq1) */ f1 FROM t4) : 쿼리 블록의 이름을 subq1로 지정
+- t4@subq1 : 쿼리 블록 subq1의 테이블 t4를 지정
+
+/*+ JOIN_PREFIX(t2, t5@subq2, t4@subq1)
+    JOIN_ORDER(t4@subq1, t3)
+    JOIN_SUFFIX(t1) */
+- t2, t5@subq2, t4@subq1, t3, t1 순서대로 조인
 
 ## 인덱스 힌트
+
+복잡한 쿼리의 경우 서로의 인덱스가 물고 물려서 필요한 인덱스를 안타고 엉뚱한 인덱스를 사용하는 경우가 있다.
+
+예를 들어서 A, B, C의 인덱스가 순서대로 사용되어야 하는데 옵티마이저가 B, C, A 순으로 처리를 하여서 속도가 느려지는 경우에 이런 순서를 잡기 위해서 인덱스 힌트를 사용한다.
+
+MySQL 5.7까지는 힌트를 줘도 힌트 외의 실행계획을 평가한다.<br>
+하지만 8.0부터는 힌트가 있을 때, 옵티마이저가 다른 실행계획을 만들지 않기 때문에 정확하게 힌트를 준다면 성능에 도움이 된다.
+
+MySQL 8.0은 이전 버젼보다 훨씬 강력하고 편의성이 강한 Optimizer hint를 제공한다. 새롭게 추가된 Hint 중 유용한 Hint는 다음과 같다.
+
 
 MySQL 힌트는 다른 DBMS보다 옵티마이저에 미치는 영향이 크다.<br>
 자주 사용되는 힌트는 대략 5개가 정도로 추릴 수 있다.
@@ -196,26 +222,6 @@ SELECT * FROM table1 USE INDEX (col1_index,col2_index)
 SELECT * FROM table1 IGNORE INDEX (col3_index)
   WHERE col1=1 AND col2=2 AND col3=3;
 ```
-
-복잡한 쿼리의 경우 서로의 인덱스가 물고 물려서 필요한 인덱스를 안타고
-
-엉뚱한 인덱스를 사용하는 경우가 있거든요.
-
-예를 들어서 A, B, C의 인덱스가 순서대로 사용되어야 하는데
-
-옵티마이저가 B, C, A 순으로 처리먹혀서 속도가 느려지는 경우에 이런 순서를 잡기 위해서 힌트를 사용하기도 한다.
-
-
-힌트를 써야한다 -> 정확한 작동. 단, 쿼리 작성자의 스킬을 믿어야 하고 조회조건 칼럼 변경이나 인덱스 변경시 힌트 확인 필요.
-
-힌트를 쓰지 말아야 한다. -> DB 변화의 유연성과 무분별한 힌트 사용을 방지하기 위해.
-
-MySQL 5.7까지는 힌트를 줘도 힌트 외의 실행계획을 평가합니다.
-참고로 8.0부터는 힌트가 있을 때, 옵티마이저가 다른 실행계획을 만들지 않기 때문에 성능에 도움이 됩니다.
-
-MySQL 8.0은 이전 버젼보다 훨씬 강력하고 편의성이 강한 Optimizer hint를 제공한다. 새롭게 추가된 Hint 중 유용한 Hint는 다음과 같다.
-
-
 
 # 키
 ## 정의
