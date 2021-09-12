@@ -5,7 +5,7 @@
 - SQL - JOIN
 - SQL Injection
 - SQL vs NoSQL
-- [Anomaly](#Anomaly와 정규화)
+- [Anomaly와 정규화](#**Anomaly와 정규화**)
 - [인덱스](#인덱스)
 - 트랜잭션(Transaction)
 - 트랜잭션 격리 수준
@@ -365,31 +365,31 @@ FROM Orders;
    * CREATE USER : 계정 생성 권한
 
    * DROP USER : 계정 삭제 권한
-    
+   
    * DROP ANY TABLE : 테이블 삭제 권한
-    
+   
    * CREATE SESSION : 데이터베이스 접속 권한
-    
+   
    * CREATE TABLE : 테이블 생성 권한
-    
+   
    * CREATE VIEW : 뷰 생성 권한
-    
+   
    * CREATE SEQUENCE : 시퀀스 생성 권한
-    
+   
    * CREATE PROCEDURE : 함수 생성 권한
 
 2. 객체 권한
    
    * ALTER : 테이블 변경 권한
-    
+   
    * INSERT : 데이터 조작 권한
 
    * DELETE : 데이터 조작 권한
-    
+   
    * SELECT : 데이터 조작 권한
-    
+   
    * UPDATE : 데이터 조작 권한
-    
+   
    * EXECUTE : PROCEDURE 실행 권한
 
 <br>
