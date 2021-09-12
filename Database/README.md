@@ -5,7 +5,7 @@
 - SQL - JOIN
 - SQL Injection
 - SQL vs NoSQL
-- [Anomaly와 정규화](#**Anomaly와 정규화**)
+- [Anomaly와 정규화](#Anomaly와 정규화)
 - [인덱스](#인덱스)
 - 트랜잭션(Transaction)
 - 트랜잭션 격리 수준
@@ -432,7 +432,7 @@ REVOKE 권한1, 권한2 ON 객체명 FROM 사용자계정;
 
 <br>
 
-# **Anomaly와 정규화**
+# Anomaly와 정규화
 
 <br>
 
