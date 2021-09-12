@@ -430,6 +430,283 @@ REVOKE 권한1, 권한2 ON 객체명 FROM 사용자계정;
 
 ---
 
+<br>
+
+# JOIN
+
+여러 테이블을 하나의 테이블처럼 논리적으로 연결하여 사용하는 방법
+
+일반적으로, 둘 이상 테이블에서 데이터가 필요한 경우 JOIN을 시도한다.
+
+![DataBase SQL JOINS](https://github.com/hongcheol/CS-study/blob/main/Database/img/db-sql-joins.jpg?raw=true)
+
+## JOIN과 집합 연산자의 차이
+
+- 집합 연산자 : 두 개 이상의 SELECT문의 결과 값을 세로로 연결한 것
+- JOIN : 두 개 이상의 테이블 데이터를 가로로 연결한 것
+
+<br>
+
+## EQUI JOIN
+
+두 테이블의 특정 열의 값들이 정확하게 일치할 때 이를 기준으로 데이터를 연결하는 방법
+
+- Default Join 방법
+- 일반적으로 PK, FK 관계에 의해 JOIN을 시도하지만 일반 컬럼을 기준으로 JOIN을 시도하는 것도 가능
+- JOIN하려는 두개 이상 테이블이 동일한 이름의 컬럼을 사용한다면 SELECT 시 반드시 테이블 명을 밝혀야함
+- N개의 테이블을 JOIN할 경우 최소 N-1개의 JOIN 조건이 필요함
+  
+### SQL 형태
+
+> Q. 회사 직원들의 사번, 이름과 함께 해당 직원들이 속한 부서번호와 부서명을 조회한다.
+> - 직원 테이블의 직원이 속한 부서번호 정보가 담긴 열과 부서 테이블의 부서번호 열을 기준으로 JOIN하면 두 테이블의 부서번호가 동일할 때 직원 정보와 각 부서명을 바로 연결할 수 있다.
+
+```sql
+SELECT e.empno, e.ename, e.deptno, d.dname
+FROM emp e, dept d
+WHERE e.deptno = d.deptno;
+```
+
+- 위의 쿼리문과 같이 `=` 연산자를 이용하여 완전히 일치하는 특정 열을 기준으로 조인
+- JOIN 조건을 `ON` 절이나 `WHERE` 절에 부여할 수 있음
+    - 단, OUTER JOIN을 시도할 경우 여러 조건과 함께 JOIN 조건을 `ON` 절로 부여하는 것과 `WHERE` 절로 부여할 때 결과가 달라지므로 주의
+
+## INNER JOIN
+
+- EQUI JOIN과 함께 Default Join 방법으로 사용됨
+- SQL 형태는 EQUI JOIN과 같음
+
+### INNER JOIN과 EQUI JOIN
+
+- EQUI JOIN : `=` 연산자를 이용하여 `ON` 절이나 `WHERE` 절에 조건을 부여하여 JOIN하는 방법
+- INNER JOIN : JOIN 조건을 만족하는 행에 대해서만 결과 값이 나오는 JOIN
+
+### INNER JOIN과 OUTER JOIN
+- INNER JOIN : 두 테이블의 **교집합**으로 JOIN하는 개념
+- OUTER JOIN : 두 테이블의 **합집합**으로 JOIN하는 개념
+
+```python
+for x in A : 
+    for x in B : 
+        if (A.x = B.x) JOIN
+```
+
+위와 같이 A 테이블과 B 테이블의 x 열을 기준으로 JOIN을 시도하는 경우
+
+INNER JOIN은 아무리 A 테이블에 x 열이 존재한다고 하더라도 **B 테이블의 x열의 값과 같지 않다면 그 값은 결과에 포함되지 않는다**. 따라서 내부 for문에 해당하는 B 테이블 조건이 결과의 핵심이다.
+
+반면 OUTER JOIN은 A 테이블과 B 테이블의 각각의 **x 열의 값이 같지 않다고 할지라도 외부 for문에 해당하는 A 테이블에 값이 존재한다면 결과에 포함시킨다**. 따라서 외부 for문에 해당하는 A 테이블 조건이 결과의 핵심이다. 만약 외부 for문에 B 테이블을, 내부 for문에 A 테이블을 조건으로 둔다면 결과는 위 경우와 반대로 **외부 for문에 해당하는 B 테이블에 존재하는 값을 기준으로 결과에 포함시킨다**.
+
+<br>
+
+## NON-EQUI JOIN
+
+한 테이블의 열의 값이 다른 테이블 열의 값과 정확히 일치하지 않지만 JOIN을 시도해야하는 경우 사용하는 방법
+
+- EQUI JOIN과 달리 `=` 연산자는 사용할 수 없고(값이 정확히 일치하지 않음), `Between`, `>`, `>=`, `<`, `<=` 등 다른 연산자를 이용해 JOIN 조건을 부여해야 함.
+
+### SQL 형태
+
+> Q. 회사 직원들의 사번, 이름과 함께 해당 직원들의 급여 등급을 조회한다.
+> - 직원 테이블의 직원 급여 열과 급여등급 테이블의 급여 하한선과 상한선 열들을 **비교하여** JOIN하면 직원의 급여와 급여가 **속하는 범위**의 등급을 연결할 수 있다.
+
+```sql
+SELECT e.empno, e.ename, e.salary, s.grade
+FROM emp e, salgrade s
+WHERE e.salary BETWEEN s.losal AND s.hisal;
+```
+
+- 위의 쿼리문과 같이 `=`가 아닌 다른 연산자를 이용하여 연산자 결과 범위에 포함되는 값을 결과로 도출
+
+<br>
+
+## OUTER JOIN
+
+JOIN 조건에 만족하지 않는 레코드를 결과에 포함하고자 할 때 사용하는 JOIN 방법
+
+어느 한쪽 테이블에는 데이터가 존재하는데 다른쪽 테이블에는 해당 데이터가 존재하지 않는 경우 INNER JOIN을 한다면 검색 결과에 누락이 발생할 수 있음
+
+따라서 **합집합**을 구하고자 할 때 사용할 수 있음
+
+### OUTER JOIN 방법
+
+- LEFT [OUTER] JOIN : JOIN 키워드의 왼쪽 테이블을 기준으로 해당 테이블에 속한 데이터는 모두 포함
+- RIGHT [OUTER] JOIN : JOIN 키워드의 오른쪽 테이블을 기준으로 해당 테이블에 속한 데이터는 모두 포함
+- FULL [OUTER] JOIN : JOIN 키워드의 양쪽 테이블을 기준으로 모든 테이블에 속한 데이터를 포함
+
+### SQL 형태
+
+> Q. 회사 모든 직원들의 사번, 이름과 함께 해당 직원들의 부서명을 조회한다. 단, 아직 부서를 배치받지 못한 직원까지 포함하여 회사의 모든 직원들이 조회되어야 한다.
+> - 직원 테이블의 부서 번호 열과 부서 테이블의 부서 번호 열의 값이 일치하는 경우를 JOIN한다. 단, 직원 누락이 발생하면 안되므로 **직원 테이블의 모든 데이터가 포함되는 OUTER JOIN**을 한다.
+
+```sql
+SELECT e.employee_id, e.last_name, d.department_name
+FROM employees e LEFT JOIN departments d
+ON e.department_id = d.department_id;
+```
+
+![outer join](https://github.com/hongcheol/CS-study/blob/main/Database/img/outer-join.png?raw=true)
+
+- 모든 데이터가 포함되어야하는 테이블의 위치에 따라 LEFT와 RIGHT 조건을 부여하여 사용한다.
+
+<br>
+
+## SELF JOIN
+
+한 테이블의 열을 같은 테이블 내 다른 열과 연결하는 방법으로, 같은 테이블을 2개 이상의 테이블인 것처럼 사용할 수 있음
+
+- 주로 데이터 간 **계층형 관계**를 표현할 수 있을 때 사용
+    - ex) 선후배 관계, 상사와 부하 직원 관계, 게시글과 답글 관계 등
+- FROM 절 뒤에 동일한 테이블 명을 2번 표현하되, 둘을 구분하기 위해 반드시 **별칭**을 기재해야 함
+- 컬럼 역시 어떤 기준 테이블인지 테이블 별칭에 연결하여 표현해야 함
+
+### SQL 형태
+
+> Q. 회사 직원들의 이름과 함께 자신의 상사 번호, 상사 이름, 상사의 직원 번호를 조회한다.
+> - 직원 테이블의 상사 번호 열과 직원 테이블의 직원 번호 열의 값이 동일한 경우를 JOIN한다.
+
+```sql
+SELECT e1.last_name, e1.manager_id, e2.last_name, e2.employee_id
+FROM employees e1, employees e2
+WHERE e1.manager_id = e2.employee_id;
+```
+
+![self join](https://github.com/hongcheol/CS-study/blob/main/Database/img/self-join.png?raw=true)
+
+- 동일하지만 서로 다른 목적을 위해 중복된 두 테이블을 구분해야 함. 따라서 별칭을 꼭 지어줘야 함.
+
+<br>
+
+## Cartesian JOIN(Cross JOIN)
+
+- JOIN 조건의 오류로 인해 한 테이블에 있는 모든 레코드가 다른 테이블의 레코드와 JOIN이 되는 경우
+- A 테이블 레코드 수가 `a`개, A 테이블 레코드 수가 `b`개라면 카티시안 조인 결과 `a*b`개의 결과가 도출됨.
+- 서로 관계가 없는 레코드도 함께 묶여 결과로 출력되므로 필요없는 결과가 중복되거나 지나치게 많은 결과가 출력될 수 있음
+
+### SQL 예제
+
+> Q. 도시명과 나라명을 조회한다.
+> - 두 테이블의 JOIN 기준 없이 JOIN하므로 레코드의 컬럼 간 의미가 없는 레코드가 저장됨.
+
+```sql
+SELECT country_name, city
+FROM countries, locations;
+```
+
+![cartesian join](https://github.com/hongcheol/CS-study/blob/main/Database/img/cartesian-join.png?raw=true)
+
+![cartesian join rows](https://github.com/hongcheol/CS-study/blob/main/Database/img/cartesian-join-row.png?raw=true)
+
+- 위의 결과 23개의 city 레코드 수와 25개의 country_name 레코드 수가 곱해져 총 575개의 결과가 도출됨.
+- 의도적으로 위와 같은 결과를 도출하려는 것이 아니라면, `WHERE`절 혹은 `ON` 절에 JOIN 조건을 명시해야함.
+
+> Q. 각 나라 별 도시를 조회한다.
+
+```sql
+SELECT c.country_name, l.city
+FROM countries c, locations l
+WHERE c.country_id = l.country_id;
+```
+
+![cartesian join sol1](https://github.com/hongcheol/CS-study/blob/main/Database/img/cartesian-join-where.png?raw=true)
+
+![cartesian join sol1](https://github.com/hongcheol/CS-study/blob/main/Database/img/cartesian-where-row.png?raw=true)
+
+> Q. 모든 나라의 도시를 조회한다.
+
+```sql
+SELECT c.country_name, l.city
+FROM locations l RIGHT JOIN countries c
+ON c.country_id = l.country_id;
+```
+
+![cartesian join sol2](https://github.com/hongcheol/CS-study/blob/main/Database/img/cartesian-right-join.png?raw=true)
+
+![cartesian join sol2](https://github.com/hongcheol/CS-study/blob/main/Database/img/cartesian-right-join-row.png?raw=true)
+
+<br>
+
+## ANSI JOIN
+
+미국 국립 표준 협회(American National Standards Institute,ANSI)에서 지정한 SQL 문법
+
+### NATURAL JOIN
+
+두 테이블의 JOIN할 열들이 완전히 동일한 필드명(컬럼명)을 가질 경우 해당 열들을 JOIN
+
+- 단, 두 테이블의 열이 같은 필드명을 가지고 있다고 할지라도, **서로 다른 데이터를 포함한 채로 필드명만 동일**할 수도 있으므로 주의하여 사용해야 한다.
+
+#### SQL 형태
+
+> Q. 회사 직원 별 직무를 조회한다.
+> - 직원 테이블의 직무 번호와 직무 테이블의 직무 번호가 일치하는 경우 JOIN
+
+```sql
+SELECT last_name, job_title
+FROM employees NATURAL JOIN jobs;
+```
+
+<br>
+
+### JOIN ~ USING
+
+두 테이블의 JOIN 기준 열을 USING에 명시하여 JOIN하는 방법
+
+#### SQL 형태
+
+> Q. 회사 직원 별 직무를 조회한다.
+> - 직원 테이블의 직무 번호와 직무 테이블의 직무 번호가 일치하는 경우 JOIN
+
+```sql
+SELECT last_name, job_title
+FROM employees JOIN jobs
+USING(job_id);
+```
+
+<br>
+
+### JOIN ~ ON
+
+두 테이블 간 공통된 이름의 열이 존재하지 않거나, 일반 쿼리 조건인 `WHERE` 절과 구분하기 위해 `ON`절에 기준을 명시하여 JOIN하는 방법
+
+#### OUTER JOIN에서의 WHERE과 ON
+
+> Q. IT 부서에서 일하는 회사 직원들의 이름을 조회한다.
+> - 직원 테이블의 부서 번호 열과 부서 테이블의 부서 번호 열의 값이 일치하는 경우를 JOIN한다. 단, 직원 누락이 발생하면 안되므로 **직원 테이블의 모든 데이터가 포함되는 OUTER JOIN**을 한다.
+
+```sql
+SELECT e.last_name, d.department_name
+FROM employees e LEFT JOIN departments d
+ON e.department_id = d.department_id
+WHERE d.department_name = 'IT';
+```
+
+![outer join on where](https://github.com/hongcheol/CS-study/blob/main/Database/img/outer-on-where.png?raw=true)
+
+- 위의 쿼리 결과 `WHERE`절로 IT부서 직원들을 필터링 한 뒤, JOIN을 한다.
+- 따라서 IT부서 직원들이 아니라면 결과에 포함되지 않는다.
+
+```sql
+SELECT e.last_name, d.department_name
+FROM employees e LEFT JOIN departments d
+ON e.department_id = d.department_id
+AND d.department_name = 'IT';
+```
+
+![outer join on and](https://github.com/hongcheol/CS-study/blob/main/Database/img/outer-on-and.png?raw=true)
+
+- 위의 쿼리 결과 `ON`절을 통째로 기준으로 삼아 JOIN을 한다.
+- 따라서 바깥 for문에 해당하는 employees 테이블의 데이터가 안쪽 for문에 해당하는 departments 테이블의 데이터를 하나씩 확인하며 부서 번호가 동일하고 IT부서라면 JOIN으로 관계를 표현하지만, 그렇지 않을 경우에도 **employees 테이블에 속한 데이터면 결과에 포함**한다.
+
+OUTER JOIN 시 `ON`과 `WHERE` 사용에 따라 다른 결과가 나올 수 있으므로 주의해야 한다. 만약 필터링으로 결과 데이터를 축소해야 한다면, 1번 예시처럼 **JOIN 조건은 `ON`에, 필터링 조건은 `WHERE`에 표현**하는 것이 좋다.
+
+<br>
+
+---
+
+<br>
+
+
 # SQL Injection
 
 ## SQL 인젝션이란?
