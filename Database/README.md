@@ -5,7 +5,7 @@
 - SQL - JOIN
 - SQL Injection
 - SQL vs NoSQL
-- [Anomaly와 정규화](#Anomaly와 정규화)
+- [Anomaly와 정규화](#anomaly와-정규화)
 - [인덱스](#인덱스)
 - 트랜잭션(Transaction)
 - 트랜잭션 격리 수준
