@@ -2,7 +2,7 @@
 
 - [키](#키)
 - [SQL - 기초 Query](#sql---기초-query)
-- [SQL - JOIN](#-JOIN)
+- [SQL - JOIN](#JOIN)
 - [SQL Injection](#sql-injection)
 - SQL vs NoSQL
 - [Anomaly와 정규화](#anomaly와-정규화)
