@@ -18,13 +18,13 @@
 
 # Hint
 
-아래 Hint에 대한 모든 내용들은 MySQL을 기준으로 작성되었습니다.
+아래 Hint에 대한 모든 내용들은 MySQL을 기준으로 작성되었음.
 
 힌트는 옵티마이저의 실행 계획을 원하는대로 바꿀 수 있게 해준다. <br>
 옵티마이저라고 반드시 최선의 실행계획을 수립할 수는 없기 때문에, 조인이나 인덱스의 잘못된 실행 계획을 개발자가 직접 바꿀 수 있도록 도와주는 것이 힌트이다. 
 
 힌트의 문법이 올바르더라도 힌트가 반드시 받아 들여지는 것은 아니며, 옵티마이저에 의해 선택되지 않을 수도 있고 선택될 수도 있다.
- 
+
 Hint는 크게 2가지로 구분할 수 있다.
 1. 옵티마이저 힌트
 2. 인덱스 힌트
@@ -153,57 +153,25 @@ WHERE t1.f1 IN (SELECT /*+ QB_NAME(subq1) */ f1 FROM t4)
 
 ## 인덱스 힌트
 
-복잡한 쿼리의 경우 서로의 인덱스가 물고 물려서 필요한 인덱스를 안타고 엉뚱한 인덱스를 사용하는 경우가 있다.
-
-예를 들어서 A, B, C의 인덱스가 순서대로 사용되어야 하는데 옵티마이저가 B, C, A 순으로 처리를 하여서 속도가 느려지는 경우에 이런 순서를 잡기 위해서 인덱스 힌트를 사용한다.
-
-MySQL 5.7까지는 힌트를 줘도 힌트 외의 실행계획을 평가한다.<br>
-하지만 8.0부터는 힌트가 있을 때, 옵티마이저가 다른 실행계획을 만들지 않기 때문에 정확하게 힌트를 준다면 성능에 도움이 된다.
-
-MySQL 8.0은 이전 버젼보다 훨씬 강력하고 편의성이 강한 Optimizer hint를 제공한다. 새롭게 추가된 Hint 중 유용한 Hint는 다음과 같다.
-
-
-MySQL 힌트는 다른 DBMS보다 옵티마이저에 미치는 영향이 크다.<br>
-자주 사용되는 힌트는 대략 5개가 정도로 추릴 수 있다.
-
-힌트사용법
-
-MySql 힌트는 오라클과 같이 SQL의 주석으로 해석되는 것이 아니라 SQL의 일부로 해석되기 때문에 잘못사용하면 에러가 발생한다. 힌트를 표기하는 방법은 2가지가 있다.
-
-1)주석표기 없이 SQL의 일부로 사용
-```sql
-select USE INDEX (PRIMARY) * from employees where emp_no=10001;
-```
-
-2)주석표기 방법
-```sql
-select /*! USE INDEX (PRIMARY) com.aaa.ss.class 날찌  */ * from employees where emp_no=10001;
-```
-
-
-Mysql를 사용을 하다보면 원하는 인덱스가 아니고 다른 인덱스를 사용하여 쿼리 성능이 느린 경우가 있다. 
-
-이때 Mysql에서 제공하는 Index Hints를 쓰면 강제적으로 할당한 Index를 이용하여 쿼리가 실행이 된다. 
-
+Mysql를 사용을 하다보면 복잡한 쿼리의 경우 서로의 인덱스가 물리고 물려서 필요한 인덱스를 안타고 엉뚱한 인덱스를 사용하는 경우가 있다.<br>
+예를 들어서 A, B, C의 인덱스가 순서대로 사용되어야 하는데 옵티마이저가 B, C, A 순으로 처리를 하여서 속도가 느려지는 경우에 이런 순서를 잡기 위해서 인덱스 힌트를 사용한다.<br>
+즉, Mysql에서 제공하는 인덱스 힌트를 쓰면 강제적으로 할당한 Index를 이용하여 쿼리가 실행이 된다. <br>
 하지만 JPA(hibernate)에서 사용이 불가능하기 때문에 JdbcTemplate 등을 이용하여 Native Query로 활용해야 된다.
 
 ### 사용 방법
 ```sql
-table_name [[AS] alias] [index_hint_list]
+TABLE_NAME [[AS] ALIAS] INDEX_HINT INDEX_LIST
 
-index_hint_list:
-    index_hint [index_hint] ...
-
-index_hint:
+INDEX_LIST:
     USE {INDEX|KEY}
-      [FOR {JOIN|ORDER BY|GROUP BY}] ([index_list])
+      [FOR {JOIN|ORDER BY|GROUP BY}] (INDEX_LIST)
   | IGNORE {INDEX|KEY}
-      [FOR {JOIN|ORDER BY|GROUP BY}] (index_list)
+      [FOR {JOIN|ORDER BY|GROUP BY}] (INDEX_LIST)
   | FORCE {INDEX|KEY}
-      [FOR {JOIN|ORDER BY|GROUP BY}] (index_list)
+      [FOR {JOIN|ORDER BY|GROUP BY}] (INDEX_LIST)
 
-index_list:
-    index_name [, index_name] ...
+INDEX_LIST:
+    INDEX_NAME , INDEX_NAME ...
 ```
 
 - USE 키워드 : 특정 인덱스를 사용하도록 권장
@@ -214,13 +182,28 @@ index_list:
 - USE INDEX FOR ORDER BY : 명시된 인덱스를 ORDER BY 용도로만 사용하도록 제한
 - USE INDEX FOR GROUP BY : 명시된 인덱스를 GROUP BY 용도로만 사용하도록 제한
 
-### 사용 예제
 ```sql
-SELECT * FROM table1 USE INDEX (col1_index,col2_index)
-  WHERE col1=1 AND col2=2 AND col3=3;
+SELECT * 
+FROM TABLE1 
+  USE INDEX (COL1_INDEX, COL2_INDEX)
+WHERE COL1=1 AND COL2=2 AND COL3=3;
 
-SELECT * FROM table1 IGNORE INDEX (col3_index)
-  WHERE col1=1 AND col2=2 AND col3=3;
+SELECT * 
+FROM TABLE2 
+  IGNORE INDEX (COL1_INDEX)
+WHERE COL1=1 AND COL2=2 AND COL3=3;
+
+SELECT * 
+FROM TABLE3
+  USE INDEX (COL1_INDEX)
+  IGNORE INDEX (COL2_INDEX) FOR ORDER BY
+  IGNORE INDEX (COL3_INDEX) FOR GROUP BY
+WHERE COL1=1 AND COL2=2 AND COL3=3;
+
+SELECT * 
+FROM TABLE4
+  USE INDEX (COL1_INDEX)
+WHERE COL1=1 AND COL2=2 AND COL3=3;
 ```
 
 # 키
