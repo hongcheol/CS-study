@@ -8,7 +8,7 @@
 - [Anomaly와 정규화](#anomaly와-정규화)
 - [인덱스](#인덱스)
 - 트랜잭션(Transaction)
-- 트랜잭션 격리 수준
+- [트랜잭션 격리 수준](#트랜잭션-격리수준)
 - [레디스](#레디스)
 - [Hint](#hint)
 - [클러스터링](#클러스터링(Clustering))
@@ -1303,9 +1303,118 @@ ALTER TABLE 테이블명 DROP INDEX 인덱스명(컬럼명);
 
 테이블에 들어있는 데이터에만 변화가 있는 게 아니라 인덱스에도 추가, 갱신이 일어나기 때문에 오버헤드가 발생할 수 있다.
 
+<br>
 
 <hr>
 
+# 트랜잭션 격리수준
+## 트랜잭션 격리수준(isolation level)이란?
+트랜잭션의 네 가지 주요 성질인 원자성, 일관성, 고립성, 내구성 (ACID) 중 **고립성(isolation)** 을 구현하는 개념이다.
+
+  * 고립성은 한 트랜잭션에서 데이터가 수정되는 과정이 다른 트랜잭션과는 독립적으로 진행되어야 한다는 특성이다.
+
+**트랜잭션 격리수준(isolation level)** 이란 동시에 여러 트랜잭션이 처리될 때, 트랜잭션끼리 얼마나 서로 고립되어 있는지를 나타내는 것이다.
+
+즉, 간단하게 말해 특정 트랜잭션이 다른 트랜잭션에 변경한 데이터를 볼 수 있도록 허용할지 말지를 결정하는 것이다.
+
+<br>
+
+격리수준은 크게 아래의 4개로 나뉜다.
+
+* READ UNCOMMITTED
+* READ COMMITTED
+* REPEATABLE READ
+* SERIALIZABLE
+
+<br>
+
+아래로 내려갈수록 트랜잭션 간 고립 정도가 높아지며, 성능이 떨어지는 것이 일반적이다.
+
+일반적인 온라인 서비스에서는 `READ COMMITTED`나 `REPEATABLE READ` 중 하나를 사용한다.
+
+(oracle의 기본 격리수준 = READ COMMITTED, mysql의 기본 격리수준 = REPEATABLE READ)
+
+<br>
+
+## 트랜잭션 격리수준의 종류
+### READ UNCOMMITTED (레벨 0) - 커밋되지 않는 읽기
+* 각 트랜잭션에서의 변경 내용이 `COMMIT`이나 `ROLLBACK` 여부에 상관 없이 다른 트랜잭션에서 값을 읽을 수 있다.
+* 정합성에 문제가 많은 격리 수준이기 때문에 사용하지 않는 것을 권장한다.
+* 아래의 그림과 같이 Commit이 되지 않는 상태지만 Update된 값을 다른 트랜잭션에서 읽을 수 있다.
+
+<p align="center">
+<img src="https://user-images.githubusercontent.com/33649908/132951718-73bd5401-b850-4d05-ad5b-69bb326e9efa.png" width="70%">
+</p>
+
+* **DIRTY READ** 현상 발생
+  * 트랜잭션이 작업이 완료되지 않았는데도 다른 트랜잭션에서 볼 수 있게 되는 현상
+
+<br>
+
+### READ COMMITTED (레벨 1) - 커밋된 읽기
+* RDB에서 대부분 기본적으로 사용되고 있는 격리 수준이다.
+* `Dirty Read`와 같은 현상은 발생하지 않는다.
+* 실제 테이블 값을 가져오는 것이 아니라 **Undo 영역에 백업된 레코드**에서 값을 가져온다.
+
+<p align="center">
+<img src="https://user-images.githubusercontent.com/33649908/132951873-38358fb9-e303-4019-8b4d-3723df78bd0f.png" width="70%">
+</p>
+
+<br>
+
+* **Non-repeatable read** 현상 발생
+  * 한 트랜잭션에서 같은 쿼리를 두 번 수행할 때 그 사이에 다른 트랜잭션 값을 수정 또는 삭제하면서 두 쿼리의 결과가 상이하게 나타나는 일관성이 깨진 현상
+
+<p align="center">
+<img src="https://user-images.githubusercontent.com/33649908/132952520-64586159-6375-43c9-95f5-e9ce8ceb17df.png" width="70%">
+</p>
+
+<br>
+
+### REPEATABLE READ (레벨 2) - 반복가능한 읽기
+* MySQL에서는 트랜잭션마다 `트랜잭션 ID`를 부여하여 **트랜잭션 ID보다 작은 트랜잭션 번호에서 변경한 것**만 읽게 된다.
+* **Undo 공간에 백업해두고 실제 레코드 값을 변경**한다.
+* 백업된 데이터는 불필요하다고 판단하는 시점에 주기적으로 삭제한다.
+* Undo에 백업된 레코드가 많아지면 MySQL 서버의 처리 성능이 떨어질 수 있다.
+* 이러한 변경방식은 `MVCC(Multi Version Concurrency Control)`라고 부른다.
+
+<p align="center">
+<img src="https://user-images.githubusercontent.com/33649908/132952697-71a2fe8c-d8e9-4fa0-a62b-17d5858e3cc4.png" width="70%">
+</p>
+
+* **PHANTOM READ** 현상 발생
+  * 다른 트랜잭션에서 수행한 변경 작업에 의해 레코드가 보였다가 안 보였다가 하는 현상
+  * `REPETABLE READ`에 의하면 원래 출력되지 않아야 하는데 **UPDATE** 문의 영향을 받은 후 부터 출력된다.
+  * 이를 방지하기 위해서는 쓰기 잠금을 걸어야 한다.
+
+<p align="center">
+<img src="https://user-images.githubusercontent.com/33649908/132953986-634b5c1c-2469-46a2-bdda-14c4af39fdb8.png" width="70%">
+</p>
+
+<br>
+
+### SERIALIZABLE (레벨 3) - 직렬화 가능
+* 가장 단순한 격리 수준이지만 가장 엄격한 격리 수준으로 **완벽한 읽기 일관성 모드**를 제공한다.
+* 다른 사용자는 트랜잭션 영역에 해당되는 데이터에 대한 **수정 및 입력 불가능**
+* 성능 측면에서는 동시 처리성능이 가장 낮다.
+* SERIALIZABLE에서는 `PHANTOM READ`가 발생하지 않는다. 하지만 데이터베이스에서 거의 사용되지 않는다.
+
+<br>
+
+## 낮은 격리수준을 활용했을 때 발생하는 현상들
+이 현상들은 트랜잭션의 고립성과 데이터의 무결성의 지표로 사용된다.
+
+1. **더티 리드 (Dirty read)** : 생성, 갱신, 혹은 삭제 중에 커밋 되지 않은 데이터 조회를 허용함으로써, 트랜잭션이 종료되면 더 이상 존재하지 않거나, 롤백되었거나, 저장 위치가 바뀌었을 수도 있는 데이터를 읽어들이는 현상이다.
+2. **반복 가능하지 않은 조회 (Non-repeatable read)** : 한 트랜잭션 내에서 같은 행이 두 번 이상 조회됐는데 그 값이 다른 경우를 가리킨다. (A와 B가 마지막 남은 영화표를 예매하는데 A가 고민하는 중에 B가 표를 구매하여 A는 상반된 정보를 받게 되는 경우 등)
+3. **팬텀 리드 (Phantom read)** : 한 트랜잭션 내에서 같은 쿼리문이 실행되었음에도 불구하고 조회 결과가 다른 경우를 뜻한다.
+
+<p align="center">
+<img src="https://user-images.githubusercontent.com/33649908/132952211-8915f2e2-e039-4c51-a6e8-d544b06de43e.png" width="70%">
+</p>
+
+<br>
+
+----
 
 # 레디스
 
