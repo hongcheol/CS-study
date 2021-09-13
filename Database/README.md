@@ -4,7 +4,7 @@
 - [SQL - 기초 Query](#sql---기초-query)
 - [SQL - JOIN](#JOIN)
 - [SQL Injection](#sql-injection)
-- [SQL vs NoSQL](#SQL vs NoSQL)
+- [SQL vs NoSQL](#SQLvsNoSQL)
 - [Anomaly와 정규화](#anomaly와-정규화)
 - [인덱스](#인덱스)
 - 트랜잭션(Transaction)
@@ -913,7 +913,7 @@ Prepared Statement 구문을 사용하게 되면, 사용자의 입력 값이 데
 
 <br>
 
-# SQL vs NoSQL
+# SQLvsNoSQL
 
 ### [SQL (Structured Query Language) ]
 SQL은 RDBMS (관계형 데이터베이스 관리 시스템)의 데이터를 관리하기 위해 설계된 프로그래밍 언어입니다.  SQL의 예시로는 *MySQL, PostgreSQL* 등이 있습니다.
