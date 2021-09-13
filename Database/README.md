@@ -7,7 +7,7 @@
 - [SQL vs NoSQL](#SQLvsNoSQL)
 - [Anomaly와 정규화](#anomaly와-정규화)
 - [인덱스](#인덱스)
-- [트랜잭션]트랜잭션(Transaction)(#트랜잭션(Transaction))
+- [트랜잭션](#트랜잭션(Transaction))
 - [트랜잭션 격리 수준](#트랜잭션-격리수준)
 - [레디스](#레디스)
 - [Hint](#hint)
