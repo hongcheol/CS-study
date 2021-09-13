@@ -6,13 +6,11 @@ cs지식을 정리하는 공간
 ## Table of Contents
 
 - [Development Common Sense(개발상식)](#개발상식-)
-- [Data Structure(자료구조)](#자료구조-)
 - [Algorithm(알고리즘)](#알고리즘-)
 - [Database(데이터베이스)](#데이터베이스-)
 - [Network(네트워크)](#네트워크-)
 - [Operating System(운영체제)](#운영체제-)
 - [Design Pattern(디자인 패턴)](#디자인-패턴-)
-- [Web(웹)](#웹-)
 
 # 개발상식 [🔍](../../tree/main/CommonSense)
 
@@ -32,21 +30,6 @@ cs지식을 정리하는 공간
 * Sync vs Async
 * XSS
 * 도커와 쿠버네티스
-
-- - - -
-
-# 자료구조 [🔍](../../tree/main/DataStructure)
-
-1. Array
-2. LinkedList
-3. Array & ArrayList & LinkedList
-4. 스택(Stack) & 큐(Queue)
-5. 힙(Heap)
-6. 이진탐색트리(Binary Search Tree)
-7. 해시(Hash)
-8. 트라이(Trie)
-9. B-Tree & B+Tree
-10. 그래프(Graph)
 
 ---
 
@@ -197,17 +180,3 @@ cs지식을 정리하는 공간
 	* State
 	* Strategy
 	* Visitor
-
-- - -
-
-# 웹 [🔍](../../tree/main/Web)
-
-- 웹 동작 방식
-- Http 상태 코드
-- TCP vs UDP
-- GET, POST
-- 공인 IP, 사설 IP
-- OSI 7계층
-- HTTP 프로토콜
-- HTTP vs HTTPS
-
