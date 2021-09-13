@@ -4,7 +4,7 @@
 - [SQL - 기초 Query](#sql---기초-query)
 - [SQL - JOIN](#JOIN)
 - [SQL Injection](#sql-injection)
-- [SQL vs NoSQL](# SQL vs NoSQL)
+- [SQL vs NoSQL](#SQL vs NoSQL)
 - [Anomaly와 정규화](#anomaly와-정규화)
 - [인덱스](#인덱스)
 - 트랜잭션(Transaction)
