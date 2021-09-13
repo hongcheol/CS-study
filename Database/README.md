@@ -1305,6 +1305,8 @@ ALTER TABLE 테이블명 DROP INDEX 인덱스명(컬럼명);
 
 <br>
 <hr>
+
+
 # 트랜잭션
 ## 트랜잭션이란?
 
