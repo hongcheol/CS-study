@@ -4,23 +4,13 @@
 ## Table of Contents
 
 - [Development Common Sense(개발상식)](#개발상식-)
-- [Data Structure(자료구조)](#자료구조-)
 - [Algorithm(알고리즘)](#알고리즘-)
 - [Database(데이터베이스)](#데이터베이스-)
 - [Network(네트워크)](#네트워크-)
 - [Operating System(운영체제)](#운영체제-)
 - [Design Pattern(디자인 패턴)](#디자인-패턴-)
-- [Web(웹)](#웹-)
 
 # 개발상식 [🔍](../../tree/main/CommonSense)
-
-
----
-
-<br />
-
-
-# 자료구조 [🔍](../../tree/main/DataStructure)
 
 
 ---
@@ -82,11 +72,3 @@
 ---
 
 <br />
-
-
-# 웹 [🔍](../../tree/main/Web)
-
-
-
-<br />
-
