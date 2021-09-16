@@ -3980,8 +3980,7 @@ k가 0인 경우에는 중간 경로 없는 vertex i에서 vertex j로 바로 �
 for(int k = 0;k<n;k++){
 	for(int i = 0;i<n;i++){
 		for(int j = 0;j<n;j++){
-			if(k == 0) d[k][i][j] = w[i,j];
-			else d[k][i][j] = min(d[k-1][i][j],d[k-1][i][k] + d[k-1][k][j]);
+			d[i][j] = min(d[i][j],d[i][k] + d[k][j]);
 		}
 	}
 }
