@@ -4,12 +4,17 @@
 2. [IP](#ip)
    1. [IPv4](#ipv4)
    2. [IPv6](#ipv6)
+   3. 공인 IP, 사설 IP
 3. [TCP/IP](#tcp/ip)
 4. [UDP](#udp)
 5. 대칭키 & 공개키
-6. HTTP & HTTPS
-7. Load Balancing
-8. Blocking & Non-Blocking I/O
+6. Load Balancing
+7. Blocking & Non-Blocking I/O
+8. 웹 동작 방식
+9. HTTP 프로토콜
+10. HTTP & HTTPS
+11. GET, POST
+12. HTTP 상태 코드
 
 # OSI 7계층
 
