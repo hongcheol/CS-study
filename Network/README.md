@@ -10,7 +10,7 @@
 5. 대칭키 & 공개키
 6. Load Balancing
 7. Blocking & Non-Blocking I/O
-8. [웹 동작 방식](#웹 동작 방식)
+8. [웹 동작 방식](#웹-동작-방식)
 9. [DNS](#dns)
 10. HTTP 프로토콜
 11. HTTP & HTTPS
