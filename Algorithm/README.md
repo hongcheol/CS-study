@@ -2457,6 +2457,274 @@ LIFO에 따라 제일 최근에 삽입된 자료가 가장 먼저 삭제된다.
 
 # 문자열 [☝](#알고리즘)
 
+문장으로 된 자료형을 이야기하고 String으로 나타낸다.
+
+문자열을 생성하는 방법은 아래의 두 가지이다.
+
+```java
+String a = new String("Happy Java");
+String b = "Happy Java";
+```
+
+이때, 두 개의 문자열 객체의 메모리에서의 형태는 아래와 같다.
+
+![image](https://user-images.githubusercontent.com/53392870/133645919-b74267eb-dce4-4f3d-adf2-167d203c6fb5.png)
+
+## String Constant Pool
+
+Heap 영역 내부에서 String 객체를 위해 별도로 관리하는 저장소
+
+new 연산자가 아닌 리터럴("")로 String 객체를 생성하면 다음과 같은 동작이 일어난다.
+
+1. JVM은 String Constant Pool에서 생성하려고 하는 값과 같은 값을 가진 String 객체를 찾는다.
+2. 값을 찾으면 그 객체의 주소 값을 반환해서 String 객체가 해당 주소 값을 참조하도록 한다.
+3. 값을 찾지 못하면 String Constant Pool에 String 객체를 생성하고 그 주소 값을 참조하도록 한다.
+
+예시)
+(1) 리터럴("")로 String 객체를 생성하면 String Constant Pool에 가서 확인하고 없으면 생성한다.
+![image](https://user-images.githubusercontent.com/53392870/133470617-1961d806-7190-4b49-99c7-a9ae27bc7b0e.png)
+
+(2) 있으면 String Constant Pool에 있는 해당 값의 주소 값을 String 객체가 참조하도록 한다.
+![image](https://user-images.githubusercontent.com/53392870/133470791-97d2dfe5-61cf-45f6-85be-3d8b427e171e.png)
+
+### intern() 메소드
+
+리터럴("")로 String 객체를 생성하면 String의 intern() 메소드가 호출된다.
+
+```java
+    /**
+     * Returns a canonical representation for the string object.
+     * <p>
+     * A pool of strings, initially empty, is maintained privately by the
+     * class {@code String}.
+     * <p>
+     * When the intern method is invoked, if the pool already contains a
+     * string equal to this {@code String} object as determined by
+     * the {@link #equals(Object)} method, then the string from the pool is
+     * returned. Otherwise, this {@code String} object is added to the
+     * pool and a reference to this {@code String} object is returned.
+     * <p>
+     * It follows that for any two strings {@code s} and {@code t},
+     * {@code s.intern() == t.intern()} is {@code true}
+     * if and only if {@code s.equals(t)} is {@code true}.
+     * <p>
+     * All literal strings and string-valued constant expressions are
+     * interned. String literals are defined in section 3.10.5 of the
+     * <cite>The Java&trade; Language Specification</cite>.
+     *
+     * @return  a string that has the same contents as this string, but is
+     *          guaranteed to be from a pool of unique strings.
+     */
+    public native String intern();
+```
+intern() 함수에 대한 설명을 보면 **문자열 개체에 대한 표준 표현을 반환**한다고 되어있다. 
+
+pool을 체크해서 같은 값을 가지는 String 객체가 있으면 반환하고, 같은 값을 가지는 String 객체가 없으면 pool에 생성해서 반환한다.
+
+## String 함수
+
+1. length
+
+- int length()
+
+문자열의 길이를 반환한다.
+
+```java
+String str = new String("");
+System.out.println(str.length()); // str 길이 : 0
+		
+str = "absc";
+System.out.println(str.length()); // str 길이 : 4
+
+str = null;
+System.out.println(str.length()); // java.lang.NullPointerException
+
+```
+
+2. compareTo
+
+- int compareTo(String anotherString)
+사전 순으로 문자열의 대소를 비교한다.
+
+- int compareToIgnoreCase(String str)
+대소문자를 무시하고 사전 순으로 비교한다.
+```java
+
+String happy = "Happy";
+String java = "Java";
+		
+System.out.println(happy.compareTo(java));
+// -2, 이유: happy.charAt(0) - java.charAt(0)
+		
+String happylife = "HappyLife";
+System.out.println(happy.compareTo(happylife));
+// -4, 이유: happy.length() - happylife.length();
+// index에서 차이가 나지 않으면 length를 통해서 비교한다.
+		
+String hello = "HELLO";
+System.out.println(hello.compareToIgnoreCase(happy));
+// 4, 이유: hello.charAt(1) - happy.charAt(1);
+```
+
+3. charAt
+- char charAt(int index)
+문자열의 index에 해당하는 문자가 반환된다.
+
+```java
+String str = "Happy Java Hello World";
+
+char strAt6 = str.charAt(6);
+// J
+```
+4. getChars
+
+- void getChars(int srcBegin, int srcEnd, char[] dst, int dstBegin)
+
+문자열을 문자 배열로 복사한다.
+
+```java
+String str = "Happy Java Hello World Happy";
+		
+char[] get_chars = new char[str.length()];
+		
+str.getChars(0, str.length(), get_chars, 0);
+// [H, a, p, p, y,  , J, a, v, a,  , H, e, l, l, o,  , W, o, r, l, d,  , H, a, p, p, y]
+```
+
+5. indexOf
+해당 문자열이 위치하는 인덱스를 반환한다.
+
+- int indexOf(int ch) 
+
+- int indexOf(int ch, int fromIndex)
+fromIndex에서부터 문자열 끝까지 중에서 해당 문자열이 위치하는 인덱스를 반환한다.
+
+- int indexOf(String str)
+
+- int indexOf(String str, int fromIndex)
+
+```java
+String str = "Happy Java Hello World Happy";
+		
+int index_of_str_W = str.indexOf('W');
+		
+// index_of_str_W: 18
+		
+int index_of_str_W_from_18 = str.indexOf('W', 18);
+		
+// index_of_str_W_from_18: -1
+
+int index_of_str_Java = str.indexOf("Java");
+		
+// index_of_str_Java: 6
+
+int index_of_str_Java_from_7 = str.indexOf("Java", 7);
+			
+// index_of_str_Java_from_7: -1
+```
+
+6. replace
+해당 문자를 찾아 입력받은 문자로 변경한다.
+
+- String replace(char old, char new)
+
+- String replace(CharSequence old, CharSequence new)
+(CharSequence는 인터페이스이기 때문에 이것을 구현하는 String, StringBuffer, StringBuilder를 사용하면 된다.)
+
+```java
+String str = "Happy Cava Hello World";
+
+String str1 = str.replace('C', 'J');
+//Happy Java Hello World
+
+String str2 = str.replace("Cava", "Cpp");
+// Happy Cpp Hello World
+```
+
+7. substring
+해당 문자열의 인덱스부터 끝까지(endIndex가 주어졌다면 endIndex - 1까지)의 부분 문자열을 반환한다.
+
+- String substring(int beginIndex)
+
+- String substring(int beginIndex, int endIndex)
+
+```java
+String str = "Happy Java Hello World";
+
+String substring_str = str.substring(6);
+// Java Hello World
+substring_str = str.substring(6, 10);
+// Java
+```
+
+8. concat
+
+- String concat(String str)
+문자열의 맨 끝에 str을 연결한다.
+
+```java
+String str = "Happy Java Hello";
+		
+String concat_str = str.concat(" World");
+// Happy Java Hello World
+```
+9. split
+주어진 regex(표현식)으로 분리한다. limit은 분리되어지는 개수에 제한을 둔 것이다.
+
+- String[] split(String regex)
+
+- String[] split(String regex, int limit)
+
+```java
+String str = "Happy Java Hello World";
+		
+String[] split = str.split(" ");
+// [Happy, Java, Hello, World]
+
+split = str.split(" ", 3);
+// [Happy, Java, Hello World] 분리되어지는 개수를 limit 만큼으로 제한한다.
+```
+## String, StringBuffer, StringBuilder
+
+<table>
+<tr>
+    <td>클래스</td>
+<td> 속성</td>
+<td>특징</td>
+</tr>
+<tr>
+    <td>String</td>
+<td>불변(immutable), 동기화 O</td>
+<td>
+
+- 불변성으로 인해 문자열 추가, 수정, 삭제 등의 연산에서 불리하게 작용한다.
+
+</td>
+</tr>
+<tr>
+    <td>StringBuffer</td>
+<td> 가변(mutable). 동기화 O</td>
+<td>
+
+- 가변적이기 때문에 문자열 추가, 수정, 삭제 연산 시 사용된다.
+- 동기화를 지원해서 멀티쓰레드 환경에서 안전하다. (thread-safe)
+- StringBuilder에 비해 성능이 좋지 않다.
+
+</td>
+</tr>
+<tr>
+    <td>StringBuilder</td>
+<td>  가변(mutable), 동기화 X</td>
+<td>
+
+- 가변적이기 때문에 문자열 추가, 수정, 삭제 연산 시 사용된다.
+- 동기화를 지원하지 않기 때문에 멀티쓰레드 환경에서 사용하는 것은 적합하지 않다.
+- 단일쓰레드에서의 성능은 StringBuffer보다 좋다.
+
+</td>
+</tr>
+</table>
+
 ---
 
 # 해시 [☝](#알고리즘)
