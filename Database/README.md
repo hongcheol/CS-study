@@ -1,19 +1,34 @@
 # Database
 
 - [키](#키)
+
 - [SQL - 기초 Query](#sql---기초-query)
+
 - [SQL - JOIN](#JOIN)
+
 - [SQL Injection](#sql-injection)
+
 - [SQL vs NoSQL](#SQLvsNoSQL)
+
 - [Anomaly와 정규화](#anomaly와-정규화)
+
 - [인덱스](#인덱스)
+
 - [트랜잭션](#트랜잭션)
+
 - [트랜잭션 격리 수준](#트랜잭션-격리수준)
+
 - [레디스](#레디스)
+
 - [Hint](#hint)
+
 - [클러스터링](#클러스터링(Clustering))
-- 리플리케이션
+
+- [리플리케이션](#리플리케이션(Replication))
+
 - [데이터베이스 튜닝](#데이터베이스-튜닝)
+
+  
 
 
 # 키
@@ -1869,6 +1884,92 @@ WHERE COL1=1 AND COL2=2 AND COL3=3;
 ---
 
 <br>
+
+# 리플리케이션(Replication)
+
+리플리케이션은 여러 개의 **DB를 권한에 따라 수직적인(Master-Slave) 구조로 구축**하는 방식입니다.
+
+리플리케이션 구조는 **데이터를 변경하는 쓰기(Insert, Update, Delete 등) 작업은 Master 가 처리**하고 **읽기(Select) 작업은 Slave가 처리**하도록 합니다.
+
+리플리케이션 구조는 클러스터와 달리 **비동기적으로 DB 간의 데이터를 동기화**합니다. 그래서 클러스터 구조 보다 데이터의 쓰기 작업의 속도가 빠릅니다. 하지만 비동기적이므로 딜레이 차이로 어떤 DB에는 데이터가 동기화 되어 있지만 그렇지 않은 DB가 존재할 수 있습니다.
+
+<p align="center"><img src="img\replication_master_slave.PNG" width="400"></p>
+
+
+
+## 동작 방식
+
+<p align="center"><img src="img\replication_master_slave3.PNG" width="400"></p>
+
+1. Master에 쓰기 트랜잭션이 수행됩니다.
+2. Master는 데이터를 저장하고 트랜잭션에 대한 Binary log를 만들어 기록합니다.
+3. Slave는 IO thread를 통해서 Master에 Binary log를 요청합니다.
+4. Master는 Binary log를 요청 받으면 binlog dump thread를 통해서 로그를 전송합니다.
+5. IO thread는 전송받은 로그로 Relay log를 만듭니다.
+6. SQL thread는 Relay log를 읽어서 이벤트를 다시 실행하여 Slave에 데이터를 저장합니다.
+
+
+
+## 구성
+
+- Master
+
+  - **Binary log**
+
+    MySQL은 데이터 또는 스키마를 변경하는 이벤트들을 저장할 수 있으며, Binary log 이 이벤트들을 저장한 것입니다. Binary log는 DB를 변경하는 모든 이벤트가 저장되어 있으므로 원하는 시점으로 데이터를 복구할 수 있습니다. 그래서 Slave에서 이를 다시 실행하면 DB를 동기화 할 수 있습니다.
+
+  - **Binlog dump thread**
+
+    Binlog dump thread는 Slave의 I/O thread로 binary log를 요청했을 때 Master에서 이를 처리하기 위해 만든 쓰레드 입니다. Binlog dump thread는 Slave가 로그를 요청하면 binary log에 lock을 걸고, Slave로 로그를 전송합니다. 이때, binary log를 너무 긴 시간 lock하지 않기 위해서 Slave로 전송하기 전에 binary log를 읽고 바로 락을 해제합니다. binlog dump thread는 Slave가 Master에 connect 할 때 생성되지만, 여러 개의 Slave가 붙어도 단 하나의 스레드만 생성됩니다.
+
+- Slave
+
+  - **I/O thread**
+
+    I/O thread는 Slave가 마지막으로 읽었던 이벤트를 기억하고 있다가 Master에게 다음 binary log 로그를 전송해달라고 요청합니다. 그리고 Master의 binlog dump thread가 로그를 보내주면 이것을 Relay log로 저장합니다. 백업을 위해서 I/O thread를 잠시 정지할 수도 있습니다. 하지만, 정지된 상황에서 Master의 binary log가 지워지면 Slave는 Master의 데이터를 복제할 수 없습니다.
+
+  - **Relay log**
+
+    Relay log는 Slave I/O thread를 통해서 받은 로그를 저장한 것 입니다. 보통 relay log는 SQL thread가 읽고 나면 지웁니다. 따라서 어느 정도 이상의 크기가 되지 않습니다. 하지만 SQL thread가 멈추어 있으면 relay log는 계속해서 크기가 커지게 됩니다. 그렇게 되면 I/O thread는 자동으로 새 relay log 파일을 만들어, 파일이 너무 커지는 것을 막습니다.
+
+  - **SQL thread**
+
+    SQL thread는 I/O thread가 만든 relay log를 읽어 실행을 시키고, relay log를 지웁니다.
+
+
+
+## 장점 및 단점
+
+- 장점
+  - 데이터 동기화가 비동기 방식이기 때문에 지연시간이 거의 없습니다.
+  - DB로 요청하는 Query의 대부분은 읽기 작업입니다. 리플리케이션 구조는 읽기 요청을 Slave에서 전담하여 처리할 수 있으므로 Slave의 Scale을 늘림으로써 부하를 분산시키고 DB의 읽기 속도를 향상 시킬 수 있습니다.
+  - Slave에 데이터가 복제되며 Slave는 복제 프로세스를 일시적으로 중지할 수 있기 때문에 특정 시점의 원본 소스 데이터를 손상시키지 않고 백업이 가능합니다.
+  - Master에서 현재 데이터를 동기화 한 뒤 Slave에서 서비스에 영향을 주지 않고 데이터의 분석을 실행할 수 있습니다.
+  - 여러 지역 혹은 local에 Slave를 복제할 수 있으므로 지리적으로 빠른 응답속도를 보일 수 있으며 문제가 생겼을때 DB의 데이터를 복구하기 수월합니다.
+- 단점
+  - 데이터 동기화가 비동기 방식이기 때문에 시간차가 생겨서 Slave에 최신 데이터가 반영되지 않았을 수 있습니다.
+  - Master와 Slave의 기능 및 구성의 차이로 인해 Master가 다운되었을 때 클러스터 구조 처럼 Fail over 한 시스템을 만들 수 없습니다.
+
+
+
+## 리플리케이션 vs 클러스터
+
+- 리플리케이션
+  - 여러 개의 DB서버와 DB를 권한에 따라 수직적인 구조(master-Slave)로 구축하는 방식이다.
+  - 비동기 방식으로 데이터를 동기화 한다.
+  - 데이터 무결성 검사를 하지 않기 때문에 데이터가 동기화로 인한 지연시간이 거의 없다.
+  - DB 간에 일관성 있는 데이터를 얻지 못할 수 있다.
+- 클러스터
+  - 여러 개의 DB 서버를 수평적인 구조로 구축하는 방식이다.
+  - 동기 방식으로 노드들 간의 데이터를 동기화 한다.
+  - 데이터를 동기화하는 시간이 필요하므로 리플리케이션에 비해 쓰기 성능이 떨어진다.
+  - 1개의 DB 서버가 다운되어도 시스템 장애를 최소화 하도록 Fail Over 하게 운영할 수 있다.
+
+-------
+
+<br>
+
+
 
 # 데이터베이스 튜닝
 
