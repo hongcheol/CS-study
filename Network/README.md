@@ -14,7 +14,7 @@
 9. [DNS](#dns)
 10. [HTTP 프로토콜](#http-프로토콜)
 11. [HTTP & HTTPS](#HTTP와-HTTPS)
-12. GET, POST
+12. HTTP Method
 13. [HTTP 상태 코드](#http-상태코드)
 
 # OSI 7계층
