@@ -9,7 +9,7 @@
 4. [UDP](#udp)
 5. [대칭키 & 공개키](#대칭키와-공개키)
 6. Load Balancing
-7. [Blocking/Non-Blocking & Synchronous/Asynchronous I/O](#Blocking-vs-Non-Blocking-|-Synchronous-vs-Asynchronous-IO)
+7. [Blocking/Non-Blocking & Synchronous/Asynchronous I/O](#Blocking-vs-Non-Blocking-IO와-Synchronous-vs-Asynchronous-IO)
 8. [웹 동작 방식](#웹-동작-방식)
 9. [DNS](#dns)
 10. [HTTP 프로토콜](#http-프로토콜)
@@ -938,7 +938,7 @@ RSA는 소인수분해 연산을 이용합니다.
 <br>
 
 
-# Blocking vs Non Blocking | Synchronous vs Asynchronous IO
+# Blocking vs Non Blocking IO와 Synchronous vs Asynchronous IO
 
 ### I/O 작업
 
