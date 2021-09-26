@@ -7,15 +7,15 @@
    3. [공인 IP, 사설 IP](#공인-ip-사설-ip)
 3. [TCP/IP](#tcp/ip)
 4. [UDP](#udp)
-5. 대칭키 & 공개키
+5. [대칭키 & 공개키](#대칭키와-공개키)
 6. Load Balancing
 7. Blocking & Non-Blocking I/O
 8. [웹 동작 방식](#웹-동작-방식)
 9. [DNS](#dns)
-10. HTTP 프로토콜
-11. HTTP & HTTPS
-12. GET, POST
-13. [HTTP 상태 코드](#HTTP-상태코드)
+10. [HTTP 프로토콜](#http-프로토콜)
+11. [HTTP & HTTPS](#HTTP와-HTTPS)
+12. HTTP Method
+13. [HTTP 상태 코드](#http-상태코드)
 
 # OSI 7계층
 
@@ -788,6 +788,152 @@ TCP 헤더에 비해 매우 단순합니다.
 <br>
 
 <br>
+# 대칭키와 공개키
+
+## 네트워크 보안
+secure communication을 위해서는 다음의 원칙들을 고려해야합니다.
+1. 기밀성
+송신자와 정해진 수신자만이 전송된 메세지의 내용을 이해할 수 있어야한다.
+2. 메세지 무결성
+송신자와 수신자 사이의 메세지는 중간에 변형되면 안된다.
+3. 엔드포인트 인증
+발신자와 수신자 모두 통신에 관련된 상대방(End-point)의 신원을 확인할 수 있어야한다.
+4. 운영 보안
+공격자가 바이러스를 심거나 보안사항을 얻으려는 시도를 하거나, DoS 공격을 시도하는 등을 할 수 없게 안전하게 운영되어야한다.
+
+이 중 대칭키와 비대칭키는 1번 원칙인 기밀성을 위해 사용되는 도구입니다.
+## 암호화의 원칙
+다음은 암호화의 요소에대한 그림입니다.
+![사진 2021  9  18  오후 55150](https://user-images.githubusercontent.com/16794320/133893614-d0fffee0-bb63-49ba-a942-98695eda7a3d.jpg)
+ Alice는 암호화 알고리즘에 input으로 들어갈 key를 제공합니다. 이 때, key는 숫자와 문자로 구성된 문자열입니다.
+이 암호화 알고리즘은 송신자의 키와 plaintext 메세지를 받아서 output으로 암호문을 만들어냅니다.
+복호화 알고리즘은 암호화 알고리즘을 통해 만들어진 암호문을 수신자의 키를 이용해서 plaintext 메세지로 바꿔줍니다.
+이런 과정에서 사용되는 키는 대칭키와 비대칭키가 있습니다.
+> 대칭키 : 수신자와 송신자의 키가 동일하다.
+> 공개키 : 수신자와 송신자의 키가 쌍으로 사용됩니다.
+
+## 대칭키
+### stream 암호
+plaintext와 같은 길이의 키 스트림을 생성해서 비트단위로 XOR연산을 수행합니다.
+오류 확산의 위험이 없고, 이동통신 환경에서 구현이 용이해서 무선 데이터 보호에 많이 사용됩니다. 실시간성이 중요한 음성, 영상, 스트리밍 전송에 사용됩니다.
+비트단위로 암호화를 진행해서 시간이 많이 걸리고, 데이터 흐름에 따라서 비트 단위로 순차적으로 처리해서 내부 상태를 저장하고 있어야한다는 단점이 있습니다.
+![New-Project-18](https://user-images.githubusercontent.com/16794320/133893630-f2705679-c85b-4213-a862-334d45ac1cfc.jpg)
+
+![download](https://user-images.githubusercontent.com/16794320/133893632-43ab0478-0a06-4830-a881-58b87b1c504b.png)
+
+
+
+### RC4
+SSL/TLS나 네트워크 프로토콜에서 자주 사용되는 스트림 암호 기법으로 plaintext와 XOR 연산을 진행할 pseudorandom stream을 만듭니다.
+
+256 바이트로 구성된 상태의 한 바이트는 암호화 키로서 사용되기 위해서 랜덤하게 선택이 됩니다.
+
+초기화는 256바이트의 state vector를 0,1,2,…,254,255로 초기화합니다.
+초기화 한 후에 키 배열을 이용해서 상태배열에대해 다음과 같이 swap을 해줍니다.
+![1280px-RC4 svg](https://user-images.githubusercontent.com/16794320/133893639-a499f0de-ea3b-478f-ad5e-f9724ded8ff4.png)
+
+이 swap 과정 중 S[i] + S[j] 의 값에 해당하는 상태 배열의 인덱스의 원소를 키로 사용합니다.
+
+### block 암호
+다양한 보안이 적용된 인터넷 프로토콜(ex. PGP,SSL,IPsec)에서 사용되는 암호입니다.
+블록 암호문에서는 암호화될 메세지는 *k bit*의 블록으로 처리됩니다.
+예를들면, k = 64인 경우에는 메세지는 64 비트의 블록 단위로 나눠지고, 각각의 블록들은 독립적으로 암호화됩니다.
+
+블록을 암호화 하기위해서는 암호는 일대일 매핑을 사용해서 k비트의 일반 텍스트 블록을 암호문의 k비트 블록에 매핑합니다.
+
+k = 3 인 경우 아래와 같이 매핑할 수 있습니다.
+이는 가능한 8!(=40320)가지 방법 중 한가지를 표시한 것입니다.
+|input|output|input|output|
+|----|----|----|----|
+|000|110|100|011|
+|001|111|101|010|
+|010|101|110|000|
+|011|100|111|001|
+
+우리는 이런 각각의 매핑들을 키로 생각할 수 있습니다. 
+하지만 이처럼 작은 비트로 매핑을하면 모든 경우의 수를 완전탐색으로 금방 찾아낼 수 있습니다. 이런 공격을 방지하기 위해서 k bit를 64비트나 그 이상의 비트수로 구성합니다.
+
+비록 이런 적절한 k를 이용한 full-table block 암호가 강력한 대칭키 암호 스키마를 만들 수 있지만, 구현하는 것이 까다롭습니다. k bit 를 사용하면 송신자와 수신자 모두 (2^k)!가지의 경우의 수로 구성된 테이블을 유지해야하는데, 이는 실행이 불가능합니다. 
+어찌어찌해서 다 만들었다하더라도, 키를 바꿔버리면 다시 테이블을 생성해야합니다. 
+
+그래서 full-table 암호는 모든 입력과 출력 간에 미리 결정된 mapping을 제공하는 경우에만 사용합니다.
+
+이런 점을 해결하기 위해서 블록 암호는 랜덤하게 조합된 테이블을 만드는 함수들을 사용합니다. 
+
+![사진 2021  9  18  오후 64308](https://user-images.githubusercontent.com/16794320/133893670-711eeb35-8600-4008-ab8f-77e4b08da8b1.jpg)
+
+위의 그림처럼 input을 다루기 쉬운 사이즈의 bit로 나눠서 매핑합니다.
+이렇게 나눠진 chunk들은 64비트의 블록으로 합쳐진 후에, 다시 한 번 섞여서 새로운 64-bit output을 만듭니다. 
+이렇게 만들어진 결과물은 64-bit input으로 사용되어 위 과정을 반복하고, 이 반복을 총 n번 반복합니다.
+이 때, n번의 싸이클을 돌리는 목적은 각각의 input bit가 출력 비트의 대부분에 영향을 미치게하기 위함입니다.(chunk 안에 있는 bit는 바뀌는 것이 없기 때문)
+ 
+### AES
+AES는 128 비트 블록을 사용하고 128,192,256비트 길이의 키를 사용할 수 있습니다. 
+
+![](https://upload.wikimedia.org/wikipedia/commons/9/96/AES_Encryption_Round.png)
+
+위 그림은 다음 4가지 단계를 표현한 것입니다.
+1. SubByte : 바이트 단위 형태로 블록을 교환
+cf) S-box
+![에스박스-1](https://user-images.githubusercontent.com/16794320/133916464-79ca0684-e7b6-46b8-a509-77c1236abce8.png)
+
+2. Shift rows : 행과 행을 치환
+3. Mix columns : 열에 속한 모든 바이트를 순환 행렬을 사용해서 함수로 열에 있는 각 바이트를 대체해서 변화시킵니다.
+4. Add round key : 확장된 키의 일부와 현재 블록을 비트별로 XOR 연산해줍니다.
+
+암호화와 복호화를 위해서 라운드 키 더하기 단계에서 시작해 10라운드를 수행합니다. 9라운드 동안은 4단계를 모두 포함하는 반복을 수행한 후에 10번째에는 3단계(mix columns제외)로 구성된 반복을 수행합니다.
+
+라운드 키를 더하는 단계에서만 키를 사용하기 때문에 각 라운드의 시작과 끝은 라운드 키를 더하는 단계가 됩니다.
+
+위의 4가지 단계는 비트를 뒤섞고 XOR 암호화 하는 것을 번갈아서 적용함으로서 효과적으로 보안성을 강화시킵니다.
+
+암호화된 암호문은 암호의 역순으로 해독하면 평문을 얻어낼 수 있습니다.
+
+[AES 진행방식](https://www.youtube.com/watch?v=mlzxpkdXP58)
+## 공개키(Public Key)
+
+대칭키를 이용한 암호화 통신은 두 communicating  당사자들이 공통된 키를 공유합니다. 이런 방법의 한가지 어려운 점은 두 참가자가 반드시 공유키에대한 동의를 해야한다는 것입니다. 참가자들이 처음 만나서 동의한 다음 그 후에 암호화로 통신이 가능할 것입니다.
+그러나 지금 세상에는 네트워크 없이 통신의 참여자가 직접 만나거나 소통을 할 수 없습니다. 
+그렇다면 두 참여자가 사전에 이미 알고있는 비밀키 공유 없이 암호화 통신을 할 수 있는 방법은 무엇일까요?
+
+![사진 2021  9  18  오후 110602](https://user-images.githubusercontent.com/16794320/133893682-77fa94f2-98cc-49eb-b8d2-382ea68d2c3e.jpg)
+
+그 때 사용하는 것이 공개키(Public Key)입니다.
+공개키 구조는 네트워크에 참여하는 모두가 볼 수 있는 공개키와 수신자만 가지고 있는 개인키로 되어있습니다. 
+공개키로 암호화되어진 암호문을 수신자의 개인키를 이용해서 복호화합니다. 
+이런 특징 때문에, 공격자가 암호 알고리즘과 암호키를 알아도 복호키 계산이 불가능합니다. 
+공개키를 이용해서 암호화를 할 때, 주로 RSA 알고리즘을 이용해서 암호화합니다.
+
+RSA
+RSA는 소인수분해 연산을 이용합니다.
+1. p와 q라고하는 2개의 서로 다른 충분히 큰 소수를 고릅니다.
+2. n = pq, z = (p-1)(q-1)을 계산합니다.
+3. n보다 작으면서 서로소인 정수 e를 찾습니다.
+4. 그 후 d*e를 z로 나눴을 대 나머지가 1인 정수 d(ed mod z = 1)를 구합니다.
+5. (n,e)는 공개키로 사용, (n,d)는 개인키로 사용
+이 때, p와q를 이용해서 d,e를 계산하는 것이 가능하기 때문에, 보안상의 이유로 공개키와 개인키를 생성한 이후에는 p와 q를 지워버리는 것이 안전합니다.
+
+이 때, e는 공개키에 이용되고, d는 개인키에 사용됩니다.
+> 암호화
+> C = (M^e)(mod N)
+> M 은 송신자가 보내는 메세지이고, C는 암호화 값입니다.
+> 이때 C의 비트 패턴은 수신자에게 보내는 암호문과 관련이 있습니다.
+> 복호화
+> M = (C^d)(mod N) 
+
+다음은 love라는 단어를 암호화하고 복호화하는 과정을 나타낸 그림입니다.
+
+![사진 2021  9  19  오후 13909](https://user-images.githubusercontent.com/16794320/133916081-5ea54bc8-217a-4480-9c75-7d05cecd37f8.jpg)
+![사진 2021  9  19  오후 13900](https://user-images.githubusercontent.com/16794320/133916084-f83a30ab-b78b-473d-b0d0-2bf3c2613286.jpg)
+
+그렇다면 RSA는 어떻게 암호화 알고리즘으로서 역할을 할 수 있을까요??
+
+1. c = (m^e) mod n
+2. [{(m^e) mod n}^d] mod n = (m^ed) mod n
+3. (m^ed) mod n = (m^(ed mod z) mod n) = m mod n = m
+4. (((m^d)mod n)^e) mod n = m^de mod n = m^ed mod n = (m^e mod n)^d mod n
+위와 같이 (m^d mod n)^e와 (m^e mod n)^d 가 n에 대해서 합동이고, d와 n을 이용해서 e를 구할 수 있기 때문에 암호화 알고리즘으로서의 역할을 할 수 있습니다.
+<br>
 
 # 웹 동작 방식
 
@@ -932,15 +1078,421 @@ ICANN의 지사인 인터넷 할당 번호 관리기관(IANA)에서 관리하는
 
 실제 DNS 서버는 반복과 재귀적인 방식을 함께 사용하며 Local DNS 서버에는 재귀, Root와 TLD 서버에는 반복, Authoritative 서버에는 재귀/반복적 query를 사용한다.
 
-# 대칭키 & 공개키
-
-# HTTP & HTTPS
-
-# Load Balancing
-
-# Blocking & Non-Blocking I/O
+<br>
 
 ---
+
+# HTTP 프로토콜
+## HTTP란? 
+
+* HTTP(Hypertext Transfer Protocol)는 인터넷 상에서 데이터를 주고 받기 위한 **서버/클라이언트 모델**을 따르는 프로토콜이다.
+
+* 애플리케이션(응용) 레벨의 프로토콜로 **TCP/IP**위에서 작동한다.
+
+* HTTP로 보낼 수 있는 데이터는 HTML문서, 이미지, 동영상, 오디오, 텍스트 문서 등 여러 종류가 있다.
+
+* "하이퍼텍스트 기반으로(Hypertext) 데이터를 전송하겠다(Transfer)" = "**링크 기반**으로 데이터에 접속하겠다"는 의미이다.
+
+<p align="center">
+<img src="https://user-images.githubusercontent.com/33649908/133892598-2544d3b1-b325-4ade-a97c-195b65a83eff.png" width="60%">
+</p>
+
+<br>
+
+## HTTP 작동방식
+<p align="center">
+<img src="https://user-images.githubusercontent.com/33649908/133892659-e7da1269-19d5-4756-8571-2ea54456c59d.png" width="50%">
+</p>
+
+HTTP는 기본적으로 **요청/응답 (request/response)** 구조로 되어 있다.
+
+클라이언트가 **HTTP Request**를 서버에 보내면 서버는 **HTTP Response**를 보내는 구조.
+
+클라이언트와 서버의 모든 통신이 **요청과 응답**으로 이루어 진다.
+
+<br>
+
+## HTTP의 특징
+### 비연결성 (Connectionless)
+클라이언트에서 서버에 요청을 하고 서버가 요청을 받아 응답하게 되면 **연결을 끊어버리는 특징**
+
+* 지속적인 연결로 인한 서버 부담이 줄어드는 장점이 있으나 클라이언트의 이전 상태를 알 수가 없게 된다.
+
+* 이전 상태 정보를 알 수 없게 되면 로그인을 성공하더라도 로그 정보를 유지할 수 없게 된다.
+
+<br>
+
+HTTP 1.1 부턴 **지속적 연결 상태가 기본**이며 이를 해제하기 위해선 명시적으로 요청 헤더를 수정해야 한다.
+
+<br>
+
+**(참고) Keep-Alive**
+
+HTTP 프로토콜의 Keep-Alive는 Http의 Header의 일종으로, **HTTP/1.0에서 지원하지 않던 지속 커넥션을 가능하게 하기 위해서** 사용되었다.
+
+* HTTP 요청시 
+``` http
+Connection: Keep-Alive
+```
+
+* HTTP 응답시
+``` http
+Connection: Keep-Alive
+Keep-Alive: max=5, timeout=120 
+```
+
+Keep-Alive 헤더를 추가적으로 보낼 수 있다.
+
+* Keep-Alive의 max 파라미터는 커넥션이 몇 개의 HTTP 트랜젝션을 처리할 때까지 유지될 것인지를 의미한다.
+* timeout 파라미터는 커넥션이 얼마동안 유지될 것인가를 나타내고, 위의 예시에서는 2분동안 커넥션을 유지하라는 내용이다.
+    
+<br>
+
+### 무상태성 (Stateless)
+비연결성(Connectionless)에서 파생되는 특징으로 **각각의 요청이 독립적으로 여겨지게 되는 특징**
+
+* 서버는 클라이언트의 상태(State)를 유지하지 않으므로 **Cookie, Session** 등을 이용하여 클라이언트 인증, 인식을 한다.
+
+<br>
+
+> Cookie(쿠키) : 서버에 저장하지 않고 클라이언트에 저장되는 방식으로, 개별 클라이언트 상태정보를 HTTP 헤더에 담아 전달하는 데이터
+
+> Session(세션) : 쿠키와 반대로 클라이언트에 저장되는 것이 아니라 서버에 데이터를 저장하는 방법
+
+<br>
+
+## URI
+URI는 HTTP와는 독립된 다른 체계다. 
+
+HTTP는 **전송 프로토콜**이고, URI는 **자원의 위치를 알려주기 위한 프로토콜**이다. 
+
+Uniform Resource Identifiers(URL)의 줄임로, World Wide Web(www)상에서 접근하고자 하는 자원의 위치를 나타내기 위해서 사용한다. 
+
+자원은 HTML문서, 이미지, 동영상, 오디오, 텍스트 문서 등 모든 것이 될 수 있다. 
+
+<br>
+
+웹페이지의 위치를 나타내기 위해서 사용하는 https://www.naver.com/index.html 등이 URI의 예다.
+
+```
+https : 자원에 접근하기 위해서 https 프로토콜을 사용한다.
+
+www.naver.com : 자원의 인터넷 상에서의 위치는 www.naver.com 이다. 
+                도메인은 ip 주소로 변환되므로, ip 주소로 서버의 위치를 찾을 수 있다.
+
+index.html : 요청할 자원의 이름이다.
+````
+
+이렇게 **"프로토콜", "위치", "자원명"** 으로 어디에 있던지 자원에 접근할 수 있다.
+
+<br>
+
+## HTTP Request(요청) 구조
+HTTP Request 메세지는 크게 3부분으로 구성된다.
+
+<p align="center">
+<img src="https://user-images.githubusercontent.com/33649908/133894446-2bf03de7-3a6b-4256-a3d7-9f6910cebb6a.png" width="50%">
+</p>
+
+* Start Line (Status Line)
+* Headers
+* Body
+
+<br>
+
+### Start Line (Status Line)
+말 그대로 HTTP request의 첫 라인으로, start line 또한 3부분으로 구성되어 있다.
+
+<br>
+
+``` http
+GET /search HTTP/1.1
+```
+
+1. HTTP Method
+    * 해당 request가 의도한 **action**을 정의하는 부분
+    * HTTP Methods에는 GET, POST, PUT, DELETE, OPTIONS 등이 있다.
+    * 주로 GET 과 POST과 쓰인다.
+
+2. Request target
+    * 해당 request가 전송되는 **목표 URL**
+
+3. HTTP Version
+    * 말 그대로 사용되는 HTTP 버전으로, 1.0, 1.1, 2.0 등이 있다.
+
+<br>
+
+### Headers
+* 해당 request에 대한 **추가 정보**를 담고 있는 부분
+  
+  예를 들어, request 메세지 body의 총 길이 (Content-Length) 등
+
+* **Key:Value** 값으로 되어 있다. (: 이 사용됨)
+  
+  `HOST: google.com` => Key = HOST, Value = google.com
+
+* Headers도 크게 general headers, request headers, entity headers 3부분으로 구성되어 있다.
+
+<br>
+
+``` http
+Accept: */*
+Accept-Encoding: gzip, deflate
+Connection: keep-alive
+Content-Type: application/json
+Content-Length: 257
+Host: google.com
+User-Agent: HTTPie/0.9.3
+```
+
+* Host : 요청이 전송되는 target의 host url (예를 들어, google.com)
+
+* User-Agent : 요청을 보내는 클라이언트의 대한 정보 (예를 들어, 웹브라우저에 대한 정보)
+  
+* Accept : 해당 요청이 받을 수 있는 응답(response) 타입
+  
+* Connection : 해당 요청이 끝난 후에 클라이언트와 서버가 계속해서 네트워크 컨넥션을 유지할 것인지 아니면 끊을 것인지에 대해 지시하는 부분
+  
+* Content-Type : 해당 요청이 보내는 메세지 body의 타입 (예를 들어, JSON을 보내면 application/json)
+  
+* Content-Length : 메세지 body의 길이
+
+<br>
+
+### Body
+해당 reqeust의 실제 메세지/내용으로, Body가 없는 request도 많다.
+
+예를 들어, GET request들은 대부분 body가 없는 경우가 많음.
+
+``` http
+POST /payment-sync HTTP/1.1
+Accept: application/json
+Accept-Encoding: gzip, deflate
+Connection: keep-alive
+Content-Length: 83
+Content-Type: application/json
+Host: intropython.com
+User-Agent: HTTPie/0.9.3
+
+{
+    "imp_uid": "imp_1234567890",
+    "merchant_uid": "order_id_8237352",
+    "status": "paid"
+}
+```
+
+<br>
+
+## HTTP Response(응답) 구조
+Response도 request와 마찬가지로 크게 3부분으로 구성되어 있다.
+
+<p align="center">
+<img src="https://user-images.githubusercontent.com/33649908/133894499-04aa40bf-6a42-4a09-979c-d8db93555b18.png" width="50%">
+</p>
+
+* Start Line (Status Line)
+* Headers
+* Body
+
+<br>
+
+### Start Line (Status Line)
+Response의 상태를 간략하게 나타내주는 부분으로, 3부분으로 구성되어 있다.
+
+``` http
+HTTP/1.1 404 Not Found
+```
+
+1. HTTP 버전
+
+2. Status code: 응답 상태를 나타내는 코드 (예를 들어, 200)
+ 
+3. Status text: 응답 상태를 간략하게 설명해주는 부분 (예를 들어, "Not Found")
+
+<br>
+
+### Headers
+Request의 headers와 동일하다.
+
+다만 response에서만 사용되는 header 값들이 있다.
+* 예를 들어, User-Agent 대신에 Server 헤더가 사용된다.
+
+<br>
+
+### Body
+Request의 body와 일반적으로 동일하다.
+
+Request와 마찬가지로 모든 response가 body가 있지는 않다. 데이터를 전송할 필요가 없을 경우 body가 비어있게 된다.
+
+``` http
+HTTP/1.1 200 OK
+Date: Sat, 17 Oct 2020 07:32:39 GMT
+Content-Type: application/json
+Content-Length: 332
+Connection: close
+Server: gunicorn/19.9.0
+Access-Control-Allow-Origin: *
+Access-Control-Allow-Credentials: true
+
+{
+  "args": {}, 
+  "data": "Hello", 
+  "files": {}, 
+  "form": {}, 
+  "headers": {
+    "Content-Length": "5", 
+    "Content-Type": "text/plain", 
+    "Host": "httpbin.org", 
+    "X-Amzn-Trace-Id": "Root=1-5f8a9e17-1755758a691e5b0051977312"
+  }, 
+  "json": null, 
+  "origin": "121.131.70.240", 
+  "url": "https://httpbin.org/post"
+}
+```
+<br>
+
+## HTML 버전
+현재는 주로 HTML/1.1, HTML/2.0을 사용한다.
+
+1. HTTP/1.0
+
+    처음으로 널리 사용하기 시작한 버전이다.
+
+2. HTTP/1.0+
+  
+    keep alive 커넥션, 프락시 연결 지원 등의 기능이 추가 되었다.
+
+3. **HTTP/1.1**
+  
+    1.0에서는 연결하고 끊고를 반복하면 서버나 클라이언트 모두에 부담이 된다. 그래서 1.1은 pipeline(파이프라인) 기능을 추가하여 매번 연결을 맺고 끊고 하는 과정을 줄여서 속도를 높였다.
+  
+    PUT, DELETE 등의 새로운 Method가 추가 되었다.
+
+4. SPDY
+  
+    구글이 만든 프로토콜로, HTTP의 속도를 개선시키기 위해 만들었다.
+  
+    대표적인 기능으로 헤더를 압축하는 기능과 하나의 TCP커넥션에 여러 요청을 동시에 보내는 기능, 클라이언트가 요청을 보내지 않아도 서버가 리소스를 푸시하는 기능 등을 갖추고 있다.
+
+5. **HTTP/2.0**
+  
+    2012년 구글이 만든 SPDY 프로토콜을 기반으로 만들어진 프로토콜이다.
+  
+    1.1은 컨넥션 하나에서 여러개의 파일을 전송할 수 있는 1개의 파이프라인을 연결하는데 2.0은 연결이 되면 여러개의 파이프라인을 꽂는다고 생각하면 된다.
+  
+    이걸 **stream(스트림)** 이라고 하는데 1번 파이프라인으로 전송되던 파일이 늦어지면 2번, 3번 또는 다른 파이프라인으로 보내기 때문에 **늦어지는 현상이 1.1에 비해서 짧다는 장점**이 있다.
+
+    더 많은 차이점은 https://developers.google.com/web/fundamentals/performance/http2?hl=ko 참고.
+
+<br>
+
+---
+
+<br>
+
+# HTTP와 HTTPS
+
+## HTTP(Hyper Text Transfer Protocol)
+
+WWW(World-Wide-Web)기반 서비스에서 웹 서버와 WWW 클라이언트(웹 브라우저) 간 통신을 위해 사용하는 네트워크 프로토콜
+
+일반적으로 `80`번 포트를 사용한다. 클라이언트가 `80`번 포트를 이용해 데이터를 **요청**(Request)하면 웹 서버는 `80`번 포트로 들어온 요청에 **응답**(Response)하는 방식으로 통신한다.
+
+HTTP 요청(Request) 메시지와 응답(Response) 메시지는 크게 **Start line**, **Headers**, **Body** 부분으로 구성되어 있다.
+
+>- Start line : Method 방식, 타겟 URL, HTTP 버전 등의 정보
+>- Headers : Request와 Response 메시지 메타 정보
+>- Body : 실제 Request와 및 Response 메시지 내용
+
+HTTP는 **직관적**이다. 요청 및 응답 메시지(HTML 파일, 텍스트 데이터, 이미지 및 파일 데이터 등)를 **Body에 평문으로 붙여** 전달한다. 따라서 데이터를 **빠르고 쉽게** 주고 받을 수 있다.
+
+## HTTPS(Hyper Text Transfer Protocol over Secure-Socket-Layer)
+
+HTTP 프로토콜에 대해 **SSL 암호화 통신 기능**을 추가한 네트워크 프로토콜
+
+HTTP는 웹 서버와 클라이언트(브라우저) 간 통신을 제약 없이 자유롭게 진행했다면, HTTPS는 웹 서버와 클라이언트(브라우저) 간 통신이 암호화되므로 제 3자의 개입이나 위, 변조를 막을 수 있다.
+
+일반적으로 `443`번 포트를 사용한다. 또한 URL이 `http://`로 시작하는 HTTP 프로토콜과 달리, HTTPS 프로토콜은 `https://`로 시작하므로 URL을 확인하면 어떤 웹 사이트에서 HTTPS 프로토콜을 사용하는지 알 수 있다.
+
+<br>
+
+## SSL(Secure Socket Layer)
+
+웹 서버와 클라이언트 간 통신을 공인된 제 3자 인증 기관 CA(Certificate Authority)에서 인증하여 보안을 강화하는 방법
+
+- SSL은 OSI 7계층의 `응용 계층`과 `표현 계층` 중간에 독립적으로 존재한다. 응용계층이 SSL로 데이터를 전송하면 SSL은 이를 암호화하여 TCP로 보낸 뒤 이것이 외부 인터넷으로 전달된다. 수신 역시 TCP로부터 데이터를 수신받은 SSL은 이를 복호화하여 응용계층으로 전달한다.
+- 전송 계층 보안(Transport Layer Security, TLS)은 조금 더 진화된 버전의 SSL이다. 오늘날 대부분 TLS 방식을 이용하지만 SSL이 더 많이 알려져있기때문에 실제로는 TLS를 쓰고 용어만 SSL이라고 한다.
+
+### 공개키 암호화 방식
+
+- 데이터를 암호화(Encrypt)하고 암호화된 데이터를 다시 평문으로 원상복구하는 복호화(Decrypt) 과정에서 각각 서로 다른 키(Key)를 사용한다.
+- A키를 이용해 암호화한 데이터는 B키가 있어야 복호화하여 해석할 수 있다. 두 키는 쌍을 이룬다.
+- 암호화 키(공개키)는 모두에게 공개되어 있기 때문에 누구나 암호화할 수 있다.
+- 다만 복호화 키(비밀키)는 해당 데이터를 열람하고 수정할 권한이 있는 호스트만 각자 개인의 비밀키를 갖고 있다. 따라서 권한이 있는 자만 데이터를 읽을 수 있다.
+
+### 공개키 암호화의 특성을 이용한 전자 서명
+
+위의 공개키 암호화 방식을 응용하여 **정보를 제공한 자의 신원을 보장**할 수 있는 방법이 있다.
+
+- 비밀키 소유가 자신의 비밀키를 이용해 데이터를 암호화하고, 이 데이터를 공개키와 함께 배포한다.
+- 데이터를 수신한 자는 함께 수신한 공개키를 이용해 데이터를 복호화하여 접근할 수 있다.
+
+기존의 공개키 암호화 방식에서는 공개키로 암호화한 뒤 비밀키로 복호화했다면 전자 서명에서는 반대로 비밀키로 암호화한 뒤 공개키로 복호화한다. 이 방법은 언뜻 보면 누구나 공개키를 이용해 데이터를 읽어 위, 변조할 수 있어 위험해 보인다. 하지만 암호화된 데이터를 특정 공개키로 복호화할 수 있다는 것은 **해당 데이터가 특정 공개키와 쌍을 이루는 특정 비밀키로 암호화되어있다**는 것을 의미한다. 따라서 데이터를 제공한 자의 신원을 보장할 수 있다.
+
+### SSL을 이용한 통신 과정
+
+1. Handshake
+    1. 클라이언트가 서버에 접속한다.
+        - 전송하는 정보 : 클라이언트가 생성한 랜덤 데이터, 암호화 방식 협상을 위한 제안, 세션 아이디
+        - 랜덤 데이터는 실질적인 요청 및 응답 메시지 암호화, 복호화를 위해 사용됨
+        - 클라이언트 측에서 가능한 암호화 방식의 종류를 서버 측에 제시
+        - 이후 같은 세션에서는 SSL 핸드 쉐이킹을 생략하기 위해 세션 식별자를 함께 보냄
+    2. 서버는 클라이언트의 요청에 응답한다.
+        - 전송하는 정보 : 서버가 생성한 랜덤 데이터, 클라이언트의 암호화 방식 중 서버가 선택한 암호화 방식 명시, 인증서
+        - 랜덤 데이터는 실질적인 요청 및 응답 메시지 암호화, 복호화를 위해 사용됨
+        - 클라이언트가 제시한 암호화 방식 중 가능한 암호화 방식을 선택함
+        - 서버가 자기 자신임을 인증하기 위한 인증서
+    3. 클라이언트는 서버의 인증서를 통해 서버의 신원을 판별한다.
+        - 클라이언트는 서버의 인증서가 신뢰할 수 있는 CA에서 인증된 것인지 확인한다.
+        - 신뢰할 수 있다면 해당 CA의 공개키로 서버의 인증서를 복호화한다.
+        - 복호화가 성공했다는 것은 CA의 공개키와 쌍을 이룬 해당 CA의 비밀키로 암호화가 되었다는 것을 의미하므로 서버의 신원을 확실하게 믿을 수 있다.
+    4. 실제 HTTPS 통신 메시지를 암호화하기 위해 클라이언트와 서버의 랜덤 메시지를 조합하여 pre master secret 키를 생성한다.
+        - pre master secret 키는 대칭키이므로 이를 주고받기 위해 다시 공개키 방식을 이용한다. 서버의 공개키로 pre master secret 키를 암호화하여 보내면 클라이언트는 이를 자신의 비밀키로 복호화하여 메시지를 읽을 키(session key)를 획득한다.
+2. 세션
+    - 클라이언트와 서버가 실제 데이터를 주고 받는다.
+    - handshake 단계에서 공유한 session key(대칭키)를 이용해 메시지를 암호화 및 복호화한다.
+    - 대칭키와 공개키를 혼용하는 이유 : 공개키 방식이 상대적으로 많은 연산을 필요로하기 때문에 연산을 최소화하기위해 실제 데이터에 접근하기 위한 대칭키만 공개키로 암호화하는 것!
+3. 세션 종료
+    - SSL 통신이 끝났음을 서로에게 통지한다. 
+    - session key는 폐기한다.
+
+<br>
+
+## HTTP Vs HTTPS
+
+1. HTTPS 프로토콜과 HTTP 프로토콜의 가장 큰 차이는 **보안**이다.
+
+    HTTPS 프로토콜은 SSL 암호화 방식을 이용해 **요청과 응답 주체를 인증**할 수 있고, 전송하는 데이터도 **암호화** 되어있으므로 해독하여 위, 변조할 수 없다. 즉, **데이터의 무결성을 보장**한다.
+
+    사용자의 개인정보나 결제 정보 등과 같이 민감하고 중요한 정보를 전송해야할 경우 HTTPS 프로토콜을 이용해야 한다.
+
+2. 부가적인 차이는 **SEO 품질**이다.
+    - SEO(Search Engine Optimization, 검색 엔진 최적화) : 구글 등의 검색 엔진에서 웹사이트가 잘 검색되고 노출될 수 있도록 검색을 최적화 하는 전략
+
+    검색 엔진 구글은 HTTPS 프로토콜을 이용하는 웹 사이트에 대해 SEO 가산점을 제공하여 웹 사이트들이 HTTPS 프로토콜을 이용하도록 유도하고 있다.
+
+    나아가 크롬과 같은 브라우저에서는 HTTP 프로토콜을 이용하거나 신뢰할 수 없는 인증서를 이용해 통신할 경우 `‘안전하지 않음’` 이라는 메시지를 출력함으로써 사용자가 HTTP 웹 사이트를 접속하는 것을 간접적으로 막고 있다.
+
+    또한 구글에서 지원하는 AMP(Accelerated Mobile Pages, 가속화된 모바일 페이지) 혜택을 받기 위해서도 HTTPS 프로토콜을 사용해야 한다.
+
+3. 미묘한 성능 차이가 존재할 수 있으나 기술의 발달로 체감할 수 없는 수준이 되거나 오히려 HTTPS가 더 좋은 성능을 보이기도 하므로 문제가 없는 수준이다.
+
+<br>
+
+---
+
+<br>
 
 # HTTP 상태코드
 
