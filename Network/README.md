@@ -938,7 +938,7 @@ RSA는 소인수분해 연산을 이용합니다.
 <br>
 
 
-# Blocking/Non-Blocking & Synchronous/Asynchronous I/O
+# Blocking/Non Blocking & Synchronous/Asynchronous I/O
 
 ### I/O 작업
 
