@@ -7,8 +7,8 @@
    3. [공인 IP, 사설 IP](#공인-ip-사설-ip)
 3. [TCP/IP](#tcp/ip)
 4. [UDP](#udp)
-5. [대칭키 & 공개키](#대칭키와-공개키)
-6. Load Balancing
+5. [대칭키 & 공개키](#대칭키-공개키)
+6. [Load Balancing](#load-balancing)
 7. [Blocking/Non-Blocking & Synchronous/Asynchronous I/O](#Blocking-vs-Non-Blocking-IO와-Synchronous-vs-Asynchronous-IO)
 8. [웹 동작 방식](#웹-동작-방식)
 9. [DNS](#dns)
@@ -787,8 +787,7 @@ TCP 헤더에 비해 매우 단순합니다.
 
 <br>
 
-<br>
-# 대칭키와 공개키
+# 대칭키-공개키
 
 ## 네트워크 보안
 secure communication을 위해서는 다음의 원칙들을 고려해야합니다.
@@ -937,6 +936,130 @@ RSA는 소인수분해 연산을 이용합니다.
 
 <br>
 
+# load balancing
+
+![load-balancing-illustration-citrix](https://user-images.githubusercontent.com/16794320/134773886-ca57315f-a7a6-4a3f-840c-a662ff0068e3.png)
+
+컴퓨터 네트워크 기술의 일종으로 둘 혹은 셋 이상의 중앙처리장치 혹은 저장장치와 같은 컴퓨터 자원들에 작업을 나누는 것을 의미합니다.
+
+서버에 가해지는 부하(load)를 분산시켜 balance를 맞춰주는 기술입니다.
+
+**load balancing이 필요한 이유**
+서비스의 규모가 점점 커지고 클라이언트의 수가 늘어나면 기존에 사용하던 서버가 감당할 수 없는 경우 정상적인 서비스가 불가능합니다.
+
+**방법**
+scale -up : 서버의 하드웨어 성능을 올림
+scale-out : 서버의 개수를 늘려서 여러대의 서버가 나눠서 작업을 수행
+scale-out을 주로 사용한다고 합니다.
+
+## 종류
+OSI 7계층 기반(#osi-7계층)으로 구분해서 나뉩니다. 이 과정에서 DNS(#dns)에대한 요청과 응답이 발생합니다.
+![lb](https://user-images.githubusercontent.com/16794320/134773898-63826578-6603-4d25-b05e-f30dc3478a39.jpeg)
+
+L2 - MAC 주소를 기준으로 분산 작업처리
+L3 - IP주소를 기준으로 분산 작업처리
+
+![L3lb](https://user-images.githubusercontent.com/16794320/134773906-7842b8b7-d219-45c8-a12c-1370acf2ec83.jpeg)
+
+L4
+Transport Layer(IP&Port) 레벨에서 분산처리(TCP,UDP)
+
+![L4lb](https://user-images.githubusercontent.com/16794320/134773910-dd53de13-cd2f-46dd-b378-5e2287cdcaf7.jpeg)
+
+NLB라고도 하며, TCP/UDP를 기준으로 로드밸런싱하는 역할
+IP와 포트 정보를 보고 정해진 방식에 따라서 라우팅을해 로드를 분산시킵니다.
+L4로드밸런서는 TLS/SSL termination의 유무에 따라서 2개의 디자인으로 분류됩니다.
+1. TCP/UDP Termination 로드 밸런서
+
+![termination](https://user-images.githubusercontent.com/16794320/134773913-c4a8b62b-ac4f-433c-bd3f-2f0aa9036d8d.jpeg)
+
+지연시간이 낮고 TLS Termination을 load balancer가 수행합니다.
+
+2. TCP/UDP Passthrough 로드 밸런서
+
+![passthrough](https://user-images.githubusercontent.com/16794320/134773917-d7ae45d1-518b-4330-87d8-32abb894c001.jpeg)
+
+연결 추적과 NAT을 수행한 뒤에 각 연결에대한 패킷을 백엔드로 전달합니다.
+TLS termination을 사용하지않기 때문에 로드벨런서에 가해지는 부하가 적어지기 때문에 훨씬 많은 연결 및 패킷을 처리할 수 있습니다.
+또한, Termination과 다르게 DSR이 가능해집니다.
+
+> TLS/SSL termination?
+> TLS/SSL 통신이 끝났음을 통보하는 과정으로 트래픽을 암호화 및 복호화 하는 연산으로부터 백엔드 서버를 분리시키기 위한 작업입니다.
+> ex) http/https 통신 
+
+![SSL_termination_proxy svg](https://user-images.githubusercontent.com/16794320/134773929-c3d67cb5-f210-4b6d-87e0-ada6ecb35a6e.png)
+
+L7
+Application Layer(사용자의 Request) 레벨(IP와 포트번호, 패킷의 URL 정보, 쿠키, payload 등) 정보들을 기준으로 분산처리
+
+![L7lb](https://user-images.githubusercontent.com/16794320/134773927-4e3c14f0-1105-4312-ae2a-56655c4dad8a.jpeg)
+
+하위 레이어의 로드밸런서보다 세부적으로 로드 밸런싱이 가능하다는 것이 특징입니다.
+MSA에서 마이크로 서비스간의 통신은 보통 HTTP를 사용합니다.
+패킷 내용을 복호화해서 처리하기 때문에 이 과정에서 부하가 많이 발생할 수 있습니다.
+
+
+
+## 주요 기술
+### NAT(Network Address Translation) 
+Private IP를 Public IP로 바꾸는데 사용하는 통신망의 주소 변조기로 패킷이 로드밸런서를 통과할 때 패킷의 ip/port 정보를 변경하는 역할을 합니다.
+[Private IP,Public IP](#공인-ip-사설-ip)
+
+### Tunneling
+인터넷 상에 보이지않는 통로를 만들어 통신할 수 있게하는 개념. 데이터를 캡슐화해 연결된 노드만 캡슐을 해제할 수 있게 만들어줍니다.
+
+### DSR(Direct Server Return)
+로드벨런서 사용시 서버에서 클라이언트로 요청에대한 응답을 할 때, 로드밸런서(스위치의 IP주소)가 아닌 클라이언트의 IP로 응답을 보내 네트워크 스위치를 거치지않고 클라이언트를 찾아갈 수 있게 해줍니다.
+
+![dsr](https://user-images.githubusercontent.com/16794320/134774186-ee364545-146b-4427-8c15-f3a5980cb0e1.png)
+
+## 동작 방식
+## Bridge/Transparent Mode
+사용자가 서비스를 요청하면 L4로 전달된 목적지 IP 주소를 real server IP 주소로 변조하고 MAC 주소를 변조해서 목적지를 찾아가는 방식
+	1. 요청 전달 시 변조
+	사용자 > L4 > NAT(IP/MAC 주소 변조) > real server 
+	사용자가 L4를 호출하면 중간에 NAT가 목적지 IP 주소를 real server IP 주소로 변조하고 MAC 주소도 변조합니다.
+	2. 응답 전달 시 변조
+		- real server > NAT > L4 > 사용자 - real server에서 L4를 거치면서 출발지(source) IP 주소를 L4 가상 IP 주소로 변조한다. 동일 네트워크 대역이므로 MAC 주소는 변조하지 않습니다.
+## Router Mode
+Bridge/Transparent Mode와 유사하지만 출발지(source) MAC 주소도 변조됩니다.
+## One Arm Mode
+사용자가 real server에 접근할 때 목적지 IP는 L4 스위치 IP를 바라본다. L4에 도달하면 L4가 클라이언트에게 받은 목적지 IP 주소를 L4 IP 주소에서 real server IP와 real server MAC 주소로 변조한다. 되돌아가는 IP는 L4의 IP pool의 IP 주소로 변조합니다.
+## DSR (Direct Server Return) Mode
+사용자가 real server에 접근할 때 출발지와 목적지의 IP 주소를 변조하지 않고, L4에서 관리하는 real server의 MAC 주소 테이블을 확인해서 MAC 주소만 변조합니다.
+
+
+## Load Balancing 알고리즘 종류
+Round Robin
+서버에 들어온 요청을 순서대로 돌아가면서 처리하는 방식으로 서버와 연결이 오래 지속되지않은 경우 적합합니다.
+
+Weighted Round Robin
+각 서버에 가중치를 매긴 후에 가중치가 높은 서버에 요청을 우선적으로 배정
+서버마다 트래픽 처리 능력이 다른 경우에 사용이 권장됩니다.
+
+Least Connection
+연결개수가 가장 적은 서버
+트래픽으로 인해서 세션이 길어지는 경우에 권장되는 방법
+
+Weighted Least Connection
+Least Connection 방식에 가중치를 적용한 방법으로 서버마다 트래픽 처리 능력이 다른 경우에 사용이 권장됩니다.
+
+Fastest Response Time
+서버가 요청에대해 응답시간을 체크해 가장 빠른 서버로 요청을 분배하는 방식
+
+Source
+사용자 IP를 해싱해서 분배하는 방식
+특정 사용자가 항상 같은 서버에 접속함을 보장합니다.
+
+## 장애대비
+로드밸런서 이중화
+서버를 분배하는 로드 밸런서에 문제가 생길 수 있어서 로드 밸런서를 이중화해서 대비합니다.
+
+![load_balancing_and_clustering_5](https://user-images.githubusercontent.com/16794320/134773935-aacbcb21-5bca-4f84-aa99-09b8eafb9898.png)
+
+이중화된 로드 밸런서들은 서로의 Health Check를 수행한 후에 Main Load Balancer가 동작하지않으면 VIP(Virtual IP)는 여분의 Load Balancer로 변경하고 이후 여분의 로드밸런서로 운영하도록 하는 방식으로 장애에 대처할 수 있습니다.
+
+<br>
 
 # Blocking vs Non Blocking IO와 Synchronous vs Asynchronous IO
 
