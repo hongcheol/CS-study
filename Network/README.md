@@ -13,8 +13,8 @@
 8. [웹 동작 방식](#웹-동작-방식)
 9. [DNS](#dns)
 10. [HTTP 프로토콜](#http-프로토콜)
-11. [HTTP & HTTPS](#HTTP와-HTTPS)
-12. HTTP Method
+11. [HTTP와 HTTPS](#http와-https)
+12. [HTTP Method](#http-method)
 13. [HTTP 상태 코드](#http-상태코드)
 
 # OSI 7계층
@@ -1574,7 +1574,152 @@ HTTP는 웹 서버와 클라이언트(브라우저) 간 통신을 제약 없이 
 
 ---
 
+# HTTP Method
+## 안정성 (Safe)
+HTTP는 안전한 메서드라 불리는 메서드의 집합이다.
+
+안전한 메서드의 목적은 서버에 어떤 영향을 줄 수 있는 안전하지 않은 메서드가 사용될 때 사용자들에게 그 사실을 알려줄 수 있도록 하는 것이다.
+
+읽기 전용인 경우 안전한 메서드로 간주하며, **GET, HEAD, OPTIONS** 메서드는 안전한 메서드로 정의되어 있다.
+
+***즉, 리소스를 수정하지 않는 메소드들을 Safe 하다고 말한다.***
+
 <br>
+
+## 멱등성 (Idempotent)
+멱등성이란 특정 메서드의 요청을 여러번 하더라도 한번 요청했을 때와 결과가 같다면 멱등하다라고 한다.
+
+**PUT, DELETE, TRACE 및 GET, HEAD, OPTIONS**가 멱등성을 갖는다.
+
+<br>
+
+## 캐시 가능성(Cacheable)
+향후 재사용을 위해 이에 대한 응답을 저장할 수 있음을 나타낸다.
+
+**현재 시점의 응답이나 권한 있는 응답에 의존하지 않는 안전한 메서드**는 캐시 가능한 것으로 정의한다.
+
+GET, HEAD, POST, PATCH가 캐시가 가능하지만 실제로는 **GET과 HEAD**만 주로 캐싱이 쓰인다고 한다.
+
+<br>
+
+## HTTP Method 종류
+| HTTP Method | 전송형태 | 설명 |
+| ----------- |----------------------| ---------------------- |
+|     **GET**     	| **GET** [request-uri]**?query_string** HTTP/1.1 <br>Host:[Hostname] 혹은 [IP]                                                                    	| URI(URL)가 가진 **정보를 검색**하기 위해 서버 측에 요청하는 형태이다.                                                                                                                                                                                                                                                                                                                 	|
+|     **HEAD**    	| **HEAD** [request-uri] HTTP/1.1<br>Host:[Hostname] 혹은 [IP]                                                                                     	| GET 방식과 동일하지만, **응답에 BODY가 없고 응답코드와 HEAD만 응답**한다.<br>- Resource를 받지 않고 오직 찾기만 원할 때<br>- object가 존재할 경우 응답의 상태 코드를 확인할 때<br>- 서버의 응답 헤더를 봄으로써 Resource가 수정되었는지 확인 등의 용도로 사용된다.                                                                                                                                   	|
+|     **POST**    	| **POST** [request-uri] HTTP/1.1<br>Host:[Hostname] 혹은 [IP]<br>**Content-Length:[Length in Bytes]<br>Content-Type:[Content Type]<br>[데이터]**  	| 요청된 자원을 **생성(CREATE)** 한다.<br>서버에 Input Data를 보내기 위함. <br> (HTML form에 많이 사용)                                                                                                                                                                                                                                                                                                                                         	|
+|     **PUT**     	| **PUT** [request-uri] HTTP/1.1<br>Host:[Hostname] 혹은 [IP]<br>**Content-Length:[Length in Bytes]<br>Content-Type:[Content Type]<br>[데이터]**   	| 요청된 Resource를 **수정(UPDATE)** 한다.<br>서버가 클라이언트 요청의 Body를 확인한다.<br>- 요청된 URL에 정의된 새로운 Resource를 생성하기 위함<br>- 요청된 URL이 존재할 경우 대체하여 사용                                                                                                                                                                                                            	|
+|    **PATCH**    	| **PATCH** [request-uri] HTTP/1.1<br>Host:[Hostname] 혹은 [IP]<br>**Content-Length:[Length in Bytes]<br>Content-Type:[Content Type]<br>[데이터]** 	| PUT과 유사하게 요청된 Resource를 **수정(UPDATE)** 할 때 사용한다.<br>PUT의 경우 Resource **전체를 갱신**하는 의미지만, PATCH는 해당 Resource의 **일부를 교체**하는 의미로 사용.                                                                                                                                                                                                                               	|
+|    **DELETE**   	| **DELETE** [request-uri] HTTP/1.1<br>Host:[Hostname] 혹은 [IP]                                                                                   	| **요청된 Resource를 삭제**할 것을 요청함. <br> (안전성 문제로 대부분의 서버에서 비활성 = 항상 보장되지 않음)                                                                                                                                                                                                                                                                                              	|
+|   **CONNECT**   	| **CONNECT** [request-uri] HTTP/1.1<br>Host:[Hostname] 혹은 [IP]                                                                                  	| 요청한 리소스에 대해 **양방향 연결**을 시작하는 메소드이다.<br>- 클라이언트가 원하는 목적지와의 TCP 연결을 HTTP 프록시 서버에 요청하면, 서버는 클라이언트를 대신하여 연결 생성을 진행한다.<br>- 한번 서버에 의해 연결이 수립되면, 프록시 서버는 클라이언트에 오고가는 TCP 스트림을 계속해서 프록시한다.                                                                                                                                                                                                                                                                                                                                         	|
+|    **TRACE**    	| **TRACE** [request-uri] HTTP/ 1.1<br>Host: [Hostname] 혹은 [IP]                                                                                  	| 클라이언트로부터 Request Packet이 방화벽, Proxy Server, Gateway 등을 거치면서 packet의 변조가 일어날 수 있다.<br>이때 Server에 도달했을 때의 **최종 Packet의 Request Packet을 볼 수 있다.**<br>- 즉, Original Data와 서버에 도달했을 때의 비교본 Data를 서버의 응답 Body를 통해 확인할 수 있다.<br>요청의 최종 수신자는 반드시 송신자에게 200(OK) 응답의 내용(Body)로 수신한 메세지를 반송해야한다. 	|
+|   **OPTIONS** <img width=100 style='display:none;'/>| **OPTIONS** [request-uri] HTTP/ 1.1<br>Host: [Hostname] 혹은 [IP] <img width=300 style='display:none;'/>	| Target Server의 **지원 가능한 메소드의 종류**를 확인할 경우 사용. <img width=500 style='display:none;'/>                                                                                                                                                                                                                                                                                                                               	|
+
+<br>
+
+## HTTP Method 정리
+
+<p align="center">
+<img src="https://user-images.githubusercontent.com/33649908/134793200-8831da83-8cf0-4c2d-a57c-ddc8a348ddfc.png" width="70%">
+</p>
+
+* *RFC(Request for Comments)란?*
+
+    미국의 국제 인터넷 표준화기구인 IEFT에서 제공, 관리하는 문서로, 인터넷 개발에 있어서 필요한 기술, 연구 결과, 절차 등을 기술해놓은 메모를 나타낸다.
+    
+    *즉, HTTP 리소스를 정리해놓은 명세서*
+<br>
+
+## HTTP POST과 PUT의 차이
+POST는 보통 **INSERT**의 개념으로 사용되고, PUT은 **UPDATE** 개념으로 생각하면 이해하기 쉽다.
+
+또한 POST는 멱등하지 않고 PUT은 멱등하다.
+* 즉 동일한 자원을 여러번 POST 하면 서버 자원에는 변화가 생기지만, 여러번 PUT하는 경우는 변화가 생기지 않는다.
+
+<br>
+
+예를 들어, POST의 경우 클라이언트가 리소스의 위치를 지정하지 않는 경우 사용된다. (/dogs)
+
+따라서, 아래와 같은 요청이 여러번 수행되는 경우 매번 새로운 dog가 생성되어 dogs/3, dogs/4 등 매번 새로운 자원이 생성된다. 멱등하지 않다는 말이다.
+
+``` http
+POST /dogs HTTP/1.1
+
+{ "name": "blue", "age": 5 }
+```
+
+<br>
+
+반면 PUT의 경우는 클라이언트가 명확하게 리소스의 위치를 지정한다. (/dogs/3)
+
+따라서, 아무리 많이 수행되더라도 리소스의 위치가 지정되어 새로운 자원이 생성되지 않으며 동일한 리소스(/dogs/3)를 수정하기 때문에 여러번 요청하더라도 멱등하다.
+
+``` http
+PUT /dogs/3 HTTP/1.1
+
+{ "name": "blue", "age": 5 }
+```
+
+<br>
+
+## HTTP PUT과 PATCH의 차이
+PUT이 **해당 자원의 전체를 교체**하는 의미를 지니는 대신, PATCH는 **일부를 변경한다**는 의미를 지니기 때문에 최근 UPDATE 이벤트에서 PUT보다 더 의미적으로 적합하다고 평가받고 있다.
+
+또한 PUT의 경우는 멱등하지만, PATCH의 경우는 멱등하지 않다.
+
+* PUT은 전체 자원을 업데이트 하기 때문에, 동일 자원에 대해서 동일하게 PUT을 처리하는 경우 멱등하게 처리된다.
+
+* 반면 PATCH로 처리되는 경우, 자원의 일부가 변경되기 때문에 멱등성을 보장할 수 없다.
+
+<br>
+
+## HTTP GET과 POST의 차이
+<p align="center">
+<img src="https://user-images.githubusercontent.com/33649908/134793677-c304423b-61c0-4258-b7d1-32d4a5277d7b.png" width="60%">
+</p>
+
+### GET Method 특징
+* 요청을 전송할 때 필요한 데이터를 **쿼리스트링**을 통해 전송. URL 끝에 ?와 이름과 값으로 이루어진 쌍을 전달한다.
+* URL에 정보들이 그대로 노출되기 때문에 POST 방식보다 상대적으로 **보안에 취약**하다.
+* **캐싱**이 가능하다. <br>
+  * js, css, 이미지 같은 정적 컨텐츠를 요청하면 브라우저에서는 요청을 캐시해두고, 동일한 요청이 발생할 때 서버로 요청을 보내지 않고 캐시된 데이터 사용.
+* POST 방식보다 상대적으로 **전송 속도가 빠르다.**
+* 동일한 요청을 여러 번 하더라도 동일한 결과가 나온다. (**멱등성**)
+* 전송하는 **데이터양에 한계**가 있다. (브라우저마다 GET 요청 길이 제한이 존재)
+* Get 요청은 성공시, **200(Ok)** HTTP 응답 코드를 XML, JSON뿐만 아니라 여러 데이터(html, txt등..), 여러 형식의 데이터와 함께 반환한다.
+* **브라우저에 기록이 남는다.**
+* 요청을 **북마크에 추가**할 수 있다.
+
+<br>
+
+### POST Method 특징
+* 데이터들을 URL 뒤에 붙여서 서버로 보내는 것이 아닌 **Body에 담아서 전송**한다.
+* 요청 헤더의 **Content-Type**에 콘텐츠 타입을 명시한다.
+* 데이터들이 URL에 노출되지 않기 때문에 GET 방식보다 상대적으로 **보안성이 높다.**
+* 데이터들을 Body에 담기 때문에 서버로 보내는 **데이터의 양은 제한이 없다.**
+* URL에 데이터가 노출되지 않으므로 **캐싱이 불가능**하다.
+* 클라이언트에서 인코딩, 서버에서 디코딩을 한다. (암호화 시)
+* Post 요청 중 자원 생성은 **201(Created)** HTTP 응답 코드를 반환한다.
+* **브라우저 기록이 남지 않는다.**
+* 요청을 **북마크에 추가할 수 없다.**
+
+<br>
+
+### 정리
+|      HTTP Method      	|   GET 방식  	|   POST 방식  	|
+|:---------------------:	|:-----------:	|:------------:	|
+|          캐싱         	|      ⭕️      	|       ❌      	|
+|     브라우저 기록     	|      ⭕️      	|       ❌      	|
+|      북마크 추가      	|      ⭕️      	|       ❌      	|
+|    데이터 길이 제한   	|      ⭕️      	|       ❌      	|
+|     HTTP 응답 코드    	|   200(Ok)   	| 201(Created) 	|
+| 언제 주로 사용하는가? 	| 리소스 요청 	|  리소스 생성 	|
+|    리소스 전달 방식   	|  쿼리스트링 	|   HTTP Body  	|
+|         멱등성        	|      ⭕️      	|       ❌      	|
+
+<br>
+
+---
 
 # HTTP 상태코드
 
