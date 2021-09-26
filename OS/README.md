@@ -1,8 +1,8 @@
 # Operating System(OS) 운영체제
 
 1. [운영체제란?](#운영체제란)
-2. [프로세스와 쓰레드](#프로세스와-쓰레드(Process-&-Thread))
-3. [인터럽트](#인터럽트-(Interrupt))
+2. [프로세스와 쓰레드](#프로세스와-쓰레드(process-&-thread))
+3. [인터럽트](#인터럽트-(interrupt))
 4. [시스템 콜](#시스템-콜)
 5. [PCB와 Context Switching](#PCB와-Context-Switching)
 6. [IPC](#IPC(Inter-Process-Communication))
