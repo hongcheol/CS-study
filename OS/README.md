@@ -3,7 +3,7 @@
 1. [운영체제란?](#운영체제란)
 2. [프로세스와 쓰레드](#프로세스와-쓰레드(Process-&-Thread))
 3. [인터럽트](#인터럽트-(Interrupt))
-4. 시스템 콜
+4. [시스템 콜](#시스템_콜)
 5. [PCB와 Context Switching](#PCB와-Context-Switching)
 6. [IPC](#IPC(Inter-Process-Communication))
 7. [CPU 스케줄링](#CPU-스케줄링-(CPU-Scheduling))
@@ -220,7 +220,116 @@ Data에는 전역 변수들이 저장되고 Stack에는 함수의 매개변수, 
 
 <br>
 
+<br>
 
+# 시스템 콜
+
+<br>
+
+## 1. CPU 모드
+
+CPU는 사용자 애플리케이션(User Application)이 시스템을 손상시키는 것을 방지하기 위해 2가지 모드를 제공한다. CPU에 있는 Mode bit로 모드를 구분하며 0은 커널 모드(운영체제 프로세스 실행) 1은 사용자 모드(사용자 프로세스 실행)를 나타낸다. 
+
+- 사용자 모드(User Mode)
+
+  사용자 모드에서 사용자 애플리케이션 코드가 실행된다. 사용자가 접근할 수 있는 영역에 제한이 있기 때문에 해당 모드에서는 하드웨어(디스크, I/O 등) 에 직접적으로 접근할 수 없다. 접근을 위해서는 시스템콜(System Call)을 사용해야한다. 사용자 애플리케이션의 각 스레드들은 고유의 사용자 모드 스택을 가진다. 
+
+
+
+- 커널 모드(Kernel Mode)
+
+  운영체제(OS)가 CPU를 사용하는 모드이다. 시스템콜을 통해 커널모드로 전환이 되면 운영체제는 하드웨어를 제어하는 명령어(Privileged Instructions)를 실행한다. Privileged Instructions은 사용자 모드에서 실행되면 exception이 발생한다.
+
+<p align="center">
+<img src="https://user-images.githubusercontent.com/49037411/134795621-3cdbf338-f41a-44ef-8b73-2a96ac53ae0f.png"   /> </p>
+<br>
+
+<br>
+
+## 2. 시스템콜(System Call)
+
+운영체제에서 제공하는 서비스들을 사용하기 위한 프로그래밍 인터페이스이다. 보통 직접적으로 시스템 콜을 사용하기보다 API(라이브러리 함수)를 통해 사용하게 된다.
+
+
+<p align="center">
+<img src="https://user-images.githubusercontent.com/49037411/134795623-d0cf4938-0edb-44d4-b383-72e28dc915c6.png"   /> </p>
+
+<br>
+
+
+
+### 시스템  콜 종류
+
+시스템 콜은 프로세스 제어, 파일 조작, 디바이스 조작, 정보 유지, 통신, 보호 크게 6가지로 분류할 수 있다. 
+
+<br>
+
+1. 프로세스 제어(Process Control)
+   - 프로세스 생성/제거
+   - 끝내기, 중지
+   - 적재, 실행
+   - 대기
+   - 메모리 할당/해제
+   
+2. 파일 조작(File Manipulation)
+   - 파일 생성/삭제
+   - 열기/닫기/읽기/쓰기
+   
+3. 디바이스 조작(Device Manipulation)
+   - 장치 요청/해제
+   - 장치 읽기/쓰기/위치 변경
+   - 속성 설정
+   
+4. 정보 유지(Information Maintenance)
+   - 시간, 날짜 설정/요청
+   
+5. 통신(Communication)
+   - 통신 연결 생성/제거
+   - 송신/수신
+   
+6. 보호(Protection)
+   - 권한 관리
+
+
+
+<p align="center">
+<img src="https://user-images.githubusercontent.com/49037411/134795626-6101d652-da61-479f-8073-3eff9fe9ce7e.png"   /> </p>
+<br>
+
+### 시스템 콜 vs 라이브러리 함수
+
+#### **시스템 콜**
+
+커널 자원을 사용자가 사용할 수 있도록 만들어 놓은 함수들이며 호출 시 커널 모드로 전환이 되어 실행된다. 리턴 타입은 대부분 int이고 오류는 -1, 정상은 0 이상의 값을 반환한다.
+
+<br>
+
+#### **라이브러리 함수**
+
+문자열/표준 입출력 등 사용자가 많이 사용하는 기능들을 미리 함수로 만들어 놓은 것이며 내부적으로 시스템 콜을 사용하지만 호출 시 사용자 모드에서 실행된다. 목적에 따라 다양한 타입의 리턴값을 갖으며 개발을 쉽게 만들거나 시스템 콜 호출을 최소화하기 위해 제공된다. 예를 들어, 파일 입/출력시 read(), write()와 같은 시스템 콜들을 호출할 때마다 커널 모드로 전환되어 바로 파일에 기록된다. 반면 라이브러리 함수인 fread(), fwrite()의 경우는 버퍼를 사용해 내부적으로 한번만 read(), write()를 실행하기 때문에 시스템 자원을 효율적으로 사용하게 된다. 내부적으로 시스템 콜을 호출하기 때문에 wrapper 함수라고도 부른다.
+
+Windows API, POSIX API, Java API 등이 있다. 
+<p align="center">
+<img src="https://user-images.githubusercontent.com/49037411/134795628-db980d37-f6d5-477b-9e78-e82b884214fb.jpg"   /> </p>
+
+
+<br>
+
+### 시스템 콜 실행 과정(Linux)
+
+<p align="center">
+<img src="https://user-images.githubusercontent.com/49037411/134795630-eb123315-b4b8-4606-8d17-936c3ef1f8ea.png"   /> </p>
+
+```
+1. 라이브러리 함수(printf)를 호출한다.
+2. 라이브러리 함수 내부에서 시스템 콜(write)를 호출한다.
+3. 해당 시스템 콜의 인덱스(4)를 CPU 레지스터에 저장한다.
+4. 0x80 인터럽트를 발생시킨다.(커널 모드로 전환)
+5. IDT(Interrupt Descriptor Table)를 참조하여 system_call()을 호출한다.
+6. 이때 3에서 저장한 인덱스를 system_call() 함수 내에 전달한다. 
+7. sys_call_table을 참조해 해당 인덱스에 맞는 기능(sys_write)을 호출한다. 
+8. 수행이 모두 끝나면 사용자 모드로 전환된다.
+```
 
 # PCB와 Context Switching
 
