@@ -1,4 +1,7 @@
 # 네트워크 유량
+
+![9921CE375BB450461A](https://user-images.githubusercontent.com/51703260/134789412-d2455d13-e1e7-4b73-8b19-cab576011eba.png)
+
 네트워크 유량이란 유방향 그래프에 용량이 존재하는 것이다. 유량의 시작 정점을 Source, 끝 정점을 Sink라고 한다.<br>
 이 때, Source에서 Sink로 흘려보낼 수 있는 최대 유량(flow)을 구하는 문제를 네트워크 유량 문제라고 한다.
 
@@ -39,16 +42,15 @@ u->v로 2만큼 흐른다면, v->u엔 -2만큼 흐른다.
 S 와 T를 제외하고는 각 정점에서 들어오는 유량과 나가는 유량이 일치해야 한다.
 그래서 유량의 대칭성 때문에 S와 T를 제외하고 유량을 모두 합하면 0이 되어야 한다.
 
-
 # 포드-풀커슨 알고리즘
 최초의 네트워크 유량 알고리즘<br>
 개념과 구현이 간단하다.
 
 ### 개념
 1. 각 간선의 용량을 입력받는다.
-2. DFS(포드-풀커슨)또는 BFS(에드몬드-카프)를 이용하여 `r(u,v)` > 0인 증가 경로를 찾는다.
+2. DFS(포드-풀커슨)를 이용하여 `r(u,v)` > 0인 증가 경로를 찾는다. (DFS 기 때문에 최단경로 아님 )
 3. 찾은 증가 경로 상에서 `r(u,v)`이 가장 낮은 엣지를 찾는다.
-4. 잔여 용량만큼 S에서 T까지 유량을 흘려보낸다(경로의 모든 엣지에 유량 추가).
+4. 찾은 엣지의 `r(u,v)`만큼만 S에서 T까지 유량을 흘려보낸다(경로의 모든 엣지에 유량 추가).
 5. 더 이상 증가 경로가 발견이 되지 않을 때까지 반복한다.
 
 아래 그래프를 가지고 포드-풀커슨 알고리즘의 과정을 살펴 보면,
@@ -80,6 +82,133 @@ S->a->T 라는 증가 경로를 먼저 찾고, 그 다음 S->b->T라는 증가 �
 
 [백준 6086 : 최대 유량](https://www.acmicpc.net/problem/6086)
 
+# 에드몬드-카프 알고리즘
+
+앞서 살펴본 `포드-풀커슨` 알고리즘은 임의의 유량 그래프가 주어졌을 때, 원래 경로가 이미 사용되어 막혀있어도 `Back-Edge` 덕분에 최대 유량은 확실하게 구할 수 있다는 것을 알게되었다.
+
+하지만 최대 유량만 알 수 있지, 우리가 생각하는 유량이 흐르는 실제 경로를 제시하지는 않는다.
+
+아래 유량 그래프를 다시 한 번 예시로 보자.
+
+<p align="center"><img src="https://user-images.githubusercontent.com/51703260/133916224-1b022950-880b-436a-b105-885ed3c305ed.png"></p>
+
+`포드-풀커슨` 알고리즘에서는 S->1->2->T 가 먼저 증가경로로 잡히면, 유량의 대칭성으로 잔여 유량이 1이 생겨 2->1로 갈 수 있는 경로가 생겨서 S->2->1->T라는 증가경로가 생기게 되어서 
+
+- S->1->2->T (유량 1 보냄)
+- S->2->1->T (유량 1 보냄)
+- S->1->2->T (유량 1 보냄)
+- S->2->1->T (유량 1 보냄)
+- **최대 유량 : 4**
+
+이런 방식으로 결국 최대 유량을 알게되었다. 그래서 총 4번의 증가경로 탐색이 필요하다.
+
+이렇기 때문에 위 그래프와 같이 중간에 용량이 1인 엣지가 끼어있는 병목상태에서는 `포드-풀커슨` 알고리즘은 굉장히 비효율적으로 동작할 수 있다.
+
+하지만 실제 유량이 흐르는 증가경로는 아래와 같다.
+
+- S->1->T (유량 2 보냄)
+- S->2->T (유량 2 보냄)
+- **최대 유량 : 4**
+
+위 방식처럼 동작하는 알고리즘이 바로 `에드먼드-카프` 알고리즘이다.
+
+`포드-풀커슨` 알고리즘이 DFS 방식으로 증가경로를 탐색했다면, `에드먼드-카프` 알고리즘은 BFS 방식으로 증가경로를 탐색한다. 
+
+가장 짧은 경로의 증가 경로를 탐색하여 해당 증가경로로 보낼 수 있는 최대의 유량을 한번에 보내면 된다.
+
+즉, 최단거리로 최대의 유량을 보내기 때문에 중간에 용량이 1인 엣지가 끼어있어도 돌아가는 길이라면 무시할 수 있는 것이다.
+
+잔여용량이 남은 간선들만을 이용해서 BFS를 반복적으로 수행하고, 찾은 경로들에게 유량을 보내고, 더이상 할 수 없을때까지 보낸 총 유량을 반환하기만 하면 된다.
+
+### 개념
+1. 각 간선의 용량을 입력받는다.
+2. BFS(에드몬드-카프)를 이용하여 `r(u,v)` > 0인 증가 경로 중 최단 거리를 찾는다.
+3. 찾은 증가 경로 중에서 `r(u,v)`이 가장 낮은 엣지를 찾는다.
+4. 찾은 엣지의 `r(u,v)`만큼만 S에서 T까지 유량을 흘려보낸다(경로의 모든 엣지에 유량 추가).
+5. 더 이상 증가 경로가 발견이 되지 않을 때까지 반복한다.
+
+### 시간복잡도
+BFS 한번이 O(E)이고, 증가 경로를 최대 VE번 찾기 때문에 `에드먼드-카프` 알고리즘의 일반적으로 알려진 시간복잡도는 O(VE^2)라고 한다.
+
+증가 경로를 최대 VE번 찾는 이유(복잡함)에 대한 더 이상의 자세한 설명은 생략한다.
+
+정확하게는 min(O(|E|f), O(VE^2))라고 하는데 만약 간선은 많고, 흘러야 하는 유량이 적을 때는 O(|E|f) < O(VE^2)이 될 수 있다고 한다.
+
+#### 코드
+```java
+import java.io.*;
+import java.util.*;
+
+public class BaekOJ6086_배문규 {
+	static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+	static StringBuilder sb = new StringBuilder();
+	static StringTokenizer st = null;
+	
+	static final int MAX_SIZE = 52;
+	static int N, maxFlow, S, T = 25, aPath[], capacity[][], flow[][];
+	static Queue<Integer> queue;
+
+	public static void main(String[] args) throws NumberFormatException, IOException {
+		capacity = new int[MAX_SIZE][MAX_SIZE];
+		flow = new int[MAX_SIZE][MAX_SIZE];
+		
+		N = Integer.parseInt(br.readLine());
+		for(int i = 0; i < N; i++) {
+			st = new StringTokenizer(br.readLine());
+			int start = atoi(st.nextToken().charAt(0));
+			int end = atoi(st.nextToken().charAt(0));
+			int weight = Integer.parseInt(st.nextToken());
+			// 여기서는 그냥 연결이기 때문에 무향 그래프라서 양방향으로 웨이트를 둘 다 더해줌
+			capacity[start][end] += weight; 
+			capacity[end][start] += weight;
+		}
+		
+		queue = new PriorityQueue<Integer>();
+		aPath = new int[MAX_SIZE];
+		while(true) {
+			// 큐, 증가경로 초기화
+			queue.clear();
+			Arrays.fill(aPath, -1);
+			aPath[S] = S;
+			queue.add(S);
+			
+			// BFS로 최단거리 증가경로 찾기
+			while(!queue.isEmpty() && aPath[T] == -1) {
+				int from = queue.poll();
+				for(int to = 0; to < MAX_SIZE; to++) {
+					if(capacity[from][to] > flow[from][to] && aPath[to] == -1) {
+						queue.offer(to);
+						aPath[to] = from;
+					}
+				}
+			}
+			
+			// 경로가 없으면 종료
+			if(aPath[T] == -1) break;
+			
+			// 찾은 증가 경로의 r(u,v)의 최솟값 (최소 잔여 용량)을 찾음 
+			int flowAmount = Integer.MAX_VALUE;
+			for(int i = T; i != S; i = aPath[i]) flowAmount = Math.min(capacity[aPath[i]][i] - flow[aPath[i]][i], flowAmount);
+
+			for(int i = T; i != S; i = aPath[i]) {
+				flow[aPath[i]][i] += flowAmount; // 경로들에 유량 흘러줌
+				flow[i][aPath[i]] -= flowAmount; // 유량의 대칭성으로 반대 경로에 - 유량 흘림
+			}
+			
+			maxFlow += flowAmount;
+		}
+		
+		System.out.println(maxFlow);
+	}
+	
+	// 문자를 인덱스로 매핑하기 위해 변환
+	public static int atoi(char c) {
+		if('a' <= c && c <= 'z') c -= 6;
+		return c - 65;
+	}
+}
+
+```
 
 # 알고리즘
 1. 알고리즘 분석
