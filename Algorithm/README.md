@@ -279,7 +279,8 @@ public class BaekOJ6086_배문규_BFS {
 			
 			// 찾은 증가 경로의 r(u,v)의 최솟값 (최소 잔여 용량)을 찾음 
 			int flowAmount = Integer.MAX_VALUE;
-			for(int i = T; i != S; i = aPath[i]) flowAmount = Math.min(capacity[aPath[i]][i] - flow[aPath[i]][i], flowAmount);
+			for(int i = T; i != S; i = aPath[i]) 
+				flowAmount = Math.min(capacity[aPath[i]][i] - flow[aPath[i]][i], flowAmount);
 
 			for(int i = T; i != S; i = aPath[i]) {
 				flow[aPath[i]][i] += flowAmount; // 경로들에 유량 흘러줌
