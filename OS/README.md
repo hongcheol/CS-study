@@ -330,7 +330,8 @@ Windows API, POSIX API, Java API 등이 있다.
 7. sys_call_table을 참조해 해당 인덱스에 맞는 기능(sys_write)을 호출한다. 
 8. 수행이 모두 끝나면 사용자 모드로 전환된다.
 ```
-
+<br>
+<br>
 # PCB와 Context Switching
 
 ## PCB(Process Controll Block)
