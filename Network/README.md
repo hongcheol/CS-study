@@ -16,7 +16,7 @@
 11. [HTTP와 HTTPS](#http와-https)
 12. [HTTP Method](#http-method)
 13. [HTTP 상태 코드](#http-상태코드)
-14. [쿠키, 세션](#쿠키,-세션)
+14. [쿠키, 세션](#쿠키-세션)
 
 # OSI 7계층
 
