@@ -9,7 +9,7 @@
 7. [CPU 스케줄링](#CPU-스케줄링-(CPU-Scheduling))
 8. [Deadlock 교착상태](#Deadlock-교착상태)
 9. [Race Condition](#Race-Condition)
-10. [세마포어 & 뮤텍스](#세마포어 & 뮤텍스)
+10. [세마포어 & 뮤텍스](#세마포어&뮤텍스)
 11. 페이징 & 세그멘테이션
 12. 페이지 교체 알고리즘
 13. [메모리 & 가상 메모리](#주-메모리와-가상-메모리)
@@ -1112,7 +1112,7 @@ while(true){
 ---
 <br>
 
-# 세마포어 & 뮤텍스
+# 세마포어&뮤텍스
 
 ## 📌 멀티스레드 프로그래밍에서의 동기화 문제
 ![image](https://user-images.githubusercontent.com/55073084/134780551-083aa7bc-1c97-44cf-b2d8-701dcbb2ff53.png)
