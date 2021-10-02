@@ -9,12 +9,11 @@
 7. [CPU 스케줄링](#CPU-스케줄링-(CPU-Scheduling))
 8. [Deadlock 교착상태](#Deadlock-교착상태)
 9. [Race Condition](#Race-Condition)
-10. 세마포어
-11. 뮤텍스
-12. 페이징 & 세그멘테이션
-13. 페이지 교체 알고리즘
-14. [메모리 & 가상 메모리](#주-메모리와-가상-메모리)
-15. 파일 시스템
+10. [세마포어 & 뮤텍스](#세마포어 & 뮤텍스)
+11. 페이징 & 세그멘테이션
+12. 페이지 교체 알고리즘
+13. [메모리 & 가상 메모리](#주-메모리와-가상-메모리)
+14. 파일 시스템
 
 <br>
 
@@ -1112,6 +1111,213 @@ while(true){
 - Monitor
 ---
 <br>
+
+# 세마포어 & 뮤텍스
+
+## 📌 멀티스레드 프로그래밍에서의 동기화 문제
+![image](https://user-images.githubusercontent.com/55073084/134780551-083aa7bc-1c97-44cf-b2d8-701dcbb2ff53.png)
+
+멀티스레드가 구현된 프로그램 안에서 두 개 이상의 스레드가 동시에 어떤 기능을 수행함에 있어 두개의 쓰레드가 만약 어떤 자원(변수) 같이 공유해서 사용하는 경우가 있다고 가정
+
+
+각각의 쓰레드가 이 자원(변수) 특정한 값으로 수정하는 기능이 있다면 동시에 접근하는 이유로 인하여 이 자원의 값이 제대로 된 값을 유지하지 못하는 경우가 있을 수 있다.
+
+이와 같이 멀티스레드 환경에서 발생하는 문제를 해결하기 위한 일련의 작업을 스레드 동기화(Thread Synchronization)라 부른다. 스레드 동기화 방법에 대해서는 세마포어(Semaphore), 뮤텍스(Mutex) 등이 있다.
+
+###   Thread Synchronization in Java
+
+자바에서는 이러한 임계영역의 처리를 위하여 synchronized, Semaphore 키워드를 제공하며 임계영역의 처리를 수행
+
+synchronized는 Mutex와 동일한 기능을, Semaphore는 말 그대로 세마포어의 기능을 수행한다.
+
+```Java
+
+// synchronized 사용법
+public synchronized void test
+{ 
+    // 임계구역 작업
+}
+public void test
+{
+        // 일반 작업 
+	synchronized{
+	      // 임계구역 작업
+	}
+}
+
+// Semaphore 사용법
+public void test{
+
+      Semaphore semaphore = new Semaphore(maxThread); // 동시 접근 가능한 Thread 개수
+      semaphore.acquire(); // Thread 가 semaphore에게 시작을 알림
+      // 임계구역 작업
+      semaphore.release(); // Thread 가 semaphore에게 종료를 알림
+}
+```
+
+
+
+## 📌 임계 구역 (Critical Section)
+ > 임계구역은 개념적 크리티컬 섹션과 기능적 크리티컬 섹션 두 가지 의미로 사용될 수 있지만, 자바에서는 개념적 크리티컬 섹션의 의미만을 사용
+
+<h4> 개념적 크리티컬 섹션 </h4>
+
+- 여러 프로세스(스레드)가 데이터를 공유하며 수행될 때, 각 **프로세스(스레드)에서 공유 데이터를 접근하는 프로그램 코드 부분**
+
+
+
+<h4> 기능적 크리티컬 섹션 </h4>
+
+- 동기화 목적을 위해 사용되는 배타적 제어를 하기 위한 구조(API)
+- Windows 객체 중 하나이며, 프로그램에서 CRITICAL_SECTION 타입 변수를 통해 사용
+- **자바에서는 사용하지 않음**
+
+
+## 📌 세마포어(Semaphore)
+![image](https://user-images.githubusercontent.com/55073084/134778576-66d21fac-04b1-4337-9646-d28e57b8ab98.png)
+
+- **Signaling 메커니즘** 을 통해 자원에 대한 접근을 동기화하는 기술
+- 임계구역에 동시에 접근 가능한 스레드의 개수는 1개 이상이다.
+- Signaling 메커니즘으로 락을 걸지 않은 스레드도 Signal을 통해 락을 해제할 수 있다. (wait 함수를 호출한 스레드만이 signal 함수를 호출할 수 있는 Mutex와의 차이점)
+- Spin-Lock 방식과 Block & Wakeup의 2가지 방식의 사용법이 존재한다. (Spin-Up 방식은 CPU를 계속 점유하기 때문에 busy-wating이 발생한다는 단점이 있다.)
+
+###  세마포어의 동작 원리
+P (Wait) : 임계 구역에 들어가는 동작 (프로세스 진입 여부를 자원의 개수 S 를 통해 결정)
+
+V (Signal) : 임계 구역에서 나오는 동작 (자원 반납 알림, 대기 중인 프로세스를 깨우는 신호)
+
+<h4> 기본 동작 </h4>
+
+```C++
+wait(S);
+// --- 임계 구역 ---
+signal(S);
+```
+
+<h4> Spin-Lock(busy-waiting) </h4>
+
+```C++
+wait(S) {
+  while (S <= 0);  // 자원이 없다면 while 루프를 돌며 대기를 함.
+
+  S--;  // 자원을 획득함.
+}
+
+signal(S) {
+  S++;  // 자원을 해제함.
+}
+```
+
+<h4> Block & Wakeup </h4>
+
+```C++
+wait(semaphore *S) {
+  S->value--;
+  if (S->value < 0 ) {              // 자원이 없다면
+    add this process to S->list;    // 프로세스를 큐에 넣고
+    block();                        // block 시킴
+  }
+}
+
+signal(semaphore *S) {
+  S->value++;
+  if (S->value <= 0) {               // 자원이 0이하라면 block중인 프로세스가 있다는 의미임.
+    remove a process P from S->list; // 대기하고 있는 프로세스를 가져옴.
+    wakeup(P);                       // 가져온 프로세스를 깨움.
+  }
+}
+```
+
+
+## 📌 뮤텍스(Mutex)
+![image](https://user-images.githubusercontent.com/55073084/134778802-9a3b5beb-e4eb-46b3-a10f-fa023480b6aa.png)
+
+- **Locking 메커니즘** 을 통해 자원에 대한 접근을 동기화하는 **상호배제 기술**
+-  Locking 메커니즘으로 오직 하나의 스레드만이 동일한 시점에 뮤텍스를 얻어 임계 영역에 들어갈 수 있다.
+    - Lock : 임계 구역의 사용 권한을 얻음 (만약 다른 스레드가 임계 구역 수행중이면 종료시까지 대기)
+    - unlock : 현재 임계 구역을 모두 사용했음을 알림 (대기중인 다른 스레드가 임계구역에 진입할수 있음)
+- Lock을 건 스레드만이 임계 영역에서 나갈 때 뮤텍스를 해제할 수 있다.
+- 뮤텍스는 상태가 1, 0 밖에 존재하지 않고, 바이너리 세마포어(Binary Semaphore)라고도 불림
+
+###  뮤텍스 알고리즘
+
+<h4> 1. 데커 알고리즘 (Dekker's Algorithm) </h4>
+
+> 프로세스 두 개 일 때 상호 배제를 보장하는 알고리즘
+> flag와 turn 변수를 통해 임계 구역에 들어갈 프로세스/스레드를 결정하는 방식
+- flag : 프로세스 중 누가 임계영역에 진입할 것인지 나타내는 변수
+- turn : 누가 임계구역에 들어갈 차례인지 나타내는 변수
+
+```C++
+while(true) {
+    flag[i] = true;                 // 프로세스 i가 임계 구역 진입 시도
+
+    while(flag[j]) {                // 프로세스 j가 현재 임계 구역에 있는지 확인
+        if(turn == j) {             // j가 임계 구역 사용 중이면
+            flag[i] = false;        // 프로세스 i 진입 취소
+
+            while(turn == j);    // turn이 j에서 변경될 때까지 대기
+
+            flag[i] = true;         // j turn이 끝나면 다시 진입 시도
+        }
+    }
+}
+
+// ------- 임계 구역 ---------
+
+turn = j;               // 임계 구역 사용 끝나면 turn을 넘김
+flag[i] = false;      // flag 값을 false로 바꿔 임계 구역 사용 완료를 알림
+
+```
+
+<h4> 2. 피터슨 알고리즘 (Peterson's Algorithm) </h4>
+
+> 프로세스 두 개 일 때 상호 배제를 보장하는 알고리즘
+> 데커와 유사하지만, 상대방 프로세스/스레드에게 진입 기회를 양보하는 것에 차이가 있음
+
+```C++
+while(true) {
+    flag[i] = true; // 프로세스 i가 임계 구역 진입 시도
+    turn = j; // 다른 프로세스에게 진입 기회 양보
+    while(flag[j] && turn == j) { // 다른 프로세스가 진입 시도하면 대기
+    }
+}
+
+// ------- 임계 구역 ---------
+
+flag[i] = false; // flag 값을 false로 바꿔 임계 구역 사용 완료를 알림
+
+```
+
+<h4> 3. 램퍼드의 제과점 알고리즘 (Lamport's bakery algorithm) </h4>
+
+> 여러 프로세스/스레드에 대한 처리가 가능한 알고리즘. 
+>  프로세스에게 고유한 번호를 부여하고, 번호를 기준으로 우선순위를 정하여 우선순위가 높은 프로세스가 먼저 임계 구역에 진입하도록 구현 (번호가 낮을수록 우선순위가 높음)
+
+```C++
+while(true) {
+    
+    isReady[i] = true; // 번호표 받을 준비
+    number[i] = max(number[0~n-1]) + 1; // 현재 실행 중인 프로세스 중에 가장 큰 번호 배정 
+    isReady[i] = false; // 번호표 수령 완료
+    
+    for(j = 0; j < n; j++) { // 모든 프로세스 번호표 비교
+        while(isReady[j]); // 비교 프로세스가 번호표 받을 때까지 대기
+        while(number[j] && number[j] < number[i] && j < i);
+        
+        // 프로세스 j가 번호표 가지고 있어야 함
+        // 프로세스 j의 번호표 < 프로세스 i의 번호표
+    }
+}
+
+// ------- 임계 구역 ---------
+
+number[i] = 0; // 임계 구역 사용 종료
+
+```
+<br>
+
+
 
 # 주 메모리와 가상 메모리
 
