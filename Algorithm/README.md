@@ -1,3 +1,163 @@
+# 이분 매칭
+
+`이분 매칭(Bipartite Matching)` 알고리즘은 네트워크 유량 알고리즘과 연계되는 개념으로, 이분 그래프에서 두 그룹간의 최대 매칭을 의미한다.
+
+> 즉, `집단 A`가 `집단 B`를 선택하는 방법에 대한 알고리즘이다.
+
+먼저 `이분 그래프`란, 전체 그래프에서 점 들을 두 그룹으로 나누었을 때, 같은 그룹내에는 간선이 존재하지 않게 나눌 수 있는 그래프를 의미한다.
+
+그래프를 나눌 수 있는 경우가 여러가지기도 하지만, 보통 문제에서는 명확히 두 그룹을 분류해주는 경우가 많다.
+
+### 개념
+
+아래 예시를 통해 이분 매칭의 개념을 대해 알아보도록 하자.
+
+네이버 클라우드, 카카오, 삼성전자에 각각 1자리씩 TO가 났고, 위 세 기업에 입사를 희망하는 3명의 스터디원들이 있다.
+
+<img width="866" alt="스크린샷 2021-10-03 오전 2 59 03" src="https://user-images.githubusercontent.com/51703260/135727444-b9ba4b0a-9d3a-4211-948b-e3c79beceebc.png">
+
+위 예시에서는 `집단 A`가 **스터디원** 들이고, `집단 B`는 **희망 기업** 이라고 할 수 있다. 
+
+이와 같이 각 스터디원들이 희망하는 기업들이 미리 정해져 있을 때, 가장 효과적으로 스터디원들에게 희망 기업을 매칭시켜주는 경우를 이분 매칭으로 알아보자.
+
+먼저, 위 경우를 아래와 같은 그래프로 표현할 수 있다.
+
+<img width="698" alt="스크린샷 2021-10-03 오전 2 59 50" src="https://user-images.githubusercontent.com/51703260/135727445-5e7d280d-5572-4b7c-b51d-f45f5356a7c0.png">
+
+**이분 매칭은, 두개의 그래프를 최대한으로 연결시켜주는 최대 연결(매칭)을 의미한다.**
+
+즉, 최대한 많은 사람이 각각의 희망 기업으로 입사하는 경우를 찾는 문제로 볼 수 있다. 뭔가 느낌이 오지 않는가?
+
+우리가 그전까지 살펴본 `네트워크 유량` 문제 또한 Source에서 Sink로 흘려보낼 수 있는 최대 유량(flow)을 구하는 문제이고,
+
+`이분 매칭` 문제 또한 A에서 B로 갈 수 있는 최다 경우를 구하는 문제이기 때문에, 아래와 같이 **이분 매칭을 네트워크 유량으로 표현할 수 있다.**
+
+<img width="978" alt="스크린샷 2021-10-03 오전 2 59 35" src="https://user-images.githubusercontent.com/51703260/135727447-8d345188-4fc4-42e1-83e8-8cad92173a16.png">
+
+위와 같이 선택을 1가지만 할 수 있는 이분 매칭은 모든 엣지의 용량이 1로 설정된 네트워크 유량 문제로 이해할 수 있다.
+
+우리가 직전에 보았던 에드몬드-카프 알고리즘은 보통 시간 복잡도가 O(V*E^2)라고 알려져 있는데, 이분 매칭의 경우에는 이보다 더 빠르고 효율적으로 알고리즘을 설계할 수 있다.
+
+그게 바로 단순히 **DFS**로 푸는 방법이다. (포드-풀커슨의 DFS가 아닌 그냥 DFS)
+
+<img width="698" alt="스크린샷 2021-10-03 오전 2 59 55" src="https://user-images.githubusercontent.com/51703260/135727449-e6a5ffb5-b5ed-4bae-9551-47341c6d0729.png">
+
+먼저 첫 출발로 문규가 네이버 클라우드를 선택한다. 현재까지는 네이버 클라우드가 아무에게도 선택되지 않았으므로 바로 선택할 수 있다.
+
+<img width="698" alt="스크린샷 2021-10-03 오전 2 59 57" src="https://user-images.githubusercontent.com/51703260/135727452-9ca7f518-c802-4a34-86f4-4e0042b85995.png">
+
+문규의 선택이 끝났다면, 그 다음 경준님이 선택할 차례인데 경준님께서 희망하는 네이버 클라우드는 이미 문규가 선택하고 있는 상황이다.
+
+<img width="698" alt="스크린샷 2021-10-03 오전 2 59 59" src="https://user-images.githubusercontent.com/51703260/135727453-de4ee412-0704-41b1-9956-656e49111f69.png">
+
+이 때, 네이버 클라우드를 선택한 문규가 네이버 클라우드를 제외하고 다른 희망 기업을 선택할 수 있는지 살펴본다. 살펴보니 아직 카카오가 아무에게도 선택되지 않았으므로 카카오를 선택하였다.
+
+그래서 경준님이 네이버 클라우드를, 문규가 카카오를 선택하게 되었다.
+
+<img width="698" alt="스크린샷 2021-10-03 오전 3 00 01" src="https://user-images.githubusercontent.com/51703260/135727454-3ed9986c-9e89-442d-a696-dffe0a07f45d.png">
+
+그 다음 윤주님이 기업을 선택할 차례가 왔다. 윤주님께서 희망하는 카카오는 또 문규가 선택하고 있는 상황이다.
+
+<img width="698" alt="스크린샷 2021-10-03 오전 3 00 03" src="https://user-images.githubusercontent.com/51703260/135727455-e18ebd7f-6934-4847-af89-99bc38bf7135.png">
+
+이 때, 또 카카오를 선택한 문규가 카카오를 제외하고 다른 기업을 선택할 수 없는지 살펴본다. 네이버 클라우드를 혹시나 다시 한번 살펴 봤더니 경준님께서 계속 선택하고 계신 상황이라 선택할 수가 없었다. 
+
+<img width="698" alt="스크린샷 2021-10-03 오전 3 00 05" src="https://user-images.githubusercontent.com/51703260/135727457-2ace68ec-fa73-4eb5-909b-d59d39d80e13.png">
+
+그래서 카카오와 네이버 클라우드를 제외하고 남은 희망 기업중 남아있는 삼성전자를 선택하였다.
+
+<img width="698" alt="스크린샷 2021-10-03 오전 3 00 07" src="https://user-images.githubusercontent.com/51703260/135727458-a596952e-622d-463c-a064-f331657009a8.png">
+
+**이렇게 문규는 삼성전자, 경준님은 네이버 클라우드, 윤주님은 카카오로 매칭되어 입사를 하게 되었다.** 😊
+
+### 시간복잡도
+
+위와 같은 예시처럼 DFS를 이용해 이분 매칭을 간단히 풀 때 시간 복잡도는 `O(V * E)` 이다. 
+
+이 방법은 가장 빠른 속도의 알고리즘은 아니지만 구현이 가장 간단하고 쉽다는 점에서 많이 사용된다.
+
+### 코드
+이분매칭의 거의 기본문제라고 할수 있는 [열혈강호 : 백준 11375](https://www.acmicpc.net/problem/11375)문제의 DFS 풀이이다.
+```java
+import java.io.*;
+import java.util.*;
+
+/*
+ * 회사에 N명의 직원과, M가지 작업이 있을 때,
+ * 해당 회사가 할 수 있는 최대 일의 개수를 구하시오.
+ * 
+ * 1. 각 직원은 1개의 일을 할 수 있다.
+ * 2. 각 작업을 담당하는 사람은 1명이다. 즉, 1 : 1 매칭
+ * 3. 각 직원이 할 수 있는 일의 목록이 주어진다.
+ * 
+ * 직원(집단 A)과 작업(집단 B)을 최대한 매칭시키는 베이직한 이분 매칭 문제.
+ * 
+ * 메모리 	     시간
+ * 78212	964
+ */
+
+public class BaekOJ11375_배문규 {
+	static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+	static StringBuilder sb = new StringBuilder();
+	static StringTokenizer st = null;
+	
+	static final int MAX_SIZE = 1001;
+	static int N, M, worker[][], b[];
+	static boolean check[];
+	
+	public static void main(String[] args) throws NumberFormatException, IOException {
+		st = new StringTokenizer(br.readLine());
+		N = Integer.parseInt(st.nextToken());
+		M = Integer.parseInt(st.nextToken());
+		
+		worker = new int[N+1][];
+		for(int i = 1; i <= N; i++) {
+			st = new StringTokenizer(br.readLine());
+			int cnt = Integer.parseInt(st.nextToken());
+			
+			worker[i] = new int[cnt];
+			for(int j = 0; j < cnt; j++) worker[i][j] = Integer.parseInt(st.nextToken());
+		}
+		
+		System.out.println(bMatch());
+	}
+	
+	public static int bMatch() {
+		b = new int[MAX_SIZE]; // b배열의 인덱스 : 작업 인덱스, b배열의 값 : 직원 인덱스 
+		check = new boolean[MAX_SIZE]; // 이미 확인한 직원인지 체크 배열
+		int result = 0; // 매칭된 작업 수
+
+		for(int i = 1; i <= N; i++) {
+			Arrays.fill(check, false); // 매번 매칭을 시도할 때마다 이미 매칭된 사람도 
+									   // 다른 작업으로 매칭이 바뀔 수 있으므로 방문 체크를 초기화 해야함 
+			if(dfs(i)) result++; // i번 째 직원이 일과 매칭이 되면 카운트
+		}
+		
+		return result;
+	}
+	
+	public static boolean dfs(int workerIdx) {
+		if(check[workerIdx]) return false;  // 이미 확인한 사람은 다시 확인할 필요 없음
+		check[workerIdx] = true;
+		
+		// 해당 직원이 수행할 수 있는 작업들 
+		for(int job : worker[workerIdx]) {
+			
+			// 매칭이 가능한 경우는 2가지가 있다.
+			// 1. 아직 해당 작업이 아무런 직원과 매칭이 되어 있지 않았을 때 
+			// 2. 이미 해당 작업에 매칭된 직원이 다른 작업도 매칭할 수 있을 때
+			if(b[job] == 0 || dfs(b[job])) {
+				b[job] = workerIdx; // 직원 <--> 작업 매칭하고 true 리턴
+				return true;
+			}
+		}
+		
+		return false;
+	}
+}
+
+```
+
 # 네트워크 유량
 
 ![9921CE375BB450461A](https://user-images.githubusercontent.com/51703260/134789412-d2455d13-e1e7-4b73-8b19-cab576011eba.png)
