@@ -17,7 +17,7 @@
 12. [HTTP Method](#http-method)
 13. [HTTP 상태 코드](#http-상태코드)
 14. [쿠키, 세션](#쿠키-세션)
-15. [JWT&OAuth](#JWT-OAuth)
+15. [JWT, OAuth](#JWT-OAuth)
 
 # OSI 7계층
 
@@ -2078,7 +2078,7 @@ void removeSession(HttpServletRequest req) {
 
 세션 저장소를 사용하기 때문에 서버에 추가적인 저장공간을 필요로 하기 때문에 서버 부하가 높아진다.
 
-# JWT&OAuth
+# JWT, OAuth
 
 # Token
 
