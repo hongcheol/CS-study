@@ -1792,6 +1792,8 @@ CPU에서 나오는 모든 주소는 **페이지 번호**(p)와 **페이지 변�
 
 연관된 정보들을 모아놓은 논리적 저장 단위. 운영체제(OS)는 저장 장치의 물리적 특징을 추상화하여 파일로 맵핑하여 관리한다. 일반적으로 비휘발적인 특성을 가져 전원이 끊어져도 영구적으로 보존할 수 있다. 
 
+<br>
+
 ### 파일 속성
 
 - 이름: 사용자가 읽고 식별할 수 있는 파일 이름
@@ -1800,11 +1802,14 @@ CPU에서 나오는 모든 주소는 **페이지 번호**(p)와 **페이지 변�
 
 - 타입: 실행파일, 텍스트파일, 소스파일 등 여러 타입 존재
 
-  ​		Windows는 이름에 확장자 제공, UNIX는 파일 내에 매직넘버(Magic number) 제공
+  		Windows는 이름에 확장자 제공, UNIX는 파일 내에 매직넘버(Magic number) 제공
 
 - 위치
 
 - 크기
+
+<br>
+
 
 ### 파일 연산
 
@@ -1821,6 +1826,9 @@ CPU에서 나오는 모든 주소는 **페이지 번호**(p)와 **페이지 변�
 운영체제는 Open-file table을 사용해 열린 파일들을 관리한다. 파일을 연 횟수, 디스크에서 위치, 접근 관한 등이 기록된다. 각 프로세스들은 각자 file descriptor(fd) table을 가지고 연 파일들의 fd를 관리한다.
 
 
+<br>
+
+
 
 ### 파일 접근 방법
 
@@ -1828,15 +1836,21 @@ CPU에서 나오는 모든 주소는 **페이지 번호**(p)와 **페이지 변�
 
    기본적인 접근 방법으로 file pointer를 따라 파일 정보가 차례차례 처리된다. read(), write()는 자동으로 file pointer를 변경시키고 lseek()를 사용해 file pointer를 조정할 수 있다. 
 
-![](C:\Users\only_\Desktop\순차접근.png)
+<p align="center">
+<img src="https://user-images.githubusercontent.com/49037411/135743199-36ab5c97-200c-4857-a682-5faa38c20d9e.png"   /> </p>
 
 2. 직접 접근
 
    file pointer를 직접적으로 조작하여 특별한 순서 없이 빠르게 레코드를 읽고 쓸 수 있다. 대규모 정보를 접근하는 데이터베이스 관리에서 주로 사용된다.
 
-   ![직접접근](C:\Users\only_\Desktop\직접접근.png)
+
+<p align="center">
+<img src="https://user-images.githubusercontent.com/49037411/135743201-521e1250-100a-4a8f-baaa-06dd1d15af0f.png"   /> </p>
 
 <br>
+
+<br>
+
 
 
 
@@ -1844,39 +1858,65 @@ CPU에서 나오는 모든 주소는 **페이지 번호**(p)와 **페이지 변�
 
 관련된 파일이나 디렉터리들의 집합으로 사용자는 이를 통해 파일들을 구조화할 수 있다. 디렉터리 또한 파일이나 디렉터리 정보를 담은 하나의 **파일**이다. 
 
+<br>
+
+
 ### 1단계 디렉터리
 
 모든 파일이 동일한 디렉터리에서 관리되는 가장 기본적인 구조. 각 파일은 유일한 이름을 가져야 하므로 다수의 사용자가 사용할 경우 제약이 따른다.
 
-![1단계 디렉터리](C:\Users\only_\Desktop\1단계 디렉터리.png)
+<p align="center">
+<img src="https://user-images.githubusercontent.com/49037411/135743203-c311f434-665a-45dc-93a0-95275d42e8e6.png"   /> </p>
+
+
+<br>
+
 
 ### 2단계 디렉터리
 
 사용자별로 디렉터리를 생성한 구조. MFD(Master File Directory)가 있고 그 아래에 사용자별로 할당되는 UFD(User File Directory)가 있다. 파일 참조 시 각 UFD만 탐색하므로 사용자별로 파일 이름이 중복될 수 있다. 
 
-![2단계](C:\Users\only_\Desktop\2단계.png)
+
+<p align="center">
+<img src="https://user-images.githubusercontent.com/49037411/135743204-1c985fc8-03a6-4501-86b2-8b1112c862ee.png"   /> </p>
+
+<br>
+
 
 ### 트리 구조 디렉터리
 
 하나의 루트 디렉터리와 다수의 서브 디렉터리로 구성된 구조이며 Dos, Windows, Unix 운영체제에서 사용한다. 서로 다른 디렉터리 내에서는 파일이나 디렉터리의 이름이 중복될 수 있다. 파일 탐색시 절대 경로(루트 디렉터리를 기준) 또는 상대 경로(현재 디렉터리 기준)를 이용할 수 있다.
 
-![파일시스템](C:\Users\only_\Desktop\파일시스템.png)
+
+<p align="center">
+<img src="https://user-images.githubusercontent.com/49037411/135743209-2cada626-a7e0-46c8-bc9e-7643c849bc59.png"   /> </p>
+
+<br>
+
 
 ### 비순환 그래프 디렉터리
 
 디렉터리들이 서로 파일을 공유할 수 있도록 허용하는 구조. 절대 경로/상대 경로를 사용해 **링크**라는 디렉터리 항목을 만들 수 있다. 공유된 파일을 삭제하는 경우 빈 곳을 가리키는 고아 포인터(dangling pointer)가 발생할 수 있다. 
 
-![비순환](C:\Users\only_\Desktop\비순환.png)
+
+<p align="center">
+<img src="https://user-images.githubusercontent.com/49037411/135743211-f4ecab6e-2fcd-403d-be2f-cdc9a5eb8c02.png"   /> </p>
+
+<br>
+
 
 ### 일반 그래프 디렉터리
 
-![일반그래프](C:\Users\only_\Desktop\일반그래프.png)
+
+<p align="center">
+<img src="https://user-images.githubusercontent.com/49037411/135743213-458e8195-be44-4e3b-90a0-2e6611403ef5.png"   /> </p>
 
 디렉터리 구조에서 순환(Cycle)을 허용하는 구조. 탐색 알고리즘이 간단해 파일 접근에 용이하나 무한 루프에 빠질 가능성도 있다. 
 
-하드링크(Hard link): 해당 파일을 직접적으로 가리키는 링크. 
+<br>
 
-심볼릭링크(Symbolic link): 가리키는 파일의 경로를 담은 링크. 해당 파일이 삭제되는 고아 링크가 된다.
+**하드링크(Hard link)**: 해당 파일을 직접적으로 가리키는 링크. 
+**심볼릭링크(Symbolic link)**: 가리키는 파일의 경로를 담은 링크. 해당 파일이 삭제되면 고아 링크가 된다.
 
 
 
