@@ -17,7 +17,7 @@
 12. [HTTP Method](#http-method)
 13. [HTTP 상태 코드](#http-상태코드)
 14. [쿠키, 세션](#쿠키-세션)
-15. [JWT&OAuth](#JWT&OAuth)
+15. [JWT&OAuth](#JWT-OAuth)
 
 # OSI 7계층
 
