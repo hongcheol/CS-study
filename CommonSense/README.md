@@ -3,7 +3,7 @@
 - [애자일](#애자일) 
 - [TDD](#TDD)
 - DDD
-- MSA
+- [MSA](#MSA(Microservices_Architecture))
 - OOP
 - [OOP의 5가지 설계 원칙](#oop의-5가지-설계-원칙)
 - 함수형 프로그래밍
@@ -207,6 +207,119 @@ TDD에서는 테스트를 작성하고 이를 성공시키는 코드를 만드�
    
 
 ----
+
+# MSA(Microservices Architecture)
+
+MSA(Microservices Architecture)는 하나의 큰 어플리케이션을 여러 개의  작은 어플리케이션으로 쪼개어 변경과 조합이 가능하도록 만든 아키텍쳐입니다.
+
+Microservices 는 특정 도메인을 중심으로 비즈니스 로직을 처리하는 핵심 기능 서비스입니다. 
+
+각 서비스는 다른 서비스들과 API 같은 수단으로 서로 통신하며 독립적으로 작동할 수 있습니다. 
+
+MSA는 SOA(Service-Oriented Architecture)가 발전된 형태로 생각할 수 있습니다.
+
+[Monolithic vs SOA vs Microservice 비교](https://wonit.tistory.com/487)
+
+
+
+## Monolithic VS Microservices
+
+<p align="center"><img src="img/MSA_Monolithic_Microservices.png" width="600"></p>
+
+**Monolithic Architecture**는 소프트웨어의 모든 구성요소가 한 프로젝트에 통합되어있는 아키텍쳐입니다.
+
+즉, 하나의 프로젝트에 코드가 모여있고 하나의 파일로 구성됩니다. 보통 DB, View, Controller로 구성된 컴포넌트들이 **하나의 프로젝트에서 관리**되고 **하나의 공통된 DB**를 바라보고 있다는 특징이 있습니다. 
+
+아직까지는 많은 소프트웨어가 Monolithic 형태로 구현되어 있습니다. 특히 소규모 프로젝트에는 Monolithic Architecture가 테스트 및 배포 파이프라인 구성이 간단하고 유지보수가 용이하기 때문에 훨씬 합리적입니다. 
+
+하지만 일정 규모 이상의 서비스, 혹은 수백명의 개발자가 투입되는 프로젝트에서 Monolithic Architecture은 뚜렷한 한계를 보입니다.
+
+- **서비스 간의 의존성이 크고** 서비스/프로젝트가 커지면 커질수록, 영향도 파악 및 전체 시스템 구조의 파악에 어려움이 있습니다.
+- 작은 수정에도 시스템 전체를 빌드해야 하며, 빌드 시간 및 테스트 시간, 그리고 배포 시간이 기하급수적으로 늘어나게 됩니다.
+- 서비스를 부분적으로 scale-out하기가 어렵습니다.
+- 부분의 장애가 전체 서비스의 장애로 이어지는 경우가 발생하게 됩니다. => Single point of failure
+  - ex) 상품, 주문, 결제 서비스 중 하나라도 에러가 발생하면 어플리케이션의 다른 모든 서비스를 사용할 수 없다.
+
+**Microservices Architecture**는 서비스가 커지면서 생겼던 Monolithic Architecture의 한계들을 어느정도 보완해 줄 수 있습니다.
+
+- 서비스를 분리하였기 때문에 서비스 간의 의존성이 낮습니다.
+  - 서비스별로 신기술과 최적화된 기술(ex.데이터베이스 구조)을 독립적으로 사용 할 수 있습니다.
+- 서비스 단위로 빌드, 테스트 및 배포가 가능하며, 전체 서비스의 중단 없이 서비스 별 배포가 가능합니다. 
+
+- 서비스는 개별 프로세서에서 동작하기 때문에 새로운 컨테이너에 대한 추가가 자유롭습니다. 그래서 특정 서비스에  대한 scale-out이 용이합니다.
+- 장애가 발생한 서비스의 격리가 가능하여 장애가 전체 서비스로 확장될 가능성이 낮습니다.
+
+
+
+## MSA의 문제점
+
+<p align="center"><img src="img/MSA_msa.png" width="600"></p>
+
+그림을 보더라도 알 수 있지만 MSA를 구축하는 일은 **쉬운 일이 아닙니다.**
+
+MSA는 매우 복잡한 아키텍쳐로, 전체 서비스가 커짐에 따라 그 복잡도가 기하급수적으로 늘어날 수 있습니다.
+
+그래서 다음과 같은 문제점을 생각할 수 있습니다.
+
+- 설계 제약 사항 증가
+
+  - 서비스 간 호출 시 API를 사용하기 때문에 네트워크 에러가 발생할 수 있고 통신 비용이나, Latency가 그만큼 늘어나게 됩니다.
+
+  - 각 서비스가 다른 서버에 분리 배포되어있기 때문에 서버 URL이 각기 다를 수 밖에 없습니다. 이를 처리하기 위한 **API Gateway**가 필요합니다.
+
+- 테스트 / 트랜잭션
+  - 서비스가 분리되어 있기 때문에 테스트와 트랜잭션의 복잡도가 증가하고, 많은 자원을 필요로 합니다.
+
+- 데이터 관리
+  - 데이터가 여러 서비스에 걸쳐 분산되기 때문에 한번에 조회하기 어렵고,  데이터의 정합성 또한 관리하기 어렵습니다.
+
+- 개인이 관리해야 할 서비스의 증가
+
+  - 물리적으로 서비스가 늘어나기 때문에 담당 범위가 늘어납니다.
+
+  - 분리된 서비스를 따로 개발하다 보면 기술 스택의 차이가 발생할 수 있습니다.
+
+    
+
+> API Gateway
+>
+> MSA의 문제점 중 하나는 각 서비스가 다른 서버에 분리 배포되어있기 때문에 서버 URL이 각기 다를 수 밖에 없습니다. 이때 API Gateway는 API 서버 앞 단에서 모든 API 서버들의 End-Point를 단일화하여 묶어주는 역할을 합니다. 또한 거미줄처럼 복잡한 서비스간의 API호출 구조도 단순화 시켜줍니다. 그 외에 라우팅, 로드밸런싱, 인증 역할 등등 여러 역할을 수행합니다.
+
+
+
+## MSA는 언제나 유용한가?
+
+MSA는 복잡한 웹 시스템에 맞춰 개발된 API기반의 서비스 지향적 아키텍처 스타일입니다. MSA가 유행을 하고 있지만 꼭 정답은 아닙니다. 아키텍처 모델에 따라 시스템에 대한 설계뿐만 아니라 팀의 구조나 프로젝트 관리 방법까지 달라지기 때문에 업무나 비즈니스 특징에 따라 적절한 아키텍처가 선택되어야 합니다. 
+
+- Monolithic Architecture 프로젝트의 팀 예시
+
+<p align="center"><img src="img/MSA_team1.png" width="600"></p>
+
+
+
+- Microservices Architecture 프로젝트의 팀 예시
+
+<p align="center"><img src="img/MSA_team2.png" width="600"></p>
+
+MSA가 서비스의 재사용 성, 유연한 아키텍처구조, 대용량 웹 서비스에 적합한 구조 등 많은 장점을 가지고 있지만 개개인의 높은 숙련도가 필요한 편입니다. 프로젝트의 목적이나 팀의 상황에 맞는 유연한 선택이 필요합니다.
+
+
+
+#### Reference
+
+https://www.redhat.com/ko/topics/microservices/what-are-microservices
+
+https://tech.kakao.com/2021/09/14/msa/
+
+https://wonit.tistory.com/487
+
+http://clipsoft.co.kr/wp/blog/%EB%A7%88%EC%9D%B4%ED%81%AC%EB%A1%9C%EC%84%9C%EB%B9%84%EC%8A%A4-%EC%95%84%ED%82%A4%ED%85%8D%EC%B2%98msa-%EA%B0%9C%EB%85%90/
+
+https://velog.io/@tedigom/MSA-%EC%A0%9C%EB%8C%80%EB%A1%9C-%EC%9D%B4%ED%95%B4%ED%95%98%EA%B8%B0-1-MSA%EC%9D%98-%EA%B8%B0%EB%B3%B8-%EA%B0%9C%EB%85%90-3sk28yrv0e
+
+------
+
+
 
 # OOP의 5가지 설계 원칙
 
