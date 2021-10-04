@@ -12,7 +12,7 @@
 - DevOps
 - 3rd Party
 - Git , Github, Gitlab
-- REST API
+- [REST API](#rest-api)
 - Parameter vs Argument
 - [Sync vs Async](#동기vs비동기)
 - XSS
@@ -873,6 +873,192 @@ OCP와 연관이 있는 원칙입니다.
 OCP와 마찬가지로 다형성만으로는 구현 객체를 변경할 때, 클라이언트 코드도 변경해야하기 때문에 DIP를 지키기 어렵습니다. 
 
 → 그래서 스프링이 필요합니다!
+
+<hr>
+
+# REST API
+**REST API는 REST(REpresentational State Transfer) 아키텍처 스타일을 준수하는 API**입니다. REST API에 대해 이해하기 위해 먼저 API와 REST가 각각 무엇을 나타내는지 살펴봅시다.
+
+## API
+
+API(Application Programming Interface)는 응용 프로그램에서 사용할 수 있도록, 운영 체제, 프로그래밍 언어 또는 특정 서비스가 제공하는 기능을 제어할 수 있게 만든 인터페이스입니다.
+
+> ### 인터페이스
+>
+> 서로 다른 두 개의 시스템, 장치 사이에서 정보나 신호를 주고받는 경우의 접점이나 경계면입니다. 사용자가 기기를 쉽게 동작시키는데 도움을 주는 시스템을 의미합니다. 예를 들어 사람과 컴퓨터는 키보드, 모니터, 마우스와 같은 인터페이스를 통해 정보와 신호를 주고 받습니다.
+
+- API는 프로그램과 프로그램 사이의 인터페이스
+- 클라이언트, 서버와 같은 서로 다른 프로그램에서 요청과 응답을 주고받을 수 있도록 만든 체계
+
+## REST
+
+REST는 HTTP를 이용해서 기계간의 통신이 일어날때 HTTP의 잠재력을 최대한으로 이끌어내는 소프트웨어 아키텍처의 한 형식입니다. **HTTP를 이용하는 모범 방법론**이라고 할 수 있습니다. 아키텍쳐 스타일은 일반적인 표준이나 프로토콜과는 다르다는 점을 주의해야합니다.
+
+최근의 서버 프로그램은 여러 웹 브라우저 뿐만 아니라 아이폰, 안드로이드 앱 통신에 대응해야 합니다. 즉 멀티 플랫폼, 멀티 디바이스를 지원해야하는 것입니다. 그렇기 때문에 매번 서버를 새로 만드는 수고를 들이지 않기 위해선 **범용적인 사용성을 보장하는 서버 디자인이 필요**합니다. REST 는 이러한 범용성을 보장하는 아키텍쳐입니다.
+
+구체적으로 REST는 **HTTP URI(Uniform Resource Identifier)를 통해 자원(Resource)을 명시하고, HTTP Method(POST, GET, PUT, DELETE)를 통해 해당 자원에 대한 CRUD Operation을 적용하는 것**을 의미합니다.
+
+리소스는 서버에 있는 데이터를 말합니다. 예를 들어 블로그 서비스에서는 id, title, content와 같은 필드들로 이루어진 post라는 리소스가 존재할 것입니다.
+<br><br>
+
+![rest api example](https://gmlwjd9405.github.io/images/network/restapi-example.png)
+
+- HTTP URI(Uniform Resource Identifier)를 통해 자원(Resource)을 명시
+- HTTP Method(POST, GET, PUT/PATCH, DELETE)를 통해 해당 자원에 대한 동작을 명시
+- 서버와 클라이언트가 데이터를 주고받는 형식은 json, xml, text, rss 등이 있으며 Key와 Value를 활용하는 json을 주로 사용
+
+### REST의 구성요소
+
+1. 자원(Resource): URI
+   - 모든 자원에 고유한 ID가 존재하고, 이 자원은 Server에 존재한다. -자원을 구별하는 ID는 ‘/groups/:group_id’와 같은 HTTP URI 다.
+   - Client는 URI를 이용해서 자원을 지정하고 해당 자원의 상태(정보)에 대한 조작을 Server에 요청한다.
+2. 행위(Verb): HTTP Method
+   - HTTP 프로토콜의 Method를 사용한다.
+   - HTTP 프로토콜은 GET, POST, PUT, DELETE 와 같은 메서드를 제공한다.
+3. 표현(Representation of Resource)
+   - Client가 자원의 상태(정보)에 대한 조작을 요청하면 Server는 이에 적절한 응답(Representation)을 보낸다.
+   - REST에서 하나의 자원은 JSON, XML, TEXT, RSS 등 여러 형태의 Representation으로 나타내어 질 수 있다.
+   - JSON 혹은 XML를 통해 데이터를 주고 받는 것이 일반적이다.
+
+### REST 6가지 원칙
+
+REST는 다음과 같은 여섯가지 디자인 원칙을 지키는 것을 내용으로 합니다.
+
+1. Server-Client(서버-클라이언트 구조)
+
+- 클라이언트와 서버 애플리케이션은 서로 간에 완전히 독립적이어야 한다.
+- 자원이 있는 쪽이 Server, 자원을 요청하는 쪽이 Client가 된다.
+- REST Server: API를 제공하고 비즈니스 로직 처리 및 저장을 책임진다.
+- Client: 사용자 인증이나 context(세션, 로그인 정보) 등을 직접 관리하고 책임진다.
+- 클라이언트와 서버의 역할이 구분되어 개발 내용이 명확해지고 의존성이 줄어든다.
+
+2. Uniform Interface(인터페이스 일관성)
+
+- 요청이 어디에서 오는지와 무관하게, 동일한 리소스에 대한 모든 API 요청은 동일하게 보여야 한다.
+- URI로 지정한 Resource에 대한 조작을 통일되고 한정적인 인터페이스로 수행한다.
+- HTTP 표준 프로토콜에 따르는 모든 플랫폼에서 사용이 가능하다.
+- 특정 언어나 기술에 종속되지 않는다.
+
+3. Stateless(무상태)
+
+- HTTP와 같이 REST 역시 무상태성을 갖는다(Client의 context를 Server에 저장하지 않음).
+- 즉, 세션과 쿠키와 같은 context 정보를 신경쓰지 않아도 되므로 구현이 단순해진다.
+- Server의 처리 방식에 일관성을 부여하고 부담이 줄어들며, 서비스의 자유도가 높아진다.
+
+4. Cacheable(캐시 처리 가능)
+
+- 가급적이면, 리소스를 클라이언트 또는 서버측에서 캐싱할 수 있어야 한다.
+- 웹 표준 HTTP 프로토콜을 그대로 사용하므로 웹에서 사용하는 캐싱 기능을 적용할 수 있다.
+- HTTP 프로토콜 표준에서 사용하는 Last-Modified 태그나 E-Tag를 이용하면 캐싱 구현이 가능하다.
+- 캐시 사용을 통해 응답시간이 빨라지고 REST Server 트랜잭션이 발생하지 않기 때문에 전체 응답시간, 성능, 서버의 자원 이용률을 향상시킬 수 있다.
+
+5. Layered System(계층화)
+
+- Client는 REST API Server만 호출한다.
+- REST Server는 다중 계층으로 구성될 수 있다.
+- API Server는 순수 비즈니스 로직을 수행하고 그 앞단에 보안, 로드밸런싱, 암호화, 사용자 인증 등을 추가하여 구조상의 유연성을 줄 수 있다.
+  또한 로드밸런싱, 공유 캐시 등을 통해 확장성과 보안성을 향상시킬 수 있다.
+- PROXY, 게이트웨이 같은 네트워크 기반의 중간 매체를 사용할 수 있다.
+
+6. Code-On-Demand(optional)
+
+- Server로부터 스크립트를 받아서 Client에서 실행한다.
+- 반드시 충족할 필요는 없다.
+
+## REST API 디자인 가이드(설계 규칙)
+
+REST API 설계의 핵심 내용은 다음 두가지 입니다. 이 두가지는 꼭 기억하도록 합시다.
+
+1. URI로 통해 자원(Resource)을 명시하고
+2. HTTP Method를 통해 해당 자원에 대한 동작을 명시한다.
+
+### 핵심 설계 규칙
+
+> 참고 리소스 원형  
+> 도큐먼트 : document는 1개의 개체를 나타내는 것으로 객체 인스턴스, Datbase의 record와 유사한 개념  
+> 컬렉션 : 단일 Resource(document)들의 묶음. 새로운 Resource를 추가할 때, 또는 단일 Resource가 아닌 다량의 Resource가 필요할 때 collection Resource를 호출
+
+1. URI는 정보의 자원을 표현해야 한다.
+
+- resource는 동사보다는 명사를, 대문자보다는 소문자를 사용한다.
+- resource의 도큐먼트 이름으로는 단수 명사를 사용해야 한다.
+- resource의 컬렉션 이름으로는 복수 명사를 사용해야 한다.
+  ```
+  GET /Member/1   # REST를 제대로 적용하지 않은 URI
+  GET /members/1  # 올바른 URI
+  ```
+
+2. 자원에 대한 행위는 HTTP Method(GET, PUT/PATCH, POST, DELETE 등)로 표현한다.
+
+- URI에 행위에 대한 동사 표현이 들어가면 안됨
+
+  ```
+  GET /members/delete/1   # REST를 제대로 적용하지 않은 URI
+  DELETE /members/1       # 올바른 URI
+
+  GET /members/show/1     # REST를 제대로 적용하지 않은 URI
+  GET /members/1          # 올바른 URI
+
+  GET /members/insert/2   # REST를 제대로 적용하지 않은 URI
+  POST /members/2         # 올바른 URI
+  ```
+
+- HTTP Method 정리
+  |Method|역할|
+  |---|---|
+  |POST|리소스 생성|
+  |GET|리소스 조회|
+  |PUT|리소스 전체수정|
+  |PATCH|리소스 부분수정|
+  |DELETE|리소스 삭제|
+
+### 이외에 URI 설계 규칙
+
+1. 슬래시 구분자(/ )는 계층 관계를 나타내는데 사용한다.
+   - Ex) http://restapi.example.com/houses/apartments
+2. URI 마지막 문자로 슬래시(/ )를 포함하지 않는다.
+   - URI에 포함되는 모든 글자는 리소스의 유일한 식별자로 사용되어야 하기 때문에 혼동을 주지 않도록 URI 경로의 마지막에는 슬래시(/)를 사용하지 않는다.
+   - Ex) http://restapi.example.com/houses/apartments/ (X)
+3. 하이픈(- )은 URI 가독성을 높이는데 사용
+   - 불가피하게 긴 URI경로를 사용하게 된다면 하이픈을 사용해 가독성을 높인다.
+4. 밑줄( \_ )은 URI에 사용하지 않는다.
+   - 밑줄은 보기 어렵거나 밑줄 때문에 문자가 가려지기도 하므로 가독성을 위해 밑줄은 사용하지 않는다.
+5. URI 경로에는 소문자가 적합하다.
+   - URI 경로에 대문자 사용은 피하도록 한다.
+6. 파일확장자는 URI에 포함하지 않는다.
+   - 메시지 바디 내용의 포맷을 나타내기 위한 파일 확장자를 URI 안에 포함시키지 않고 Accept header를 사용한다.
+   - Ex) http://restapi.example.com/members/soccer/345/photo.jpg (X)
+   - Ex) GET / members/soccer/345/photo HTTP/1.1 Host: restapi.example.com Accept: image/jpg (O)
+7. 리소스 간에는 연관 관계가 있는 경우
+   - /리소스명/리소스 ID/관계가 있는 다른 리소스명
+   - Ex) GET : /users/{userid}/devices (일반적으로 소유 ‘has’의 관계를 표현할 때)
+   - https://gmlwjd9405.github.io/2018/09/21/rest-and-restful.html
+
+### HTTP 응답 상태 코드 규칙
+
+REST API는 URI 규칙을 지키는 것 뿐만 아니라 리소스에 대한 응답을 잘 내어주는 것까지 포함되어야 합니다. 정확한 응답의 상태코드만으로도 많은 정보를 전달할 수가 있기 때문입니다.(더 자세한 내용은 HTTP 상태코드 관련 글 참고)
+|상태 코드|의미|
+|---|---|
+|200|요청 정상 수행|
+|201|리소스 생성 요청 정상 수행(POST 요청시)|
+|400|부적절한 요청|
+|401|인증되지 않은 클라이언트의 보호된 리소스 요청|  
+|405|클라이언트가 요청한 리소스에서는 사용 불가능한 Method를 이용했을 경우|
+|301|요청한 리소스에 대한 URI가 변경 되었을 때|
+|500|서버에 문제가 있을 경우 사용하는 응답 코드|
+
+## REST API와 RESTful API
+
+REST API와 RESTful API는 같은 의미입니다. RESTful은 "REST하게 만들어진"이라는 의미를 갖고 있습니다. ‘REST API’를 제공하는 웹 서비스를 ‘RESTful’하다고 할 수 있으며 REST 원리를 따르는 시스템은 RESTful이란 용어로 지칭된다.
+
+## References
+
+https://www.ibm.com/kr-ko/cloud/learn/rest-apis
+https://gmlwjd9405.github.io/2018/09/21/rest-and-restful.html
+https://www.redhat.com/ko/topics/api/what-is-a-rest-api
+https://sanghaklee.tistory.com/57
+https://meetup.toast.com/posts/92
+
 
 <hr>
 
