@@ -1053,10 +1053,10 @@ REST API와 RESTful API는 같은 의미입니다. RESTful은 "REST하게 만들
 
 ## References
 
-https://www.ibm.com/kr-ko/cloud/learn/rest-apis
-https://gmlwjd9405.github.io/2018/09/21/rest-and-restful.html
-https://www.redhat.com/ko/topics/api/what-is-a-rest-api
-https://sanghaklee.tistory.com/57
+https://www.ibm.com/kr-ko/cloud/learn/rest-apis  
+https://gmlwjd9405.github.io/2018/09/21/rest-and-restful.html  
+https://www.redhat.com/ko/topics/api/what-is-a-rest-api  
+https://sanghaklee.tistory.com/57  
 https://meetup.toast.com/posts/92
 
 
