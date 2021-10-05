@@ -13,7 +13,7 @@
 - 3rd Party
 - Git , Github, Gitlab
 - [REST API](#rest-api)
-- Parameter vs Argument
+- [Argument vs Parameter](#Argument-vs-Parameter)
 - [Sync vs Async](#동기vs비동기)
 - XSS
 - [도커와 쿠버네티스](#도커란)
@@ -1267,6 +1267,245 @@ https://meetup.toast.com/posts/92
 
 
 <hr>
+
+<br>
+
+# Argument vs Parameter
+
+## 전달인자와 매개변수
+
+### 전달인자(Argument)
+부모 함수에서 자식 함수를 호출할 때 자식 함수에게 전달하고자 하는 값
+
+### 매개변수(Parameter)
+부모 함수에서 자식 함수를 호출할 때 전달되는 값을 받기 위해 선언된 변수
+
+<br>
+
+> 💡 전달인자와 매개변수의 가장 큰 차이점은 **전달인자는 값**(value) 을 의미하고, **매개변수는 변수**(variable)를 의미한다는 것!
+> - 일부는 "인자"라는 표현이 잘못되었고 "인수"라는 표현이 더 알맞다고 하는데 사실 인자냐 인수냐가 중요한 것이 아니라 "전달인자"와 "매개변수"의 차이를 아는 것이 더 중요하다.
+
+---
+
+#### 예제
+
+```java
+class ArguNParam {
+    public static void main(String[] args) {
+        String group = "CS 스터디";
+        cheer(6, "모두");          // 인자값 6과 인자값 "모두"를 cheer()에 전달
+        cheer(6, group);          // 인자값 6과 변수 group에 저장된 값인 "CS 스터디"를 cheer()에 전달
+        saySlogan();                // 인자가 필요 없는 메서드
+    }
+
+    // 매개변수를 2개 갖는 메서드
+    public static void cheer(int class, String group) {
+        System.out.println(class + "반 " + group + " 파이팅!!!");
+    }
+    
+    // 매개변수를 갖지 않는 메서드
+    public static void saySlogan() {
+        System.out.println("열정 6기 핫식스");
+    }
+}
+```
+
+[출력 결과]
+
+```markdown
+6반 모두 파이팅!!!
+6반 CS 스터디 파이팅!!!
+열정 6기 핫식스
+```
+
+- 부모 함수인 `main()` 메서드에서 자식 함수인 `cheer()` 메서드를 호출하는 과정에서 `cheer()` 메서드의 기능을 사용하기 위해 **정수 값과 문자열 값을 전달 인자**로 전달
+- 부모 함수인 `main()` 메서드에서 자식 함수인 `cheer()` 메서드를 호출하는 과정에서 `main()` 메서드가 넘겨주고자 하는 값을 **전달 받아 매개변수로 저장**
+- 매개변수가 필요 없는 메서드는 인자로 넘겨줄 값도 없고 저장할 값이 없으니 저장 대상인 매개변수도 없음
+
+<br>
+
+## 전달인자의 특징
+
+- **실제로 힙 메모리에 할당되어 있는 값**
+- 매개변수의 **수와 자료형에 일치하는 값**만 인자로 전달할 수 있다.
+
+## 매개변수의 특징
+
+- 메서드 호출 시 선언되어, 전달되는 값을 저장한다.
+- 따라서 메서드가 호출되기 전까지 **매개변수는 실제로 값을 갖고 있지 않는다**.
+- 매개변수가 선언된 **메서드 내에서만 유효**한 변수이다.
+
+<br>
+
+## 함수 호출 시 전달인자를 매개변수로 저장하는 로직
+
+1. 부모 함수에서 자식 함수 호출이 발생한다. 이때 전달인자를 통해 전달하고 싶은 값을 함께 보낸다.
+2. 자식 함수는 함수 호출 스택(stack)에 push된다. 
+3. 이때 호출된 함수의 정보를 유지하기 위해 스택 공간에 해당 함수를 위한 메모리가 할당된다. 이 스택의 메모리 크기는 매개변수, 지역변수 등을 고려하여 할당된다.
+4. 전달인자로 전달된 값을 스택에 할당된 매개변수 메모리에 저장한다.
+
+<br>
+
+## Call by Value
+
+값에 의한 호출
+
+함수 호출 시 전달인자로 넘겨준 **값을 복사**하여 매개변수 메모리에 저장. 즉, **값만을 넘겨주는 방식**
+
+따라서 원본 데이터의 값은 호출된 함수에 저장된 매개변수 값과 **별개의 메모리에 저장**되어 있으므로 함수 호출에 따른 원본 데이터 값의 변화가 일어나지 않는다.
+
+## Call by Reference
+
+참조(주소)에 의한 호출
+
+함수 호출 시 전달인자로 넘겨준 **주소를**를 매개변수 메모리에 저장. 즉, **주소로 접근하여 얻을 수 있는 실제 대상**을 넘겨주는 방식
+
+따라서 원본 데이터의 주소를 참조하여 원본 데이터 값에 접근할 수 있고 이를 대상으로 연산을 하므로 **함수 호출에 따른 원본 데이터 값의 변화가 발생**한다!
+
+<br>
+
+## Java에서의 함수 호출
+
+🌟 Java는 무조건 `Call by Value` 방식으로 함수를 호출한다!!!
+
+### 기본형 전달인자의 함수 호출
+
+예제
+
+```java
+class CallByValue {
+    public static void main(String args[]){
+        int from = 10;      // 원본 데이터
+        int to = 20;
+
+        System.out.println("swap 전 from : " + from + ", to : " + to);
+        swap(from, to);     // swap() 메서드에 원본 데이터를 인자로 하여 함수 호출
+        System.out.println("swap 후 from : " + from + ", to : " + to);
+    }
+
+    public static void swap(int n1, int n2) {       // 매개변수에 인자로 넘어온 값을 복사하여 저장하여 복사된 값만 사용
+        int temp = n1;
+        n1 = n2;
+        n2 = temp;
+    }
+}
+```
+
+[출력 결과]
+
+```markdown
+swap 전 from : 10, to : 20
+swap 후 from : 10, to : 20
+```
+
+위 예제 코드로 알 수 있듯이 기본형 자료형을 전달인자로 넘겨 함수 호출을 할 경우, 자식 함수는 부모 함수의 원본 데이터의 **값을 복사**하여 연산에 사용하기때문에 `swap()` 함수 호출 전후로 원본 데이터 값이 같다.
+
+이렇게 기본형은 당연히 `Call by Value` 방식을 따른다는 것을 알 수 있다. 하지만 참조형의 경우 무척 헷갈릴 수 있다.
+
+### 참조형 전달인자의 함수 호출
+
+예제
+
+```java
+class MyInt {           // 사용자 정의 객체 - 참조형 자료형
+    int num;
+
+    MyInt(int num) {
+        this.num = num;
+    }
+
+    @Override
+	public String toString() {
+		return Integer.toString(num);
+	}
+}
+
+class CallByValue2 {
+    public static void main(String args[]){
+        MyInt from = new MyInt(10);      // 원본 데이터
+        MyInt to = new MyInt(20);
+
+        System.out.println("swap 전 from : " + from + ", to : " + to);
+        swap(from, to);     // swap() 메서드에 원본 데이터를 인자로 하여 함수 호출
+        System.out.println("swap 후 from : " + from + ", to : " + to);
+    }
+
+    public static void swap(MyInt n1, MyInt n2) {       // 매개변수에 인자로 넘어온 참조형 데이터의 주소값을 복사하여 사용
+        int temp = n1.num;      // 복사된 주소값으로 실제 객체의 값에 접근하여 변경가능
+        n1.num = n2.num;
+        n2.num = temp;
+    }
+}
+```
+
+[출력 결과]
+
+```markdown
+swap 전 from : 10, to : 20
+swap 후 from : 20, to : 10
+```
+
+위 예제 코드를 보면 `swap()` 메서드 호출로 인해 원본 데이터 값이 변경되었기때문에 `Call by Reference` 방식으로 전달인자를 넘겨준 것처럼 보인다. 
+
+하지만, 자바에서 참조형 데이터를 전달인자로 전달할 경우 값이 복사되는 것도 아니고, 주소가 그대로 전달되는 것도 아니고, **주소 값이 복사**되어 매개변수에 저장되는 방식을 따른다.
+
+원본 데이터 변수가 주소를 따라가 힙 메모리에 저장된 값을 참조하고 있고, 동시에 매개변수 역시 복사된 동일한 주소 값을 따라가 힙 메모리에 저장된 값을 참조하게 된다. 원본 데이터 변수와 별개로 호출된 메서드의 매개변수는 힙 메모리의 객체를 가리키는 새로운 지역 변수가 생성된 것이므로 **서로 다른 변수가 같은 값을 동시에 가리키고 있는 형태**인 것이다.
+
+![참조형 데이터의 Call by Value](https://github.com/hongcheol/CS-study/blob/main/CommonSense/img/call-by-value1.png?raw=true)
+
+따라서 아무리 함수 호출로 인해 원본 데이터 값이 바뀐 것처럼 보이더라도 별개의 변수를 사용하고 있으므로 자바에서는 무조건 `Call by Value`에 의해 함수를 호출하고 전달인자를 넘겨준다고 이해해야 한다.
+
+위 예제가 헷갈린다면 아래 예제를 함께 보는 것도 좋을 것 같다.
+
+예제
+
+```java
+class MyInt {           // 사용자 정의 객체 - 참조형 자료형
+    int num;
+
+    MyInt(int num) {
+        this.num = num;
+    }
+
+    @Override
+	public String toString() {
+		return Integer.toString(num);
+	}
+}
+
+class CallByValue3 {
+    public static void main(String args[]){
+        MyInt from = new MyInt(10);      // 원본 데이터
+        MyInt to = new MyInt(20);
+
+        System.out.println("swap 전 from : " + from + ", to : " + to);
+        changeValue(from, to);     // swap() 메서드에 원본 데이터를 인자로 하여 함수 호출
+        System.out.println("swap 후 from : " + from + ", to : " + to);
+    }
+
+    public static void changeValue(MyInt n1, MyInt n2) {       // 매개변수에 인자로 넘어온 참조형 데이터의 주소값을 복사하여 사용
+        n1.num = 100;       // 복사된 주소값으로 실제 객체의 값에 접근하여 변경가능
+        n2 = n1;            // n2에는 n1의 복사된 주소값을 할당할 뿐 n2는 원본 데이터 to와 별개임
+    }
+}
+```
+
+[출력 결과]
+
+```markdown
+change 전 from : 10, to : 20
+change 후 from : 100, to : 20
+```
+
+위 예제 코드에서 `changeValue()` 메서드가 호출되면 매개변수 `n1`, `n2`에는 원본 데이터 `from`과 `to`를 가리키는 주소값이 복사되어 저장된다. 따라서 `n1`, `n2`와 `from`, `to`는 서로 다른 별개의 변수들이 동일한 값을 참조하고 있는 것이다.
+
+![참조형 데이터의 Call by Value2](https://github.com/hongcheol/CS-study/blob/main/CommonSense/img/call-by-value2.png?raw=true)
+
+이러한 논리로 `changeValue()` 메서드의 두번째 라인이 실행되면 지역변수인 `n2`에 `n1`의 복사된 주소값을 할당할 뿐이므로 원본 데이터인 `to`에는 영향을 미치지 않는다.
+
+단, 매개변수에 저장된 복사된 값으로도 객체의 값에 접근할 수 있으므로 `changeValue()` 메서드의 첫번째 라인에 의해 원본 데이터 `from` 객체의 값은 변경된다.
+
+<br>
 
 # 동기vs비동기
 
