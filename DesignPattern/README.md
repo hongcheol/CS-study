@@ -10,7 +10,9 @@
 
 클라이언트는 퍼사드에서 고수준 인터페이스를 정의하기 때문에 서브시스템을 더 쉽게 사용할 수 있고 오직 퍼사드만 알아도 되므로 서브시스템에 의존하지 않을 수 있게 된다.
 
-### 예제
+### Facade Pattern 예시
+
+<p align="center"><img width="70%" alt="99B6F54A5C68D4A91D" src="https://user-images.githubusercontent.com/51703260/136668628-26a61237-872a-49a7-b053-cdfaad07cb46.jpg"></p>
 
 전자레인지를 예시로 퍼사드 패턴을 설명해보려고 한다.
    
@@ -22,10 +24,10 @@
    
 #### 전자레인지의 내부 구성
 - `스위치` : 전원을 키고 끔
-- `타이머` : 일정 시간동안 전자레인지를 작동시킴
+- `쿨러` : 전자레인지를 식혀줌
 - `턴테이블` :  회전시킴
 - `마그네트론` : 마이크로파를 발생시킴
-- `쿨러` : 전자레인지를 식혀줌
+- `타이머` : 일정 시간동안 전자레인지를 작동시킴
 
 > MicrowaveSwitch.java
 ```java
@@ -35,43 +37,17 @@ public interfaces MicrowaveSwitch{
 }
 ```
 
-> MicrowaveTimer.java
+> MicrowaveCooler.java
 ```java
-public class MicrowaveTimer implements Switch{
-    public static long TIME_INTERVAL = 1000;
-    private final int EXPIRED_TIME;
-    private Timer timer;
-    private TimerTask task;
-    MicrowaveFacade microwave;
-    int count = 0;
-    
-    public MicrowaveTimer(int milsec, MicrowaveFacade microwave) {
-        super();
-        this.EXPIRED_TIME = milsec;
-        this.count = EXPIRED_TIME/1000;
-        this.microwave = microwave;
-        timer = new Timer();
-        task = new TimerTask() {
-            @Override
-            public void run() {
-                if(count > 0) System.out.println("Timer : " + (count--) + " sec");
-                else {
-                    System.out.println("End");
-                    timer.cancel();
-                    microwave.off();
-                }
-            }
-        };
-    }
- 
+public class MicrowaveCooler implements MicrowaveSwitch {
     @Override
     public void on() {
-        timer.schedule(task, 0, TIME_INTERVAL);
+        System.out.println("Cooler Start");
     }
     
     @Override
     public void off() {
-        timer.cancel();
+        System.out.println("Cooler Stop");
     }
 }
 ```
@@ -79,17 +55,14 @@ public class MicrowaveTimer implements Switch{
 > MicrowaveTurntable.java
 ```java
 public class MicrowaveTurntable implements MicrowaveSwitch{
- 
     @Override
     public void on() {
         System.out.println("Turntable Start");
-        
     }
- 
+    
     @Override
     public void off() {
         System.out.println("Turntable Stop");
-        
     }
 }
 ```
@@ -97,7 +70,6 @@ public class MicrowaveTurntable implements MicrowaveSwitch{
 > MicrowaveMagnetron.java
 ```java
 public class MicrowaveMagnetron implements MicrowaveSwitch {
- 
     @Override
     public void on() {
         System.out.println("Magnetron Start");
@@ -110,18 +82,47 @@ public class MicrowaveMagnetron implements MicrowaveSwitch {
 }
 ```
 
-> MicrowaveCooler.java
+> MicrowaveTimer.java
 ```java
-public class MicrowaveCooler implements MicrowaveSwitch {
+import java.util.Timer;
+import java.util.TimerTask;
+
+public class MicrowaveTimer implements MicrowaveSwitch{
+    public static long TIME_INTERVAL = 1000;
+    private final int EXPIRED_TIME;
+    private Timer timer;
+    private TimerTask task;
+    MicrowaveFacade microwave;
+    int count = 0;
+    
+    public MicrowaveTimer(int sec, MicrowaveFacade microwave) {
+        super();
+        this.EXPIRED_TIME = sec;
+        this.count = EXPIRED_TIME;
+        this.microwave = microwave;
+        timer = new Timer();
+        task = new TimerTask() {
+            @Override
+            public void run() {
+                if(count > 0) System.out.println("Timer : " + (count--) + " sec");
+                else {
+                    System.out.println("Timer End");
+                    timer.cancel();
+                    microwave.off();
+                }
+            }
+        };
+    }
  
     @Override
     public void on() {
-        System.out.println("Cooler Start");
+        System.out.println("Timer Start" );
+        timer.schedule(task, 0, TIME_INTERVAL);
     }
     
     @Override
     public void off() {
-        System.out.println("Cooler Stop");
+        timer.cancel();
     }
 }
 ```
@@ -136,35 +137,34 @@ public class MicrowaveCooler implements MicrowaveSwitch {
 
 > MicrowaveFacade.java
 ```java
-public class MicrowaveFacade. {
+public class MicrowaveFacade {
     MicrowaveCooler cooler;
     MicrowaveMagnetron magnetron;
     MicrowaveTimer timer;
     MicrowaveTurntable turntable;
     MicrowaveSwitch[] switches;
-    String food;
     boolean isActive = false;
     
     public MicrowaveFacade(MicrowaveCooler cooler, MicrowaveMagnetron magnetron, MicrowaveTimer timer, MicrowaveTurntable turntable) {
         super();
         this.cooler = cooler;
+        this.turntable = turntable;
         this.magnetron = magnetron;
         this.timer = timer;
-        this.turntable = turntable;
-        switches = new MicrowaveSwitch[]{cooler, magnetron, timer, turntable};
+        switches = new MicrowaveSwitch[]{cooler, turntable,  magnetron, timer};
     }
  
     public MicrowaveFacade(int time) {
         super();
         cooler = new MicrowaveCooler();
-        magnetron = new MicrowaveMagnetron();
-        timer = new Microwavetimer(time, this);
         turntable = new MicrowaveTurntable();
-        switches = new MicrowaveSwitch[]{cooler, magnetron, timer, turntable};
+        magnetron = new MicrowaveMagnetron();
+        timer = new MicrowaveTimer(time, this);
+        switches = new MicrowaveSwitch[]{cooler, turntable,  magnetron, timer};
     }
     
-    
     public void on() {
+        System.out.println("Microwave On");
         for(int i=0; i<switches.length; ++i) {
             switches[i].on();
         }
@@ -172,9 +172,10 @@ public class MicrowaveFacade. {
     }
     
     public void off() {
-        for(int i=0; i<switches.length; ++i) {
+        for(int i=switches.length-1; i>=0; i--) {
             switches[i].off();
         }
+        System.out.println("Microwave Off");
         isActive = false;
     }
 }
@@ -184,18 +185,23 @@ public class MicrowaveFacade. {
 ```java
 public class MicrowaveTest {
     public static void main(String[] args) {
-        MicrowaveFacade microwave = new MicrowaveFacade(Mode.FAST);
+        MicrowaveFacade microwave = new MicrowaveFacade(10);
         microwave.on();
     }
 }
+```
 
-   
-```
-   
-```java
-   
-```
-   
+위 코드를 테스트 해보면, 그냥 전자레인지 타이머를 10초 설정을 하고 그냥 on 하기만 하면 아래와 같은 결과를 확인할 수 있다.
+
+![화면 캡처 2021-10-10 021733](https://user-images.githubusercontent.com/51703260/136668170-ab351727-bba3-480b-b190-2296e4fe9d0a.png)
+
+---
+
+![997F75335C334C3E1E](https://user-images.githubusercontent.com/51703260/136668218-3ce19bb0-4e7a-47d4-be2c-ee8b2f4d61dc.jpg)
+
+위 클래스 다이어그램과 같이 전자레인지를 사용하는 MicrowaveTest(User) 클래스에서는 전자레인지의 내부 부품들이 MicrowaveFacade 클래스에 감싸져 있지만 제공되는 인터페이스(on, off 버튼 등..)를 통해 간편하게 사용할 수 있다.
+
+퍼사드 패턴은 퍼사드 클래스가 서브시스템 클래스들을 캡슐화를 해주는 기능을 제공하는 것 보다, 서브시스템 기능들을 편리하게 사용할 수 있는 인터페이스를 제공하는 것이 주된 목적이다.
 
 # Design Pattern
 
