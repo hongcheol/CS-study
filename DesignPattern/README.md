@@ -2,7 +2,7 @@
 
 ### Facade Pattern이란?
 
-<p align="center"><img width="70%" alt="99B6F54A5C68D4A91D" src="https://user-images.githubusercontent.com/51703260/136665199-6829f771-bea6-458e-9e8f-b75d4d1098b3.png"><p>
+<p align="center"><img width="70%" alt="99B6F54A5C68D4A91D" src="https://user-images.githubusercontent.com/51703260/136665199-6829f771-bea6-458e-9e8f-b75d4d1098b3.png"></p>
 
 퍼사드란, 프랑스어 Façade 에서 유래된 단어로 **"건물의 겉면"** 을 의미한다.
    
@@ -16,43 +16,179 @@
    
 전자레인지를 작동시키는 방법은 전원을 연결시키고 타이머를 설정하고 버튼을 눌러 작동 시킬 수 있다.
    
-우리가 전자레인지를 사용하기 위해서는 전자레인지가 동작하는 원리라던가, 내부에서 어떤 복잡한 일들이 일어나는지에 대해서는 굳이 알 필요가 없다.
+우리가 전자레인지를 사용하기 위해서는 전자레인지가 동작하는 원리라던가, 복잡한 내부구조에 대해서는 굳이 알 필요가 없다.
    
-이런것이 일종의 전자레인지 퍼사드라고 이해해도 좋을 것 같다.
+이런것이 일종의 전자레인지 퍼사드라고 이해해도 좋을 것 같다.만
    
-#### 전자레인지 구성
+#### 전자레인지의 내부 구성
+- `스위치` : 전원을 키고 끔
 - `타이머` : 일정 시간동안 전자레인지를 작동시킴
 - `턴테이블` :  회전시킴
 - `마그네트론` : 마이크로파를 발생시킴
 - `쿨러` : 전자레인지를 식혀줌
-   
-> switch.java
-```java
-public interfaces switch
 
-```
-   
+> MicrowaveSwitch.java
 ```java
-   
+public interfaces MicrowaveSwitch{
+     public void on();
+     public void off();
+}
 ```
-   
+
+> MicrowaveTimer.java
 ```java
-   
+public class MicrowaveTimer implements Switch{
+    public static long TIME_INTERVAL = 1000;
+    private final int EXPIRED_TIME;
+    private Timer timer;
+    private TimerTask task;
+    MicrowaveFacade microwave;
+    int count = 0;
+    
+    public MicrowaveTimer(int milsec, MicrowaveFacade microwave) {
+        super();
+        this.EXPIRED_TIME = milsec;
+        this.count = EXPIRED_TIME/1000;
+        this.microwave = microwave;
+        timer = new Timer();
+        task = new TimerTask() {
+            @Override
+            public void run() {
+                if(count > 0) System.out.println("Timer : " + (count--) + " sec");
+                else {
+                    System.out.println("End");
+                    timer.cancel();
+                    microwave.off();
+                }
+            }
+        };
+    }
+ 
+    @Override
+    public void on() {
+        timer.schedule(task, 0, TIME_INTERVAL);
+    }
+    
+    @Override
+    public void off() {
+        timer.cancel();
+    }
+}
 ```
-   
+
+> MicrowaveTurntable.java
 ```java
-   
+public class MicrowaveTurntable implements MicrowaveSwitch{
+ 
+    @Override
+    public void on() {
+        System.out.println("Turntable Start");
+        
+    }
+ 
+    @Override
+    public void off() {
+        System.out.println("Turntable Stop");
+        
+    }
+}
 ```
-   
+
+> MicrowaveMagnetron.java
 ```java
-   
+public class MicrowaveMagnetron implements MicrowaveSwitch {
+ 
+    @Override
+    public void on() {
+        System.out.println("Magnetron Start");
+    }
+ 
+    @Override
+    public void off() {
+        System.out.println("Magnetron Stop");
+    }
+}
 ```
-   
+
+> MicrowaveCooler.java
 ```java
-   
+public class MicrowaveCooler implements MicrowaveSwitch {
+ 
+    @Override
+    public void on() {
+        System.out.println("Cooler Start");
+    }
+    
+    @Override
+    public void off() {
+        System.out.println("Cooler Stop");
+    }
+}
 ```
-   
+
+만약 우리가 전자레인지를 퍼사드 패턴을 쓰지 않고 작동시킨다면, 우리는 직접 모든 내부 장치들의 스위치를 키고 꺼야한다.
+
+먼저 쿨러를 키고, 마그네트론을 키고 턴테이블을 돌린 다음에 타이머를 켜서 원하는 시간만큼 작동시킨다. 그리고 작동이 끝나거나 정지시키려면 역순으로 하나씩 모두 직접 스위치를 내려 꺼야한다.
+
+하지만 아래와 같이 우리가 일상에서 사용하는 전자레인지는 아래와 같이 퍼사드 패턴을 적용시켜서 내부 구조를 알지 못해도 그냥 버튼을 하나만 눌러도 전자레인지의 온전한 기능을 모두 누릴 수 있게된다.
+
+그리고 각각의 부품을 다른 부품으로 교체(700와트 -> 1000와트)하여도 사용자들은 바뀐 부품에 따라 다르게 전자레인지를 작동시키는 것이 아닌 예전과 동일하게 전자레인지를 사용할 수 있기 때문에 퍼사드 패턴을 적용하면 클라이언트가 서브시스템에 의존하지 않을 수 있게 된다는 것이다.
+
+> MicrowaveFacade.java
 ```java
+public class MicrowaveFacade. {
+    MicrowaveCooler cooler;
+    MicrowaveMagnetron magnetron;
+    MicrowaveTimer timer;
+    MicrowaveTurntable turntable;
+    MicrowaveSwitch[] switches;
+    String food;
+    boolean isActive = false;
+    
+    public MicrowaveFacade(MicrowaveCooler cooler, MicrowaveMagnetron magnetron, MicrowaveTimer timer, MicrowaveTurntable turntable) {
+        super();
+        this.cooler = cooler;
+        this.magnetron = magnetron;
+        this.timer = timer;
+        this.turntable = turntable;
+        switches = new MicrowaveSwitch[]{cooler, magnetron, timer, turntable};
+    }
+ 
+    public MicrowaveFacade(int time) {
+        super();
+        cooler = new MicrowaveCooler();
+        magnetron = new MicrowaveMagnetron();
+        timer = new Microwavetimer(time, this);
+        turntable = new MicrowaveTurntable();
+        switches = new MicrowaveSwitch[]{cooler, magnetron, timer, turntable};
+    }
+    
+    
+    public void on() {
+        for(int i=0; i<switches.length; ++i) {
+            switches[i].on();
+        }
+        isActive = true;
+    }
+    
+    public void off() {
+        for(int i=0; i<switches.length; ++i) {
+            switches[i].off();
+        }
+        isActive = false;
+    }
+}
+```
+
+> MicrowaveTest.java
+```java
+public class MicrowaveTest {
+    public static void main(String[] args) {
+        MicrowaveFacade microwave = new MicrowaveFacade(Mode.FAST);
+        microwave.on();
+    }
+}
+
    
 ```
    
