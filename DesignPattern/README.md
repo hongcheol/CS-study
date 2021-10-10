@@ -27,7 +27,7 @@
    - Interpreter
    - Template Method
    - Chain of Responsibillity
-   - Command
+   - [Command](#command)
    - Iterator
    - Mediator
    - Memento
