@@ -16,7 +16,7 @@
 **2. 구조 패턴**
    - Bridge
    - [Decorator](#decorator)
-   - Facade
+   - [Facade](#facade)
    - Flyweight
    - Proxy
    - Composite
@@ -1129,6 +1129,224 @@ br.readLine();
 
 ---
 
+# Facade
+
+### Facade Pattern이란?
+
+<p align="center"><img width="70%" alt="99B6F54A5C68D4A91D" src="https://user-images.githubusercontent.com/51703260/136665199-6829f771-bea6-458e-9e8f-b75d4d1098b3.png"></p>
+
+퍼사드란, 프랑스어 Façade 에서 유래된 단어로 **"건물의 겉면"** 을 의미한다.
+   
+퍼사드 패턴의 목적은 복잡한 **서브시스템(내부 구조)** 을 거대한 **클래스(외벽)** 로 감싸서 편리한 인터페이스를 제공해주는 것이다. <br> 이 퍼사드 패턴은 제 3의 API(Third Party API)같은 외부 라이브러리를 추상화 하는데도 사용되기도 한다. 
+
+클라이언트는 퍼사드에서 고수준 인터페이스를 정의하기 때문에 서브시스템을 더 쉽게 사용할 수 있고 오직 퍼사드만 알아도 되므로 서브시스템에 의존하지 않을 수 있게 된다.
+
+### Facade Pattern 예시
+
+<p align="center"><img width="70%" alt="99B6F54A5C68D4A91D" src="https://user-images.githubusercontent.com/51703260/136668628-26a61237-872a-49a7-b053-cdfaad07cb46.jpg"></p>
+
+전자레인지를 예시로 퍼사드 패턴을 설명해보려고 한다.
+   
+전자레인지를 작동시키는 방법은 전원을 연결시키고 타이머를 설정하고 버튼을 눌러 작동 시킬 수 있다.
+   
+우리가 전자레인지를 사용하기 위해서는 전자레인지가 동작하는 원리라던가, 복잡한 내부구조에 대해서는 굳이 알 필요가 없다.
+   
+이런것이 일종의 전자레인지 퍼사드라고 이해해도 좋을 것 같다.만
+   
+#### 전자레인지의 내부 구성
+- `스위치` : 전원을 키고 끔
+- `쿨러` : 전자레인지를 식혀줌
+- `턴테이블` :  회전시킴
+- `마그네트론` : 마이크로파를 발생시킴
+- `타이머` : 일정 시간동안 전자레인지를 작동시킴
+
+> MicrowaveSwitch.java
+```java
+public interfaces MicrowaveSwitch{
+     public void on();
+     public void off();
+}
+```
+
+> MicrowaveCooler.java
+```java
+public class MicrowaveCooler implements MicrowaveSwitch {
+    @Override
+    public void on() {
+        System.out.println("Cooler Start");
+    }
+    
+    @Override
+    public void off() {
+        System.out.println("Cooler Stop");
+    }
+}
+```
+
+> MicrowaveTurntable.java
+```java
+public class MicrowaveTurntable implements MicrowaveSwitch{
+    @Override
+    public void on() {
+        System.out.println("Turntable Start");
+    }
+    
+    @Override
+    public void off() {
+        System.out.println("Turntable Stop");
+    }
+}
+```
+
+> MicrowaveMagnetron.java
+```java
+public class MicrowaveMagnetron implements MicrowaveSwitch {
+    @Override
+    public void on() {
+        System.out.println("Magnetron Start");
+    }
+ 
+    @Override
+    public void off() {
+        System.out.println("Magnetron Stop");
+    }
+}
+```
+
+> MicrowaveTimer.java
+```java
+import java.util.Timer;
+import java.util.TimerTask;
+
+public class MicrowaveTimer implements MicrowaveSwitch{
+    public static long TIME_INTERVAL = 1000;
+    private final int EXPIRED_TIME;
+    private Timer timer;
+    private TimerTask task;
+    MicrowaveFacade microwave;
+    int count = 0;
+    
+    public MicrowaveTimer(int sec, MicrowaveFacade microwave) {
+        super();
+        this.EXPIRED_TIME = sec;
+        this.count = EXPIRED_TIME;
+        this.microwave = microwave;
+        timer = new Timer();
+        task = new TimerTask() {
+            @Override
+            public void run() {
+                if(count > 0) System.out.println("Timer : " + (count--) + " sec");
+                else {
+                    System.out.println("Timer End");
+                    timer.cancel();
+                    microwave.off();
+                }
+            }
+        };
+    }
+ 
+    @Override
+    public void on() {
+        System.out.println("Timer Start" );
+        timer.schedule(task, 0, TIME_INTERVAL);
+    }
+    
+    @Override
+    public void off() {
+        timer.cancel();
+    }
+}
+```
+
+만약 우리가 전자레인지를 퍼사드 패턴을 쓰지 않고 작동시킨다면, 우리는 직접 모든 내부 장치들의 스위치를 키고 꺼야한다.
+
+먼저 쿨러를 키고, 마그네트론을 키고 턴테이블을 돌린 다음에 타이머를 켜서 원하는 시간만큼 작동시킨다. 그리고 작동이 끝나거나 정지시키려면 역순으로 하나씩 모두 직접 스위치를 내려 꺼야한다.
+
+하지만 아래와 같이 우리가 일상에서 사용하는 전자레인지는 아래와 같이 퍼사드 패턴을 적용시켜서 내부 구조를 알지 못해도 그냥 버튼을 하나만 눌러도 전자레인지의 온전한 기능을 모두 누릴 수 있게된다.
+
+그리고 각각의 부품을 다른 부품으로 교체(700와트 -> 1000와트)하여도 사용자들은 바뀐 부품에 따라 다르게 전자레인지를 작동시키는 것이 아닌 예전과 동일하게 전자레인지를 사용할 수 있기 때문에 퍼사드 패턴을 적용하면 클라이언트가 서브시스템에 의존하지 않을 수 있게 된다는 것이다.
+
+> MicrowaveFacade.java
+```java
+public class MicrowaveFacade {
+    MicrowaveCooler cooler;
+    MicrowaveMagnetron magnetron;
+    MicrowaveTimer timer;
+    MicrowaveTurntable turntable;
+    MicrowaveSwitch[] switches;
+    boolean isActive = false;
+    
+    public MicrowaveFacade(MicrowaveCooler cooler, MicrowaveMagnetron magnetron, MicrowaveTimer timer, MicrowaveTurntable turntable) {
+        super();
+        this.cooler = cooler;
+        this.turntable = turntable;
+        this.magnetron = magnetron;
+        this.timer = timer;
+        switches = new MicrowaveSwitch[]{cooler, turntable,  magnetron, timer};
+    }
+ 
+    public MicrowaveFacade(int time) {
+        super();
+        cooler = new MicrowaveCooler();
+        turntable = new MicrowaveTurntable();
+        magnetron = new MicrowaveMagnetron();
+        timer = new MicrowaveTimer(time, this);
+        switches = new MicrowaveSwitch[]{cooler, turntable,  magnetron, timer};
+    }
+    
+    public void on() {
+        System.out.println("Microwave On");
+        for(int i=0; i<switches.length; ++i) {
+            switches[i].on();
+        }
+        isActive = true;
+    }
+    
+    public void off() {
+        for(int i=switches.length-1; i>=0; i--) {
+            switches[i].off();
+        }
+        System.out.println("Microwave Off");
+        isActive = false;
+    }
+}
+```
+
+> MicrowaveTest.java
+```java
+public class MicrowaveTest {
+    public static void main(String[] args) {
+        MicrowaveFacade microwave = new MicrowaveFacade(10);
+        microwave.on();
+    }
+}
+```
+
+위 코드를 테스트 해보면, 그냥 전자레인지 타이머를 10초 설정을 하고 그냥 on 하기만 하면 아래와 같은 결과를 확인할 수 있다.
+
+![화면 캡처 2021-10-10 021733](https://user-images.githubusercontent.com/51703260/136668170-ab351727-bba3-480b-b190-2296e4fe9d0a.png)
+
+---
+
+![997F75335C334C3E1E](https://user-images.githubusercontent.com/51703260/136668218-3ce19bb0-4e7a-47d4-be2c-ee8b2f4d61dc.jpg)
+
+위 클래스 다이어그램과 같이 전자레인지를 사용하는 MicrowaveTest(User) 클래스에서는 전자레인지의 내부 부품들이 MicrowaveFacade 클래스에 감싸져 있지만 제공되는 인터페이스(on, off 버튼 등..)를 통해 간편하게 사용할 수 있다.
+
+### 사용용도
+
+- 퍼사드 패턴은 퍼사드 클래스가 서브시스템 클래스들을 캡슐화를 해주는 기능을 제공하는 것 보다, 서브시스템 기능들을 편리하게 사용할 수 있는 인터페이스를 제공하는 것이 주된 목적이다.
+- 클라이언트와 구현 클래스 또는 서브시스템과 다른 서브시스템간에 의존관계가 많을 경우 이를 감소시켜 각 서브시스템들의 독립성과 이식성을 높이는것을 목적으로 사용한다.
+
+### 장단점
+
+#### 장점
+- 클라이언트가 다뤄야 할 객체의 수를 줄여준다.
+- 클라이언트와 서브시스템 간의 결합도가 높아 복잡할 때 퍼사드 패턴을 활용하면 간편해진다.
+
+#### 단점
+- 클라이언트에게 내부 서브시스템까지 숨길 수는 없다.
+- 클라이언트가 서브시스템 내부의 클래스를 직접 사용하는 것을 막을 수 없다.
+---
 ## Adapter
 #### 어댑터 패턴(Decorator Pattern)이란 한 클래스의 인터페이스를 클라이언트에서 사용하고자 할 때, 다른 인터페이스로 변환시켜 사용하는 패턴이다. 
 #### 어댑터를 이용하면 인터페이스 호환성 문제 때문에 같이 쓸 수 없는 클래스들을 연결해서 쓸 수 있다.
