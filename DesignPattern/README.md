@@ -12,7 +12,7 @@
    - [Factory Method](#factory-method)
    - [Abstract Factory](#abstract-factory)
    - [Singleton](#singleton)
-   
+
 **2. 구조 패턴**
    - Bridge
    - [Decorator](#decorator)
@@ -21,8 +21,9 @@
    - Proxy
    - Composite
    - [Adapter](#adapter)
-   
+
 **3. 행위 패턴**
+
    - Interpreter
    - Template Method
    - Chain of Responsibillity
@@ -34,7 +35,7 @@
    - State
    - Strategy
    - Visitor
-   
+
 # 1. 생성패턴 
 ## Factory Method
 #### 팩토리 메소드 패턴(Factory Method Pattern)이란 상위 클래스에 알려지지 않은 구현 클래스를 생성하는 패턴이다.
@@ -1270,3 +1271,310 @@ public class Main{
 이렇게 어댑터 패턴을 통해 mp3Player 에서도 video 포맷의 파일을 재생시킬 수 있다. 물론 영상은 못보고 소리만 나오겠지만..
 
 ---
+
+# 3.행위 패턴
+
+# Command
+
+커맨드(Command) 패턴은 특정 객체에 대한 특정 **작업 요청을 객체로 캡슐화**함으로써 주어진 여러 기능을 사용할 수 있는 재사용성이 높은 클래스를 설계하는 패턴입니다. 
+
+이벤트가 발생했을 때 실행될 기능이 다양하면서도 변경이 필요한 경우에 이벤트를 발생 시키는 클래스를 변경하지 않고 재사용하고자 할 때 유용합니다.
+
+Client가 보낸 요청을 객체로 만들어서 객체를 큐로 관리하고 저장,로깅,취소할 수도 있습니다.
+
+
+
+<p align="center"><img src="img/command_example1.PNG" width="600"></p>
+
+홈 오토메이션 리모컨을 만든다고 생각해봅시다.
+
+1번 버튼에 Light가 연결되어 있으면 ligth.on(), GarageDoor가 연결되어 있으면 garageDoor.up()... 
+
+각 버튼에 기능을 직접 연결한다면 기능들이 추가될 때마다 리모컨의 코드를 고쳐야합니다.
+
+하지만, 커맨드 패턴을 적용한다면 버튼마다 커맨드 객체를 저장해 두어 사용자가 버튼을 눌렀을 때 커맨드 객체를 통해서 작업을 처리하도록 만들 수 있습니다.
+
+그러므로 리모컨에서는 자세한 내용을 전혀 몰라도 됩니다. 
+
+리모컨은 어떤 객체에 어떤 일을 시켜야 할지 잘 알고 있는 커맨드 객체만 있으면 됩니다.
+
+
+
+## 커맨드 패턴의 구조와 구성요소
+
+<p align="center"><img src="img/command_class_diagram.PNG" width="600"></p>
+
+- Clinet
+
+  - ConcreteCommand를 생성하고 Receiver를 설정합니다.
+  - Invoker 객체의 setCommand() 메소드를 호출하여 커맨드 객체를 넘겨줍니다.
+
+- Invoker
+
+  - setCommand() 메소드를 통해 커맨드 객체를 저장하고 있습니다.
+  - 저장된 커맨드 객체의 execute() 메소드를 호출함으로써 커맨드 객체에게 특정 작업을 수행해 달라는 요구를 하게 됩니다.
+
+- Command
+
+  - 모든 커맨드 객체에서 구현해야 하는 인터페이스입니다.
+  - 행동과 receiver에 대한 정보가 들어있습니다.
+  - 모든 명령은 execute() 메소드 호출을 통해 수행되며, 이 메소드에서는 receiver에 특정 작업을 처리하라는 지시를 전달합니다.
+
+- Receiver
+
+  - 기능을 수행합니다.
+  - 요구 사항을 수행하기 위해 어떤 일을 처리해야 하는지 알고있는 객체입니다.
+
+- ConcreteCommand
+
+  - 특정 행동과 receiver 사이를 연결해 줍니다.
+  - Invoker에서 execute() 호출을 통해 요청을 하면 ConcreteCommand 객체에서 receiver에 있는 메소드를 호출함으로써 그 작업을 처리합니다.
+  - execute() 메소드 에서는 receiver에 있는 메소드를 호출하여 요청된 작업을 수행합니다.
+
+  
+
+## 커맨드 패턴의 동작 순서
+
+1. Client에서 커맨드 객체를 생성
+
+2. Invoker 객체의 setCommand() 메소드를 호출하여 커맨드 객체를 저장
+
+3. Clinet에서 Invoker를 통해  execute() 요청을 전송
+
+4. Invoker에서 커맨드 객체의 execute() 실행
+
+5. 커맨드 객체의 Receiver가 수행.
+
+   
+
+- Light
+
+  ```java
+  //Receiver 역할
+  public class Light { 
+  	
+  	private String location;
+  	
+      public Light(String location) {
+      	this.location = location;
+      }
+      
+      public void on(){        
+          System.out.println(location + " Light is on");
+      }
+  
+      public void off(){        
+          System.out.println(location + " Light is off");
+      }               
+  
+  }
+  ```
+
+  
+
+- Command
+
+  ```java
+  public interface Command {
+  	void execute();
+  }
+  ```
+
+
+
+- LightOnCommand
+
+  ```java
+  public class LightOnCommand implements Command {
+  	
+  	Light light;
+  	
+  	public LightOnCommand(Light light) {
+  		super();
+  		this.light = light;
+  	}
+  
+  	@Override
+  	public void execute() {
+  		light.on();
+  	}
+  
+  }
+  
+  ```
+
+  
+
+- LightOffCommand
+
+  ```java
+  public class LightOffCommand implements Command {
+  	
+  	Light light;
+  	
+  	public LightOffCommand(Light light) {
+  		super();
+  		this.light = light;
+  	}
+  
+  	@Override
+  	public void execute() {
+  		light.off();
+  	}
+  
+  }
+  ```
+
+  
+
+- StereoOnWithCDCommand
+
+  ```java
+  public class StereoOnWithCDCOmmand implements Command {
+  	
+  	Stereo stereo;
+  	
+      public StereoOnWithCDCOmmand(Stereo stereo){
+          this.stereo = stereo;
+      }
+      
+      // execute에서 여러 개의 동작을 수행하는 로직을 작성할 수 있습니다.
+      public void execute() {
+          stereo.On();
+          stereo.SetCD();
+          stereo.SetVolume(11);
+      }
+  }
+  ```
+
+  
+
+- RemoteController
+
+  ```java
+  // Invoker 역할
+  public class RemoteController {
+  	
+  	static final int SIZE = 7;
+  	Command[] onCommands;
+      Command[] offCommands;
+  
+      public RemoteController() {
+  
+          onCommands = new Command[SIZE];
+          offCommands = new Command[SIZE];
+          
+          // null 처리를 대신할 커맨드
+          Command noCommand = new NoCommand();
+  
+          for (int i = 0; i < SIZE; i++) {
+              onCommands[i] = noCommand;
+              offCommands[i] = noCommand;
+          }
+      }
+  
+      public void setCommand(int slot, Command onCommand, Command offCommand) {
+          onCommands[slot] = onCommand;
+          offCommands[slot] = offCommand;
+      }
+  
+      public void onButtonWasPushed(int slot) {
+          onCommands[slot].Execute();
+      }
+  
+      public void offButtonWasPushed(int slot) {
+          offCommands[slot].Execute();
+      }
+      
+      @Override
+      public String toString(){
+          StringBuffer sb = new StringBuffer();
+          sb.append("\n------ Remote Control -----\n");
+  
+          for (int i = 0; i < onCommands.length; i++) {
+              sb.append("[slot " + i + "] " + 
+                  onCommands[i].getClass().getName() + "    " + 
+                  offCommands[i].getClass().getName() + "\n");
+          }
+         return sb.toString();
+      }
+  }
+  ```
+
+
+
+- Client
+
+  ```java
+  //Client 역할
+  public class RemoteControlTest {
+  
+  	public static void main(String[] args) {
+  		RemoteController remoteController = new RemoteController();
+  		
+  		Light livingRoomlight = new Light("Living Room");
+  		Light kitchenlight = new Light("Kitchen");
+  		
+  		LightOnCommand livingRoomlightOn =
+  				new LightOnCommand(livingRoomlight);
+  		LightOffCommand livingRoomlightOff =
+  				new LightOffCommand(livingRoomlight);
+  		LightOnCommand KitchenlightOn =
+  				new LightOnCommand(kitchenlight);
+  		LightOffCommand KitchenlightOff =
+  				new LightOffCommand(kitchenlight);
+  		
+  		remoteController.setCommand(1, livingRoomlightOn, livingRoomlightOff);
+  		remoteController.setCommand(2, KitchenlightOn, KitchenlightOff);
+  		
+  		remoteController.onButtonWasPushed(1);
+  		remoteController.offButtonWasPushed(1);
+  		
+          System.out.println(remoteController);
+          
+  		remoteController.onButtonWasPushed(2);
+  		remoteController.offButtonWasPushed(2);
+  	}
+  
+  }
+  ```
+
+  <p align="center"><img src="img/command_example2.PNG" width="600"></p>
+
+
+
+## 커맨드 패턴의 장단점
+
+- 장점
+  - 작업을 요청하는 객체와 수행하는 객체를 분리하여 의존성을 줄이고 단일 책임 원칙(SRP)을 만족합니다
+  - 코드의 수정 없이 작업 수행 객체나 추가 구현이 가능하여 개방-폐쇄 원칙(OCP)을 만족합니다.
+
+- 단점
+  - 커맨드가 추가되면 클래스를 계속 생성해야 합니다.
+
+
+
+## 커맨드 패턴 활용
+
+- 작업 큐
+
+  - 커맨드 객체를 생성하고 큐에 추가합니다. ex) 네트워크 연결, 다운로드 ...
+  - 스레드에서 큐로부터 커맨드를 하나씩 제거하면서 커맨드의 execute() 메소드를 호출합니다.
+
+  
+
+- 요청을 로그에 기록
+
+  - 커맨드에 save()와 load() 메소드를 추가합니다.
+
+  - 각 커맨드가 실행될 때 마다 디스크에 그 내역을 저장합니다.
+
+  - 시스템이 다운되었다가 복구할 때 그 저장 기록으로 커맨드 객체를 다시 실행할 수 있습니다.
+
+    
+
+### Reference
+
+http://latedreamer.blogspot.com/2017/02/command-pattern.html
+
+https://brownbears.tistory.com/561
