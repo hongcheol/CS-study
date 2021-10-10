@@ -1284,7 +1284,7 @@ Client가 보낸 요청을 객체로 만들어서 객체를 큐로 관리하고 
 
 
 
-<p align="center"><img src="img/command_example1.PNG" width="600"></p>
+<p align="center"><img src="img/command_example1.png" width="600"></p>
 
 홈 오토메이션 리모컨을 만든다고 생각해봅시다.
 
