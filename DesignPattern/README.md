@@ -259,9 +259,9 @@ User user3 = new User.UserBuilder("ssafy", "Choi")
 
 #### References
 
-[howtodoinjava Builder Pattern](https://howtodoinjava.com/design-patterns/creational/builder-pattern-in-java/)
-[dzone Immutability and Builder Pattern](https://dzone.com/articles/immutability-with-builder-design-pattern)
-[StackExchange Why do we need a builder class](https://softwareengineering.stackexchange.com/questions/380397/why-do-we-need-a-builder-class-when-implementing-a-builder-pattern)
+[howtodoinjava Builder Pattern](https://howtodoinjava.com/design-patterns/creational/builder-pattern-in-java/)  
+[dzone Immutability and Builder Pattern](https://dzone.com/articles/immutability-with-builder-design-pattern)  
+[StackExchange Why do we need a builder class](https://softwareengineering.stackexchange.com/questions/380397/why-do-we-need-a-builder-class-when-implementing-a-builder-pattern)  
 
 <br>
 
