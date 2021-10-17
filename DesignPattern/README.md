@@ -31,7 +31,7 @@
    - Iterator
    - Mediator
    - Memento
-   - Observer
+   - [Observer](#observer)
    - State
    - Strategy
    - Visitor
@@ -2024,3 +2024,275 @@ Client가 보낸 요청을 객체로 만들어서 객체를 큐로 관리하고 
 http://latedreamer.blogspot.com/2017/02/command-pattern.html
 
 https://brownbears.tistory.com/561
+
+<br>
+
+---
+
+<br>
+
+# Observer
+## Observer 패턴이란?
+
+<p align="center">
+<img src="https://user-images.githubusercontent.com/33649908/137611370-063812ec-6f27-4e23-ab1b-975675c7bf9f.png" width="50%">
+</p>
+
+객체의 상태 변화를 관찰하는 관찰자들, 즉 옵저버들의 목록을 객체에 등록하여 상태 변화가 있을 때마다 메서드 등을 통해 **객체가 직접 목록의 각 옵저버에게 통지**하도록 하는 디자인 패턴이다. 주로 분산 이벤트 핸들링 시스템을 구현하는 데 사용된다. **발행/구독 모델**로 알려져 있기도 하다. <br>
+
+즉, 한 객체의 상태 변화에 따라 다른 객체의 상태도 연동되도록 **일대다(one-to-many) 객체 의존 관계**를 구성하는 패턴 <br>
+
+데이터의 변경이 발생했을 경우 상대 클래스나 객체에 의존하지 않으면서 데이터 변경을 통보하고자 할 때 유용하다.
+
+<br>
+
+## Observer 패턴의 구현
+Observer 패턴을 구현하는 방법에는 여러가지가 있지만, 대부분 **주제(Subject) 인터페이스**와 **옵저버(Observer) 인터페이스**가 들어있는 클래스로 디자인합니다.
+
+<p align="center">
+<img src="https://user-images.githubusercontent.com/33649908/137612300-351dae9e-c816-43ff-b81d-89c79f71427a.jpeg" width="70%">
+</p>
+
+### Subject 인터페이스와 구현체
+```java
+interface Subject {
+  registerObserver() // 옵저버 등록
+  removeObserver() // 옵저버 삭제
+  notifyObserver() // 옵저버에게 업데이트 알림
+}
+
+class SubjectImpl implements Subject {
+  registerObserver() { ... }
+  removeObserver() { ... }
+  notifyObserver() { ... }
+  
+  getState() // 주제 객체는 상태를 설정하고 알기 위한 getter, setter가 있을 수 있다.
+  setState()
+}
+```
+
+### Observer 인터페이스와 구현체
+```java
+interface Observer{ // 옵저버가 될 객체에서는 반드시 Observer 인터페이스를 구현해야함.
+  update() // 주제의 상태가 바뀌었을때 호출됨
+}
+
+class ObserverImpl implements Observer {
+  update() { 
+    // 주제가 업데이트 될 때 해야하는 일
+  }
+}
+```
+
+* Observer에서 `update()` 메소드를 통해 주제의 state를 전달받긴 하지만, 실제 state 데이터의 주인은 주제(Subject)에 있다.
+* Observer는 데이터가 변경되었을 때 주제에서 데이터를 전달해주기를 기다리는 입장이기 때문에 의존성을 가진다고 할 수 있다.
+* 이런 방법을 사용하면 여러 객체에서 동일한 데이터를 제어하도록 하는 것에 비해 더 깔끔한 객체지향 디자인을 만들 수 있다.
+
+<br>
+
+## 느슨한 결합(Loose Coupling)의 위력 (= Observer 패턴의 장점)
+두 객체가 느슨하게 결합되어 있다는 것은, 그 둘이 상호작용을 하긴 하지만 서로에 대해 잘 모르는 것을 의미한다. Observer 패턴에서는 **주제와 옵저버가 느슨하게 결합되어 있는 객체 디자인을 제공**한다.
+
+주제가 옵저버에 대해서 아는 것은 옵저버가 특정 인터페이스(Observer 인터페이스)를 구현한다는 것 뿐이기 때문이다.
+
+<br>
+
+느슨한 결합의 장점은 다음과 같다.
+
+1. 옵저버를 언제든 새로 추가, 제거할 수 있다.
+2. 새로운 형식의 옵저버를 추가하려고 할 때 주제를 전혀 변경할 필요가 없다.
+3. 주제와 옵저버는 서로 독립적으로 재사용할 수 있다.
+4. 주제나 옵저버가 바뀌더라도 서로에게 영향을 미치지 않는다.
+
+<br>
+
+* 디자인 원칙
+> 서로 상호작용을 하는 객체 사이에서는 가능하면 느슨하게 결합하는 디자인을 사용해야 한다.
+
+<br>
+
+따라서 Loose Coupling 디자인을 활용하면 객체 사이의 상호 의존성을 최소화 할 수 있기 때문에 **변경사항이 생겨도 무난히 처리할 수 있는 유연한 객체지향 시스템을 구축**할 수 있다.
+
+<br>
+
+## Observer 패턴의 예시
+### 기상 모니터링 애플리케이션 개요
+이 시스템은 아래 세 요소로 이루어진다.
+
+<p align="center">
+<img src="https://user-images.githubusercontent.com/33649908/137611697-aaac0d8d-52ee-4c58-8ac2-848779a8e18e.jpeg" width="80%">
+</p>
+
+1. 기상 스테이션(실제 기상 정보를 수집하는 장비)
+2. WeatherData 객체(기상 스테이션으로부터 오는 데이터를 추적하는 객체)
+3. 사용자에게 현재 기상 조건을 보여주는 디스플레이
+
+<br>
+
+WeatherData 객체에서는 기상 스테이션 장비 자체로부터 데이터를 가져올 수 있다. 데이터를 가져온 후에는 디스플레이 장비에 세가지 항목을 표시할 수 있다.<br>
+* 현재 조건(온도, 습도, 압력)
+* 기상 통계
+* 간단한 기상 예보
+
+이 화면들은 모두 WeatherData 객체에서 최신 데이터로 업데이트될 때마다 실시간으로 갱신된다. 
+
+<br>
+
+### Bad Case (Observer 패턴 적용 전)
+
+``` java
+class WeatherData {
+  getTemperature()
+  getHumidity()
+  getPressure()
+  measurementsChanged() // 기상 관측값이 갱신되면 해당 메소드가 호출됨
+}
+
+```
+Weather Data 클래스가 온도, 습도, 기압을 가져오는 get 메소드를 제공하고, 기상 관측값이 갱신되면 `measurementsChanged()` 메소드를 호출한다. <br>
+그럼 `measurementsChanged()` 메소드를 통해 3가지 화면을 구현해보자.
+
+<br>
+
+```java
+class WeatherData {
+  // 인스턴스 변수 선언
+  public void measurementsChanged() {
+    float temp = getTemperature();
+    float humidity = getHumidity();
+    float pressure = getPressure();
+    
+    currentWeatherDisplay.update(temp, humidity, pressure);
+    forecastWeatherDisplay.update(temp, humidity, pressure);
+    staticsticDisplay.update(temp, humidity, pressure);
+  }
+}
+```
+
+get 메소드들을 이용하여 온도, 습도, 기압을 가져오고 각 화면단에 해당 변수들을 전달하여 `update()`를 하는 방식으로 구현했다.
+
+하지만 이 코드에는 아래와 같은 문제가 발생한다.
+1. `currentWeatherDisplay.update`, `forecastWeatherDisplay.update`, `staticsticDisplay.update` 와 같이 구체적인 구현에 맞춰서 코딩했기 때문에, 다른 화면을 추가하고자 한다면 `measurementsChanged()` 메소드를 고치지 않고서는 새로운 화면을 추가할 수 없다.
+2. 따라서 바뀔 수 있는 부분(각 화면 단)을 캡슐화 해야한다. 
+
+<br>
+
+### Good Case (Observer 패턴 적용 후)
+
+<p align="center">
+<img src="https://user-images.githubusercontent.com/33649908/137613203-b335bc4c-adcc-4132-b1cc-d0e5ff8afc1d.jpeg" width="80%">
+</p>
+
+1. Subject 인터페이스를 구현하여 WeatherData를 주제 객체로 만들기
+```java
+interface Subject {
+  registerObserver()
+  removeObserver()
+  notifyObserver()
+}
+
+class WeatherData implements Subject {
+  registerObserver()
+  removeObserver()
+  notifyObserver()
+  
+  getTemperature()
+  getHumidity()
+  getPressure()
+  measurementsChanged()
+}
+```
+
+2. `현재 날씨, 기상 예보, 기상 통계` 화면에서 구현해야할 인터페이스 정의
+```java
+interface Observer {
+  update() // 새로 갱신된 주제 데이터를 전달하는 인터페이스
+}
+
+interface DisplayElement {
+  display() // 화면에 표현시키는 인터페이스
+}
+
+```
+
+3. 위 인터페이스를 구현한 `현재 날씨, 기상 예보, 기상 통계` 클래스 만들기
+```java
+class CurrentWeather implements Observer, DisplayElement{
+  update()
+  display() { // 현재 측정 값을 화면에 표시 }
+}
+
+class ForcastWeather implements Observer, DisplayElement{
+  update()
+  display() { // 기상 예보 표시 }
+}
+
+class StatisticsDisplay implements Observer, DisplayElement{
+  update()
+  display() { // 평균 기온, 평균 습도 등 표시 }
+}
+```
+
+4. `현재 날씨, 기상 예보, 기상 통계` 화면을 불러오는 메인 함수
+```java
+public class WeatherStation {
+
+  public static void main(String[] args) {
+    WeatherData weatherData = new WeatherData();
+    
+    // 화면 구성 
+    CurrentConditionsDisplay currentDisplay = 
+      new CurrentConditionsDisplay(weatherData);
+    StatisticsDisplay statisticsDisplay = new StatisticsDisplay(weatherData);
+    ForecastDisplay forecastDisplay = new ForecastDisplay(weatherData);
+    
+    // 기상 측정값 설정
+    weatherData.setMeasurements(80, 65, 30.4f);
+    weatherData.setMeasurements(82, 70, 29.2f);
+    weatherData.setMeasurements(78, 90, 29.2f);
+    
+    weatherData.removeObserver(forecastDisplay);
+    weatherData.setMeasurements(62, 90, 28.1f);
+  }
+}
+```
+
+<br>
+
+만약 새로운 화면 `불쾌지수` 화면을 만든다고 한다면 아래와 같이 쉽게 추가할 수 있다.
+```java
+class DiscomfortDisplay implements Observer, DisplayElement{
+  update()
+  display() {
+    // 불쾌지수를 화면에 표시
+  }
+}
+
+public class WeatherStation {
+  public static void main(String[] args) {
+    WeatherData weatherData = new WeatherData();
+
+    // 기존 화면에 불쾌지수 화면 추가
+    ...
+    DiscomfortDisplay discomfortDisplay = new DiscomfortDisplay(weatherData);
+    
+  }
+}
+```
+
+<br>
+
+## Observer 패턴 적용 
+### 목적
+하나 이상의 객체에 시스템 내의 다른 객체의 상태 변경 사항을 통지하기 위해서 
+
+<br>
+
+### 사용 용도 
+* 객체 간 Loose coupling이 필요할 때
+* 하나 이상의 객체의 상태 변화가 다른 객체들의 동작에 영향을 주어야 할 때
+* 브로드캐스팅 기능이 요구될 때
+
++) Observer 패턴은 모델-뷰-컨트롤러(Model-View-controller, MVC) 패러다임과 자주 결합된다. Observer 패턴은 MVC에서 모델과 뷰 사이를 느슨히 연결하기 위해 사용된다. 대표적으로 모델에서 일어나는 이벤트를 통보받는 Observer는 뷰의 내용을 바꾸는 스위치를 작동시킨다.
+
+<br>
