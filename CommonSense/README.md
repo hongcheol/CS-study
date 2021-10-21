@@ -12,7 +12,7 @@
 - [함수형 프로그래밍](#함수형-프로그래밍)
 - DevOps
 - 3rd Party
-- Git , Github, Gitlab
+- [Git, Github, Gitlab](#git-github-gitlab)
 - [REST API](#rest-api)
 - [Argument vs Parameter](#Argument-vs-Parameter)
 - [Sync vs Async](#동기vs비동기)
@@ -1513,6 +1513,209 @@ public class Test {
 }
 ```
 
+<hr>
+
+# Git Github Gitlab
+	
+## Git이란?
+
+컴퓨터 파일의 변경사항을 추적하고 여러명의 사용자들 간에 해당 파일들에 대한 작업을 조율하기 위한 **분산 버전 관리 시스템**입니다. 깃을 통해 다음과 같은 작업들을 할 수 있습니다.
+
+- 소스 코드가 변경된 이력을 쉽게 확인
+- 특정 시점에 저장된 버전과 비교하거나 특정 시점으로 되돌아갈 수 있음
+- 내가 올리려는 파일이 누군가 편집한 내용과 충돌한다면, 서버에 업로드 할 때 경고 메시지가 발생
+
+> **버전 관리 시스템**  
+> 소프트웨어 개발에서 팀 단위로 개발 중인 소스 코드 같은 디지털 문서를 관리하는데 사용된다. 문서의 변경 사항들에 숫자나 문자로 이뤄진 "버전"을 부여해서 구분한다. "버전"을 통해서 시간적으로 변경 사항과 그 변경 사항을 작성한 작업자를 추적할 수 있다. \- 위키백과
+
+### 버전관리 시스템의 필요성
+
+편집이 빈번하게 일어나는 텍스트 파일을 관리한다고 합시다. 파일의 편집 전 상태로 되돌아가도록 하기 위해서는 아래와 같이 파일을 관리해야 합니다.
+
+- 20210918*문서*초본.txt
+- 20210923*문서*수정본1.txt
+- 20210923*문서*수정본2.txt
+- 문서\_최종.txt
+- 20211002*문서*최종\_최종.txt
+
+이 처럼 파일을 관리하게 되면 어떤 파일이 최신 파일인지 어떤 부분이 변경된 것인지 관리하기가 매우 어려워지게 됩니다. 또한 하나의 문서를 여러 사람이 동시에 작성한다면 업데이트 되는 파일을 공유하는 것이 어려워지고 서로 정보를 덮어쓰는 일도 일어날 수 있습니다. 이러한 문제를 해결하기 위해 등장한 것이 바로 버전 관리 시스템입니다.
+
+### 버전 관리 시스템의 종류
+
+1. Client-Server Model
+   - 하나의 중앙 서버를 중심으로 여러 클라이언트가 각자 맡은 파트만 서버로부터 받아와 작업하고, 다시 서버로 통합
+   - CVS, Subversion 등
+2. **Distributed Model**
+   - 하나의 중앙 서버가 존재하지만, 여러 클라이언트들이 각자의 로컬 컴퓨터 저장소에 중앙 서버의 전체 사본을 가지고 작업
+   - **Git**
+
+## Git의 버전 관리방식
+
+Git이 파일들의 변경사항을 버전별로 관리하기 위해서 파일들을 어떤 식으로 인식하고, 어떠한 단계로 관리하는지 알아봅시다.
+
+### 1. Git의 3가지 영역(단계)
+
+Git은 아래 세가지 작업영역으로 파일을 관리합니다.
+
+![git areas](https://git-scm.com/book/en/v2/images/areas.png)
+
+- Working Directory : git이 관리 중인 파일들이 위치하는 영역
+  - git init을 통해서 git이 관리하도록 지정된 디렉토리입니다.
+  - 지정된 디렉토리에서 .git 디렉토리를 제외한 모든 것(파일, 하위 디렉토리)
+  - 작업한 파일(생성, 수정한 파일)들이 저장되는 곳
+- Staging Area : commit 할 준비가 된 파일들이 위치하는 영역
+  - 해당 영역은 .git 디렉토리에 단순한 파일로 존재
+  - 작업한(수정된) 파일들 중 버전으로 만들고자(commit 하고자) 하는 파일을 저장
+  - git에서는 기술용어로써 "Index"라고 부르기도 합니다.
+- Git Directory(Repository) : 커밋되어 버전을 관리하는 파일들이 위치하는 영역
+  - Git이 프로젝트의 메타데이터와 객체 데이터베이스를 저장하는 곳
+  - .git 디렉토리가 Git Directory(Repository)입니다.
+  - 프로젝트의 버전 정보를 관리하기 필요로 한 모든 파일이 저장되어 있습니다.
+
+### 2. Git의 3가지 상태
+
+git은 파일의 변경사항 들을 버전별로 관리하기 위해서 파일들을 Committed, Modified, Staged 3가지 상태로 관리를 합니다.
+
+- Modified : 수정한 파일을 로컬 데이터베이스에 commit하지 않은 상태
+  - Working Directory 영역에 있는 파일들 중 수정을 한 파일들의 상태를 의미합니다.
+- Staged : 수정한 파일들 중 commit 할 것이라고 표시한 상태
+  - Staging Area 영역에 있는 파일들의 상태입니다.
+- Commited : 데이터(Staged 상태였던)가 로컬 데이터베이스에 안전하게 저장된 상태
+  - commit 된 대상 파일은 Working Directory 영역으로 돌아가게 되고 대상 파일의 버전을 관리하는 파일들은 Git Directory(Repository)에 저장된 상태를 말합니다.
+  - Commited 상태 대상 파일을 수정하게 되면 Modified 상태가 됩니다.
+
+### 3. Git File Status Lifecycle
+
+git에 의해 관리되는 파일들을 라이프사이클 관점에서 살펴봅시다. Working Directory에 있는 파일들은 크게 Tracked 상태와 Untracked 상태로 분류됩니다. Tracked 상태는 좀 더 세부적으로 Unmodified, Modified, Staged 상태로 분류될 수 있습니다. Git의 파일들은 반드시 해당 4가지 상태중 하나의 상태를 가지게 되고, 4가지 상태를 반복적으로 순환합니다.
+
+![git file status lifecycle](https://t1.daumcdn.net/cfile/tistory/9946F6445AAA4F8917)
+
+- Untracked: Working Directory에 존재는 하지만 git이 관리를 하지 않는 파일들의 상태.
+  - Working Directory에 새롭게 만들어진 파일들이 이에 해당합니다.
+  - Untracked 파일이라는 개념을 이용해 특정 디렉토리나 파일을 Git의 관리 목록에서 제외(gitignore) 가능
+- Tracked: 이미 한 번 이상 커밋되어 git이 관리를 하는 파일의 상태
+  - Staged : commit 하고자 하는 파일의 상태
+    - Untracked 상태의 파일 혹은 commit 된 이후 수정이 진행된 파일(Modified 상태의 파일)을 git add 명령을 수행하게되면 해당 파일들은 Staged 상태가 됩니다.
+  - Unmodified : 수정을 하지 않은 파일 상태
+    - Unmodified 상태의 파일은 한 번 이상 commit 된 파일 중 수정을 하지 않은 파일 또는 다른 저장소의 파일들을 clone 하였을 때의 파일들을 의미합니다.
+  - Modified : 수정을 한 파일의 상태입니다.
+    - Unmodified 상태의 파일을 수정을 하게 되면 Modified 상태 파일이 됩니다.
+- 처음 저장소를 Clone하면 모든 파일은 Tracked이면서 Unmodified인 상태
+
+## 원격 저장소와 로컬 저장소
+
+Git은 원격 저장소와 로컬 저장소 두 종류의 저장소를 제공합니다.
+
+- 원격 저장소(Remote Repository): 파일이 원격 저장소 전용 서버에서 관리되며 여러 사람이 함께 공유하기 위한 저장소입니다.
+- 로컬 저장소(Local Repository): 내 PC에 파일이 저장되는 개인 전용 저장소입니다.
+  평소에는 내 PC의 로컬 저장소에서 작업하다가 작업한 내용을 공개하고 싶을 때에 원격 저장소에 업로드 합니다. 물론 원격 저장소에서 다른 사람이 작업한 파일을 로컬 저장소로 가져올 수도 있습니다.
+
+### Github와 Gitlab
+
+Github와 Gitlab 모두 분산 버전 관리 툴인 깃 저장소 호스팅을 지원하는 웹 서비스입니다. 원격 저장소를 제공하는 웹 호스팅 서비스라고 할 수 있습니다.
+
+- Github
+  - 보통 OpenSource Project가 진행되어짐
+  - private repository로 사용할 경우는 일부 비용을 내야해 개인 프로젝트 저장소로 부적합
+- Gitlab
+  - Private project더라도 비용이 없음
+  - 비용을 추가로 내면 기술지원도 받을수 있음
+
+## Git 프로세스와 명령어
+
+![git process](https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2F8WU74%2FbtqFWdeMQWq%2F0CsBk7fSnqpP2BGRDr72JK%2Fimg.jpg)
+
+- git init : 깃 저장소를 초기화한다. 저장소나 디렉토리 안에서 이 명령을 실행하기 전까지는 그냥 일반 폴더이다. 이것을 입력한 후에야 추가적인 깃 명령어들을 줄 수 있다.
+- git clone : 원격 저장소의 저장소를 내 local에서 이용할 수 있게 그대로 복사해 가져온다.
+- git add : 이 명령이 저장소에 새 파일들을 추가하진 않는다. 대신, 깃이 파일들을 지켜보게 한다. 파일을 추가하면, 깃의 저장소 “스냅샷”에 포함된다.
+- git commit : 깃의 가장 중요한 명령어이다. 파일을 수정한 후, 저장소의 “스냅샷”을 찍기 위해 사용하는 명령어이다. 보통 “git commit -m “Message hear.” 형식으로 사용한다. -m은 명령어의 다음 부분을 메세지로 남긴다는 뜻이다.
+- git push : 로컬 컴퓨터에서 작업하고 당신의 커밋을 깃허브에서 온라인으로도 볼 수 있기를 원한다면, 이 명령어로 깃허브에 변경사항을 “push”한다.
+- git pull : 원격 저장소의 내용을 가져와 자동으로 병합 작업을 실행
+- git checkout : 현재 위치하고 있지 않은 저장소를 “체크아웃”할 수 있다. 이것은 체크하길 원하는 저장소로 옮겨가게 해주는 탐색 명령이다. 만약 master 브랜치를 들여다 보고 싶으면, git checkout master를 사용할 수 있다.
+- git merge : 브랜치에서 작업을 끝내고, 모든 협업자가 볼 수 있는 master 브랜치로 병합할 수 있다. "git merge hello"라고 입력한다면 hello브랜치에서 만든 모든 변경사항을 master로 추가한다.
+- git fetch: 단순히 원격 저장소의 내용을 확인만 하고 로컬 데이터와 병합은 하지 않음
+
+
+
+## Git Branch
+
+![git branch](https://blog.kakaocdn.net/dn/t3Ih1/btqFvuOfQFZ/HrlGV5obNZ9NNRmOnEbkok/img.png)
+여러 사람이 동일한 소스코드를 기반으로 서로 다른 작업을 할 때에는 각각 서로 다른 버전의 코드가 만들어 질 수 밖에 없습니다.이럴 때, 여러 개발자들이 동시에 다양한 작업을 할 수 있게 만들어 주는 기능이 바로 '브랜치(Branch)' 입니다.
+
+브랜치란 독립적으로 어떤 작업을 진행하기 위한 개념입니다. 필요에 의해 만들어지는 각각의 브랜치는 다른 브랜치의 영향을 받지 않기 때문에, 여러 작업을 동시에 진행할 수 있습니다.
+
+만들어진 브랜치는 다른 브랜치와 병합(Merge)함으로써, 작업한 내용을 다시 새로운 하나의 브랜치로 모을 수 있습니다.
+저장소를 처음 만들면, Git은 바로 'master'라는 이름의 브랜치를 만들어 둡니다. 이 새로운 저장소에 새로운 파일을 추가 한다거나 추가한 파일의 내용을 변경하여 그 내용을 저장(커밋, Commit)하는 것은 모두 'master' 라는 이름의 브랜치를 통해 처리할 수 있는 일이 됩니다.
+
+## Git 브랜칭 전략
+
+여러 사람이 다양한 브랜치를 생성하고 사용하게 되면 브랜치를 어떤 식으로 관리하고 생성할 것인지에 대한 약속이 필요합니다. Git 브랜치를 효과적으로 나누고 관리하는 전략들에 대해 알아봅시다.
+
+- Git-flow
+- Github-flow
+- Gitlab-flow
+
+### Git-flow
+
+Git-flow는 Git이 새롭게 활성화되기 시작하는 10년전 쯤에 Vincent Driessen이라는 사람이 만들어낸 브랜치 관리 전략으로 현재는 Git으로 개발할 때 거의 표준과 같이 사용되는 방법론입니다.
+
+Git-flow는 5가의 브랜치를 사용해서 운영합니다.
+![git-flow](https://lh5.googleusercontent.com/YBoig12xGUyZKF3j9lNrPT_vuDqLvh2Y4snSSBL0UuILhBxvfJjXZRkhUTjmEQIJ_31GkQnsb5fTI3nSwmL8zAi3ZrpPm_QARYF1Q9IyooXdXL8CWiDxIyCl32JWmwFBL5J0Igli)
+
+- master : 기준이 되는 브랜치로 제품을 배포하는 브랜치(배포 가능한 상태만을 관리)
+- develop : 다음 출시 버전을 개발하는 브랜치(이 브랜치를 기준으로 각자 작업한 기능들을 Merge)
+- feature : 단위 기능을 개발하는 브랜치(개발이 완료되면 develop 브랜치에 Merge)
+- release : master 브랜치로 보내기 전에 QA를 하기위한 브랜치
+- hotfix : 출시 버전에서 발생한 버그를 수정 하는 브랜치
+
+- 장점
+  - 명령어가 나와있다.
+  - 웬만한 에디터와 IDE에는 플러그인으로 존재한다.
+- 단점
+- 브랜치 가 많아 복잡하다.
+- 안 쓰는 브런치가 있다. 그리고 몇몇 브런치는 애매한 포지션이다.
+
+### Github-flow
+
+Git-flow가 Github에서 사용하기에는 복잡하다고 나온 브랜칭 전략.
+
+![github flow](http://cdn-ak.f.st-hatena.com/images/fotolife/s/shoma2da/20151104/20151104223339.png)
+
+1. master: master 브랜치는 항상 최신 상태며, stable 상태로 product에 배포되는 브랜치
+2. 새로운 일을 시작하기 위해 브랜치 를 master에서 딴다면 이름은 어떤 일을 하는지 명확하게 작성
+    - 브랜치는 항상 master 브랜치에서 만든다
+    - Git-flow와는 다르게 feature 브랜치나 develop 브랜치가 존재하지 않음
+3. 원격지 브랜치로 수시로 push 하자
+    - 항상 원격지에 자신이 하고 있는 일들을 올려 다른 사람들도 확인할 수 있도록 해준다
+    - 이는 하드웨어에 문제가 발생해 작업하던 부분이 없어지더라도, 원격지에 있는 소스를 받아서 작업할 수 있도록 해준다
+4. 피드백이나 도움이 필요할 때, 그리고 merge 준비가 완료되었을 때는 pull request를 생성한다
+5. 기능에 대한 리뷰와 사인이 끝난 후 master로 머지한다.
+6. master로 머지되고 푸시되었을 때는 즉시 배포되어야 한다.
+    - GitHub Flow의 핵심인 master로 머지가 일어나면 hubot을 이용하여 자동으로 배포가 되도록 설정해놓는다.
+
+- 장점
+  - 브랜치 전략이 단순하다.
+  - Github 사이트에서 제공하는 기능을 모두 사용하여 작업을 진행한다.
+  - 코드 리뷰를 자연스럽게 사용할 수 있다.
+  - CI가 필수적이며, 배포는 자동으로 진행할 수 있다.
+- 단점
+  - CI와 배포 자동화가 되어있지 않은 시스템에서는 사람이 관련된 업무를 진행한다.
+  - 많은 것들이 올라오기 시작하면 복잡해진다.
+
+## git 튜토리얼
+
+실제 git의 사용법을 익히고 싶으시다면
+
+- https://backlog.com/git-tutorial/kr/intro/intro1_1.html
+- https://www.inflearn.com/course/git-2#curriculum
+
+## Reference
+
+- https://kimvampa.tistory.com/124
+- https://git-scm.com/book/ko/v2/%EC%8B%9C%EC%9E%91%ED%95%98%EA%B8%B0-Git-%EA%B8%B0%EC%B4%88
+- https://ujuc.github.io/2015/12/16/git-flow-github-flow-gitlab-flow/
+- https://hellowoori.tistory.com/56
+	
 <hr>
 
 # REST API
