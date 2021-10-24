@@ -1,7 +1,7 @@
 # 개발상식
 - [클린코드](#클린코드)
 - [리팩토링](#리팩토링)
-	- 리팩토링 기법
+	- [리팩토링 기법](#리팩토링-기법)
 - 시큐어코딩
 - [애자일](#애자일) 
 - [TDD](#TDD)
@@ -414,6 +414,471 @@ get/set 메소드만 가지고 다른 것은 아무것도 없는 등 클래스�
 <br>
 
 <br>
+
+
+# 리팩토링 기법
+
+
+
+<br>
+
+## 1. 메소드 추출(Extract Method)
+
+중복된 코드, 긴 메소드, 불필요한 주석 등이 발견될 때 필요한 기법이다. 반복되는 부분을 하나의 메소드로 생성하고 지역변수를 사용한다면 적절하게 인자값으로 넘겨준다. 이때 메소드명은 메소드 작동 원리가 아닌 기능을 잘 나타내도록 작성해야 한다. 만약 두 하위 클래스에 중복된 코드가 있다면 메소드 추출 후 상위 클래스에 정의할 수 있다.(메소드 상향)
+
+```java
+Class A{
+    void a(){
+        ...
+        System.out.println("서울 6반");
+        System.out.println("화이팅");
+        ...
+    }
+    
+     void b(){
+        ...
+        System.out.println("서울 6반");
+        System.out.println("화이팅");
+        ...
+    }
+}
+
+
+
+/***** 리팩토링 *****/
+Class A_Refactoring{
+    void a(){
+        ...
+       	printFighting();
+        ...
+    }
+    
+     void b(){
+        ...
+        printFighting();
+        ...
+    }
+    
+    void printFighting(){
+        System.out.println("서울 6반");
+        System.out.println("화이팅");
+    }
+}
+```
+
+
+
+<br>
+
+
+
+## 2. 인라인 메소드(Inline Method)
+
+메소드 몸체가 메소드 이름만큼이나 명확하다면 메소드를 삭제하고 호출하는 곳에 그 몸체를 삽입한다. 
+
+``` java
+int getRating()
+{
+  return (moreThanFiveLateDeliveries()) ? 2: 1;
+}
+boolean moreThanFiveLateDeliveries()
+{
+  return _numberOfLateDeliveries > 5;
+}
+
+
+/***** 리팩토링 *****/
+int getRating()
+{
+  return (_numberOfLateDeliveries > 5) ? 2 : 1;
+}
+```
+
+
+
+<br>
+
+
+
+## 3. 임시변수를 메소드로 전환(Replace Temp with Query)
+
+수식의 결과를 저장하는 임시변수가 있다면 이를 새로운 메소드로 생성한다. 이를 통해 다른 메소드들에서도 해당 수식 메소드를 호출할 수 있다. 
+
+``` java
+double basePrice = quantity * itemPrice; 
+if (basePrice > 1000) { 
+    return basePrice * 0.95; 
+} else { 
+    return basePrice * 0.98; 
+}
+
+
+/***** 리팩토링 *****/
+if (basePrice() > 1000) { 
+    return basePrice() * 0.95;
+} else { 
+    return basePrice() * 0.98; 
+} 
+
+public double basePrice() { 
+    return quantity * itemPrice; 
+}
+```
+
+
+
+<br>
+
+
+
+## 4. 직관적 임시변수 사용(Introduce Explaining Variable)
+
+복잡한 수식의 경우 이를 쉽게 알아볼 수 있도록 직관적 이름의 임시변수에 대입한다. 보통은 메소드 추출이 권장되는 방법이지만 지역변수 등의 이유로 메소드 추출이 어렵다면 이 방법을 사용한다.
+
+``` java
+ if( ( platform.toUpperCase().indexOf("MAC") > -1 ) &&
+        ( browser.toUpperCase().indexOf("IE") > -1 ) &&
+        ( wasInitialized() && resized > 0 )
+    {
+      // do something
+    }
+
+    
+/***** 리팩토링 *****/
+final boolean isMasOS = platform.toUpperCase().indexOf("MAC") > -1;
+final boolean isIEBrowser = browser.toUpperCase().indexOf("IE") > -1;
+final boolean wasResized = 0;
+
+if( isMacOS && isIEBrowser && wasInitialized() && wasResized )
+    {
+      // do something
+    }
+```
+
+
+
+<br>
+
+
+
+## 5. 임시변수 분리(Split Temporary Variable)
+
+루프 안의 변수 등과 같이 임시변수에 값을 누적하는 상황이 아니라면 임시변수를 돌려쓰지 않고 각 상황에 맞게 따로따로 생성한다.
+
+``` java
+double temp = 2 * (height * width);
+System.out.println(temp);
+temp = height * width;
+System.out.println(temp);
+
+
+/***** 리팩토링 *****/
+double perimeter = 2 * (height * width);
+System.out.println(perimeter);
+double area = height * width;
+System.out.println(area);
+```
+
+
+
+<br>
+
+
+
+## 6. 메소드를 메소드 객체로 전환(Replace Method with Method Object)
+
+메소드 추출을 적용해야할 때 지역변수 때문에 적용하기 어렵다면 모든 지역변수들을 객체의 필드로 만들어 새로운 객체로 뽑아낸다. 이를 통해 객체 안의 여러 메소드로 분리할 수 있다. 
+
+``` java
+ class Account {
+     
+	int gamma(int inputVal, int quantity, int yearToDate ) {
+    	int importantVaule1 = (inputVal * quantity) + delta();
+    	int importantValue2 = (inputVal * yearToDate) + 100;
+        
+	    if(( yearToDate - importantValue1 ) > 100 )
+    	    importantValue2 -= 20;
+        
+     	int importantValue3 = importantValue2 *7;
+        
+     	return importantValue3 - 2 * importantVaule1;
+    }
+}
+```
+
+```java
+class Account { 
+    
+    int gamma (int inputVal, int quantity, int yearToDate) { 
+        return new Gamma(this, inputVal, quantity, yearToDate).compute(); 
+    } 
+} 
+
+class Gamma { 
+    private final Account account; 
+    private int inputVal; 
+    private int quantity; 
+    private int yearToDate; 
+    private int importantValue1; 
+    private int importantValue2; 
+    private int importantValue3; 
+    
+    Gamma(Account source, int inputValArg, int quantityArg, int yearToDateArg) { 
+        account = source; 
+        inputVal = inputValArg; 
+        quantity = quantityArg; 
+        yearToDate = yearToDateArg; 
+    } 
+    
+    int compute() { 
+        importantValue1 = (inputVal * quantity) + account.delta(); 
+        importantValue2 = (inputVal * yearToDate) + 100; 
+        
+        if ((yearToDate -importantValue1) > 100) 
+            importantValue2 -= 20; 
+        
+        int importantValue3 = importantValue2 * 7; 
+        
+        return importantValue3 - 2 * importantValue1; 
+    } 
+}
+```
+
+
+
+<br>
+
+
+
+## 7. 메소드 이동(Move Method)
+
+메소드가 자신이 정의된 클래스보다 다른 클래스와 관련된 기능을 더 많이 수행하고 있거나, 클래스에 너무 많이 기능이 정의되어 있는 등 상황에 따라 의존성이 지나친 메소드들은 옮겨 주는 것이 좋다. 
+
+``` java
+class Account { 
+    private AccountType type; 
+    private int daysOverdrawn; 
+    
+    double overdraftCharge() { 
+        if (type.isPremium()) { 
+            double result = 10; 
+            if (daysOverdrawn > 7) { 
+                result += (daysOverdrawn - 7) * 0.85; 
+            } 
+            return result; 
+        } else { 
+            return daysOverdrawn * 1.75; 
+        } 
+    } 
+    
+    double bankCharge() { 
+        double result = 4.5; 
+        if (daysOverdrawn > 0) { 
+            result += overdraftCharge(); 
+        } 
+        return result; 
+    } 
+}
+
+
+/***** 리팩토링 *****/
+class Account { 
+    private AccountType type; 
+    private int daysOverdrawn; 
+    
+    double bankCharge() { 
+        double result = 4.5; 
+        if (daysOverdrawn > 0) { 
+            result += type.overdraftCharge(daysOverdrawn); 
+        } return result; 
+    } 
+} 
+
+class AccountType { 
+    double overdraftCharge(int daysOverdrawn) { 
+        if (isPremium()) { 
+            double result = 10; 
+            if (daysOverdrawn > 7) { 
+                result += (daysOverdrawn - 7) * 0.85; 
+            } 
+            return result; 
+        } else { 
+            return daysOverdrawn * 1.75; 
+        } 
+    } 
+}
+```
+
+
+
+<br>
+
+
+
+## 8. 클래스 추출(Extract Class)
+
+클래스는 확실하게 추상화되어 2~3가지의 명확한 기능을 맡아야 한다. 두 개의 클래스로 나누어 해야할 일을 하나의 클래스가 하고 있다면 새로운 클래스를 생성하여 기존 클래스의 관련 필드와 메소드를 옮겨야 한다. 
+
+``` java
+class Person {
+    private String name; 
+    private String officeAreaCode; 
+    private String officeNumber; 
+    
+    public String setName(String name){
+        this.name = name;
+    }
+    public String getName() { 
+        return name; 
+    } 
+    
+    // Person이 아닌 전화번호와 관련된 기능
+    public String getTelephoneNumber() { 
+        return "(" + officeAreaCode + ")" + officeNumber; 
+    } 
+    public String getOfficeAreaCode() { 
+        return officeAreaCode; 
+    } 
+    public void setOfficeAreaCode(String args) { 
+        this.officeAreaCode = arg; 
+    } 
+    public String getOfficeNumber() { 
+        return officeNumber; 
+    } 
+    public void setOfficeNumber(String arg) { 
+        this.officeNumber = arg; 
+    } 
+}
+
+
+/***** 리팩토링 *****/
+class Person { 
+    private TelephoneNumber officeTelephone = new TelephoneNumber(); 
+    private String name; 
+    
+    public String setName(String name){
+        this.name = name;
+    }
+    public String getName() { 
+        return name; 
+    } 
+    public String getTelephoneNumber() { 
+        return officeTelephone.getTelephoneNumber(); 
+    } 
+    public TelephoneNumber getOfficeTelephone() { 
+        return officeTelephone; 
+    } 
+} 
+
+// TelephoneNumber 클래스 추출
+class TelephoneNumber {
+    private String number; 
+    private String areaCode; 
+    
+    public String getTelephoneNumber() { 
+        return "(" + areaCode + ")" + number; 
+    } 
+    public String getAreaCode() { 
+        return areaCode; 
+    } 
+    public setAreaCode(String arg) { 
+        this.areaCode = arg; 
+    } 
+    public String getNumber() {
+        return number; 
+    } 
+    public void setNumber(String arg) { 
+        this.number = arg; 
+    } 
+}
+```
+
+
+
+<br>
+
+
+
+## 9. 대리 객체 은폐(Hide Delegate)
+
+사용가자 객체의 대리 클래스를 호출하는 경우 이를 감출 수 있는 메소드를 정의한다.(캡슐화, 메시지 체인 감소)
+
+``` java
+class Person { 
+    private Department department; 
+    
+    public Department getDepartment() { 
+        return department; 
+    } 
+    public void setDepartment(Department arg) { 
+        department = arg; 
+    } 
+}
+
+class Department { 
+    private String chargeCode; 
+    private Person manager; 
+    
+    public Department(Person manager) { 
+        this.manager = manager; 
+    } 
+    public Person getManager() { 
+        return manager; 
+    } 
+} 
+
+public class Main { 
+    public static void main(String[] args) { 
+        Person ssafy = new Person();
+        Person manager = ssafy.getDepartment().getManager(); // Person 객체의 Department 객체에 접근
+    } 
+}
+
+
+/***** 리팩토링 *****/
+class Person { 
+    private Department department; 
+    
+    public Person(Department department) { 
+        this.department = department; 
+    } 
+    public Person getManager() { 
+        return department.getManager(); // Department 객체를 숨기고 매니저를 얻는 메소드 생성
+    } 
+} 
+
+class Department { 
+    private String chargeCode; 
+    private Person manager; 
+    public Department(Person manager) { 
+        this.manager = manager; 
+    } 
+    public Person getManager() { 
+        return manager; 
+    } 
+} 
+
+public class Main { 
+    public static void main(String[] args) { 
+        Person ssafy = new Person();
+        Person manager = ssafy.getManager(); // Department 객체에는 접근 불가
+    } 
+}
+```
+
+
+
+<br>
+
+[참고] [*마틴 파울러 - 『리팩토링』*](http://www.kyobobook.co.kr/product/detailViewKor.laf?ejkGb=KOR&mallGb=KOR&barcode=9791162242742&orderClick=LAG&Kc=)
+
+
+<br>
+
+<br>
+
+<br>
+
 
 # 애자일
 ## 애자일 이란?
