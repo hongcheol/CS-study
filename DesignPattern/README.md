@@ -34,7 +34,7 @@
    - [Observer](#observer)
    - State
    - Strategy
-   - Visitor
+   - [Visitor](#Visitor-Pattern)
 
 <hr>
 
@@ -2408,5 +2408,330 @@ public class WeatherStation {
 * 브로드캐스팅 기능이 요구될 때
 
 +) Observer 패턴은 모델-뷰-컨트롤러(Model-View-controller, MVC) 패러다임과 자주 결합된다. Observer 패턴은 MVC에서 모델과 뷰 사이를 느슨히 연결하기 위해 사용된다. 대표적으로 모델에서 일어나는 이벤트를 통보받는 Observer는 뷰의 내용을 바꾸는 스위치를 작동시킨다.
+
+<br>
+
+# Visitor Pattern
+
+`객체`(데이터 구조)와 `로직`(알고리즘)을 분리하는 디자인 패턴  
+새로운 로직을 추가하더라도 객체의 구조는 변경하지 않은 채 새로운 동작을 추가할 수 있다.
+
+## Visitor Pattern을 적용하기 위한 빌드 업
+
+유리컵과 신선 식품을 파는 쇼핑몰 사장님이 됐다고 생각해보자. 눈치 챘겠지만 이 예제에서 **객체**는 **상품**(유리컵, 신선 식품)이 될 것이고, **로직**은 **상품 주문**이 될 것이다.
+
+> - 상품 : 유리컵, 신선 식품
+> - 주문 : 포장, 배송, 포인트 적립(추가 기능)
+
+이제 이 예제를 구현하는 과정에서 몇 가지 문제를 짚어보고, 이 문제들을 어떻게 Visitor 패턴으로 해결하는지 알아보자.
+
+<br>
+
+### 문제 1. 유지 보수의 어려움
+
+1. 쇼핑몰에서 판매하는 `상품 인터페이스`를 정의하고 이를 구현하는 `유리컵과 신선 식품 구현체`를 만든다.
+
+```java
+/* 상품 인터페이스 */
+public interface Product() {
+    public void pack();
+    public void deliver();
+}
+
+/* 유리컵 구현체 */
+public class Glass implements Product {
+    // 포장
+    @Override
+    public void pack() { System.out.println("뽁뽁이로 안전하게 포장"); }
+    // 배송
+    @Override
+    public void deliver() {System.out.println("한 달 동안 느긋하게 배송"); }
+}
+/* 신선 식품 구현체 */
+public class FreshGrocery implements Product {
+    // 포장
+    @Override
+    public void pack() { System.out.println("아이스팩으로 신선하게 포장"); }
+    // 배송
+    @Override
+    public void deliver() {System.out.println("하루만에 퀵으로 배송"); }
+}
+```
+
+[실행]
+
+```java
+public static void main(String[] args) {
+    Product glass = new Glass();
+    Product freshGrocery = new FreshGrocery();
+
+    glass.pack();
+    glass.deliver();
+    freshGrocery.pack();
+    freshGrocery.deliver();
+}
+```
+
+- 위의 방법으로 구현할 경우 모든 객체마다 로직을 위한 메서드를 정의해야하기 때문에 **1) 새로운 기능을 추가하기 어려**울 뿐만 아니라 **2) 특정 객체에서 로직 구현을 빼먹기도 쉽다**.
+- 또한 모든 객체에 대해 기능을 수행하게 하기 위해서는 위에서처럼 main()에서 모든 객체 별 각 함수를 직접 호출해야하기 때문에 **3) iterator를 통한 반복적인 처리가 불가능**하다.
+
+<br>
+
+### 문제 2. 객체 분기의 어려움 및 코드 중복
+
+1번 예제 문제를 해결하기 위해 객체와 기능 로직을 분리해보자.
+
+1. 1번 예제에서 `상품 객체`들은 유지하되, 기능을 위한 메서드는 제거한다.
+2. `주문 인터페이스`를 정의한 뒤, 이를 구현한 `세부 기능 구현체`를 정의한다.
+
+[상품 객체]
+
+```java
+/* 상품 인터페이스 */
+public interface Product() { }
+
+/* 유리컵 구현체 */
+public class Glass implements Product { }
+/* 신선 식품 구현체 */
+public class FreshGrocery implements Product { }
+```
+
+[주문 기능]
+
+```java
+/* 주문 인터페이스 */
+public interface Order {
+    public void pack(Product product);
+    public void deliver(Product product);
+}
+
+/* 주문 구현체 */
+public class OrderImpl implements Order {
+    // 포장
+    @Override
+    public void pack(Product product) {
+        if (product instanceof Glass) {
+            // 유리컵 포장
+            System.out.println("뽁뽁이로 안전하게 포장");
+        } else if (product instanceof FreshGrocery) {
+            // 신선 식품 포장
+            System.out.println("아이스팩으로 신선하게 포장");
+        }
+    }
+
+    // 배송
+    @Override
+    public void deliver(Product product) {
+        if (product instanceof Glass) {
+            // 유리컵 배송
+            System.out.println("한 달 동안 느긋하게 배송");
+        } else if (product instanceof FreshGrocery) {
+            // 신선 식품 베송
+            System.out.println("하루만에 퀵으로 배송");
+        }
+    }
+}
+```
+
+[실행]
+
+```java
+public static void main(String[] args) {
+    Product glass = new Glass();
+    Product freshGrocery = new FreshGrocery();
+    Order order = new OrderImpl();
+
+    order.pack(glass);
+    order.pack(freshGrocery);
+    order.deliver(glass);
+    order.deliver(freshGrocery);
+}
+```
+
+- 위 코드는 1번의 문제점인 반복적인 처리가 가능해졌지만 여전히 문제가 남아있다. 특히 `if (product instanceof Glass)` 부분으로 분기하는 부분이 성에 안찬다.
+- 이렇게 객체를 분기할 경우 **1) 특정 객체에 대한 분기를 빼먹을 수도 있**을 뿐만 아니라, **비슷한 구조가 반복되는 코드 중복**이 발생한다.
+- 즉, 1번의 문제를 거의 해결하지 못한 격이다.
+
+<br>
+
+### 문제 3. Single Dispatch(Dynamic Dispatch) 문제
+
+#### Dispatch란?
+
+`Dispatch`란 메서드를 호출하는 방식을 말한다.
+
+자바는 런타임 시에 어떤 메서드를 호출할지 결정하는, 즉 **런타임** 시에 생성되는 인스턴스를 **동적으로 타입 체크** 하는 `dynamic dispatch`만을 지원한다.(single dispatch)
+
+#### 예제
+
+1. 2번 예제의 상품 객체와 주문 클래스를 유지하되, 주문 클래스에서 각 상품 타입 별 메서드를 생성한다.
+
+[주문 기능]
+
+```java
+/* 주문 인터페이스 */
+public interface Order {
+    public void pack(Glass glass);
+    public void pack(FreshGrocery freshGrocery);
+    public void deliver(Glass glass);
+    public void deliver(FreshGrocery freshGrocery);
+}
+
+/* 주문 구현체 */
+public class OrderImpl implements Order {
+    // 유리컵 포장
+    @Override
+    public void pack(Glass glass) { System.out.println("뽁뽁이로 안전하게 포장"); }
+    // 신선 식품 포장
+    @Override
+    public void pack(FreshGrocery freshGrocery) { System.out.println("뽁뽁이로 안전하게 포장"); }
+    
+    // 유리컵 배송
+    @Override
+    public void deliver(Glass glass) { System.out.println("한 달 동안 느긋하게 배송"); } 
+    // 신선 식품 배송
+    @Override
+    public void deliver(FreshGrocery freshGrocery) { System.out.println("아이스팩으로 신선하게 포장"); } 
+}
+```
+
+[실행]
+
+```java
+public static void main(String[] args) {
+    Product glass = new Glass();
+    Product freshGrocery = new FreshGrocery();
+    Order order = new OrderImpl();
+
+    order.pack(glass);
+    order.pack(freshGrocery);
+    order.deliver(glass);
+    order.deliver(freshGrocery);
+}
+```
+
+- 이번 예제는 2번 예제의 실행 부분인 main() 부분이 동일하다. 언뜻보면 가능해 보일지라도 이번에는 `컴파일 에러`가 발생하게 된다.
+- `OrderImpl` 클래스 내부의 `pack()` 메서드와 `deliver()` 메서드는 각각 서로 다른 매개변수 타입(`Glass`, `FreshGrocery`)으로 정의하여 **오버로딩**하고 있다.
+- 하지만 실행 부분에서는 `glass`와 `freshGrocery` 인스턴스 모두 `Product` 타입의 객체를 생성하여 사용하고 있다. 따라서 실제로는 `Glass` 타입과 `FreshGrocery` 타입의 인스턴스일지라도, **Dynamic Dispatch** 특성 상 컴파일 시 `Glass` 타입과 `FreshGrocery` 타입으로 인식될 수 없다.
+- 더 작은 타입에 더 큰 타입의 객체를 넣을 수 없다.
+- 이 문제를 해결하자고 `glass`와 `freshGrocery` 인스턴스를 `Product` 타입이 아닌 `Glass` 타입과 `FreshGrocery` 타입으로 생성하게 된다면 이는 더 이상 인터페이스를 사용하는 의미가 없는 코드가 되어버린다.
+
+<br>
+
+## Visitor Pattern을 이용한 해결 방안
+
+이제 위의 문제점들을 Visitor Pattern을 이용해 해결해보자. 
+
+1. 1번 문제를 해결하기 위해 **객체와 로직을 분리**할 것이다.
+2. 또한 2번 문제를 해결하기 위해 **각 객체를 매개변수로 하는 기능 메서드를 각각 정의**한다.
+3. 마지막으로 **Double Dispatch**를 구현하여 3번 문제를 해결한다!
+
+[상품 객체]
+
+```java
+/* 상품 인터페이스 */
+public interface Product() {
+    public void order(Order order);
+}
+
+/* 유리컵 구현체 */
+public class Glass implements Product {
+    @Override
+    public void order(Order order) {
+        order.placeOrder(this);
+    }
+}
+/* 신선 식품 구현체 */
+public class FreshGrocery implements Product {
+    @Override
+    public void order(Order order) {
+        order.placeOrder(this);
+    }
+}
+```
+
+[주문 기능]
+
+```java
+/* 주문 인터페이스 */
+public interface Order {
+    public void placeOrder(Glass glass);
+    public void placeOrder(FreshGrocery freshGrocery);
+}
+
+/* 포장 주문 구현체 */
+public class PackOrder implements Order {
+    // 유리컵 포장
+    @Override
+    public void placeOrder(Glass glass) { System.out.println("뽁뽁이로 안전하게 포장"); }
+
+    // 신선 식품 포장
+    @Override
+    public void placeOrder(FreshGrocery freshGrocery) { System.out.println("뽁뽁이로 안전하게 포장"); }
+}
+
+/* 배송 주문 구현체 */
+public class DeliverOrder implements Order {
+    // 유리컵 배송
+    @Override
+    public void placeOrder(Glass glass) { System.out.println("한 달 동안 느긋하게 배송"); } 
+
+    // 신선 식품 배송
+    @Override
+    public void placeOrder(FreshGrocery freshGrocery) { System.out.println("아이스팩으로 신선하게 포장"); } 
+}
+
+/* 포인트 적립 주문 구현체 */
+public class pointSaveOrder implements Order {
+    // 유리컵 포인트 적립
+    @Override
+    public void placeOrder(Glass glass) { System.out.println("구매 금액의 10% 적립"); } 
+
+    // 신선 식품 포인트 적립
+    @Override
+    public void placeOrder(FreshGrocery freshGrocery) { System.out.println("구매 금액의 5% 적립"); } 
+}
+```
+
+[실행]
+
+```java
+public static void main(String[] args) {
+    Product glass = new Glass();
+    Product freshGrocery = new FreshGrocery();
+    Order packOrder = new PackOrder();
+    Order deliverOrder = new DeliverOrder();
+
+    glass.order(packOrder);
+    glass.order(deliverOrder);
+    freshGrocery.order(packOrder);
+    freshGrocery.order(deliverOrder);
+}
+```
+
+Visitor 패턴을 적용한 이후 달라진 부분은 다음과 같다.
+
+- 상품 객체 내에서 주문 기능을 구현하지 않아도 된다.
+- 주문 기능을 클래스로 빼낸 뒤, 각 상품 객체 타입 별 별도의 메서드를 정의하고 있기 때문에 구현을 빼먹을 위험이 적다.
+- 각 상품 타입 객체에서 기능 함수를 호출하여 사용하고 있기 때문에 `single dispatch`문제가 발생하지 않는다. (더 큰 타입에서 더 작은 타입의 객체를 받고 있기 때문에)
+- 새로운 주문 기능을 추가하기가 쉽다! 객체에서는 변경 없이 오직 주문 클래스만 추가하면 된다.
+
+추가적으로 Visitor Pattern에서 흔히 말하는 Visitor, Element의 역할은 다음과 같이 매칭될 수 있다.
+
+> - Visitor : 기능이나 로직을 위한 인터페이스 ex) `Order 인터페이스`
+> - ConcreteVisitor : 기능이나 로직 구현체 ex) `PackOrder 클래스`, `DeliverOrder 클래스`, `pointSaveOrder 클래스`
+> - visit(Element) : 객체에서 호출되어 사용하기 위해 기능 클래스가 공통적으로 구현해야 할 메서드 ex) `placeOrder()`
+> - Element : 기능이나 로직을 사용할 객체 인터페이스 ex) `Product 인터페이스`
+> - ConcreteElement : 객체 인터페이스의 구현체 ex) `Glass 클래스`, `FreshGrocery 클래스`
+> - accept(Visitor) : 기능 클래스 내의 visit 메서드를 호출하기 위해 모든 객체가 구현해야 할 메서드 ex) `order()`
+
+<br>
+<hr>
+
+#### References
+
+[방문자 패턴 - Visitor pattern by Jeongjin Kim](https://thecodinglog.github.io/design/2019/10/29/visitor-pattern.html)
+
+[토비의봄#01. Double Dispatch by LichKing](https://multifrontgarden.tistory.com/133)
 
 <br>
