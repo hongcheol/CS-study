@@ -2584,14 +2584,14 @@ public class OrderImpl implements Order {
     public void pack(Glass glass) { System.out.println("뽁뽁이로 안전하게 포장"); }
     // 신선 식품 포장
     @Override
-    public void pack(FreshGrocery freshGrocery) { System.out.println("뽁뽁이로 안전하게 포장"); }
+    public void pack(FreshGrocery freshGrocery) { System.out.println("아이스팩으로 신선하게 포장"); }
     
     // 유리컵 배송
     @Override
     public void deliver(Glass glass) { System.out.println("한 달 동안 느긋하게 배송"); } 
     // 신선 식품 배송
     @Override
-    public void deliver(FreshGrocery freshGrocery) { System.out.println("아이스팩으로 신선하게 포장"); } 
+    public void deliver(FreshGrocery freshGrocery) { System.out.println("하루만에 퀵으로 배송"); } 
 }
 ```
 
@@ -2667,7 +2667,7 @@ public class PackOrder implements Order {
 
     // 신선 식품 포장
     @Override
-    public void placeOrder(FreshGrocery freshGrocery) { System.out.println("뽁뽁이로 안전하게 포장"); }
+    public void placeOrder(FreshGrocery freshGrocery) { System.out.println("아이스팩으로 신선하게 포장"); }
 }
 
 /* 배송 주문 구현체 */
@@ -2678,7 +2678,7 @@ public class DeliverOrder implements Order {
 
     // 신선 식품 배송
     @Override
-    public void placeOrder(FreshGrocery freshGrocery) { System.out.println("아이스팩으로 신선하게 포장"); } 
+    public void placeOrder(FreshGrocery freshGrocery) { System.out.println("하루만에 퀵으로 배송"); } 
 }
 
 /* 포인트 적립 주문 구현체 */
