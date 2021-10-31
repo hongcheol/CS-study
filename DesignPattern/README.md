@@ -28,7 +28,7 @@
    - [Template Method](#template-method)
    - Chain of Responsibillity
    - [Command](#command)
-   - Iterator
+   - [Iterator](#iterator)
    - Mediator
    - Memento
    - [Observer](#observer)
@@ -2140,6 +2140,322 @@ http://latedreamer.blogspot.com/2017/02/command-pattern.html
 https://brownbears.tistory.com/561
 
 <br>
+
+---
+
+# Iterator
+
+컬렉션 구현 방법을 노출시키지 않으면서 그 집합체 안에 들어있는 모든 항목에 접근할 수 있는 방법을 제공한다.
+
+컬렉션 객체 안에 들어있는 모든 항목에 접근하는 방식이 통일되어 있으면 어떤 종류의 집합체에 대해서도 사용할 수 있는 다형적인 코드를 만들 수 있다.
+
+이터레이터 패턴을 사용하면 모든 항목에 일일이 접근하는 작업을 컬렉션 객체가 아닌 반복자 객체에서 맡게 된다.
+
+이렇게 하면 집합체의 인터페이스 및 구현이 간단해질 뿐 아니라, 집합체에서는 반복작업에서 손을 떼고 원래 자신이 할 일 (객체 컬렉션 관리) 에만 전념할 수 있다.
+
+## 예제
+
+두 개의 서로다른 식당이 있고 각각의 식당에서 메뉴를 구현한다고 가정해보자
+
+```java
+public class MenuItem {
+	String name;
+	String description;
+	String vegetarian;
+	double price;
+
+	public MenuItem(String name, String description, boolean vegetarian, double price){
+		this.nae = name;
+		this.description = description;
+		this.vegetarian = vegetarian;	
+		this.price = price;
+	}
+
+	public String getName() {
+		return name;
+	}
+	
+	public String getDescription() {
+		return description;
+	}
+
+	public double getPrice() {
+		return price;
+	}
+
+	public boolean isVegetarian() {
+		return vegetarian;
+	}
+	
+}
+```
+
+```java
+public class PancakeHouseMenu {
+	ArrayList<MenuItem> menuItems;
+	
+	public PancakeHouseMenu() {
+		this.menuItems = new ArrayList();
+		additem("K&B 팬케이크 세트","스크램블드 에그와 토스트가 곁들여진 펜케이크",true,2.99);
+		additem("레귤러 팬케이크 세트","달걀 후라이와 소시지가 곁들여진 펜케이크",false,2.99);
+		additem("블루베리 펜케이크","신선한 블루베리와 블루베리 시럽으로 만든 펜케이크",true,3.49);
+		additem("와플","와플, 취향에 따라 블루베리나 딸기를 얹을 수 있습니다.",true,3.59);
+	}
+	
+	public void additem(string name, String description, boolean vegetarian, double price) {
+		MenuItem menuItem = new MenuItem(name, description, vegetarian, price);
+		menuItem.add(menuItem);
+	}
+	
+	public ArrayList<MenuItem> getMenuItems() {
+		return menuItems;	
+	}
+
+	//기타 메소드
+}
+```
+
+```java
+public class DinerMenu {
+	static final int MAX_ITEMS = 6;
+	int numberOfItems = 0;
+	MenuItem[] menuItems;
+	
+	public DinerMenu() {
+		this.menuItems = new MenuItem[MAX_ITEMS];
+		additem("채식주의자용 BLT","통밀 위에 (식물성)베이컨, 상추, 토마토를 얹은 메뉴",true,2.99);
+		additem("BLT","통밀 위에 베이컨, 상추, 토마토를 얹은 메뉴",false,2.99);
+		additem("오늘의 스프","감자 샐러드를 곁들인 오늘의 스프",false,3.29);
+		additem("핫도그","사워크라우트, 갖은 양념, 양파, 치즈가 곁들여진 핫도그",false,3.05);
+	}
+
+	public void additem(string name, String description, boolean vegetarian, double price) {	
+		MenuItem menuItem = new MenuItem(name, description, vegetarian, price);
+		if(nemberOfItems >= MAX_ITEMS){
+			System.err.println("죄송합니다, 메뉴가 꽉 찼습니다. 더 이상 추가할 수 없습니다.");
+		} else {
+			menuItems[numberOfItems] = menuItem;
+			numberOfItems = numberOfItems+1;
+		}
+	}
+	
+	public MenuItem[] getMenuItems() {
+		return menuItems;
+	}
+
+	//기타 메소드
+
+}
+```
+
+이 위의 두 개의 메뉴를 사용하는 클라이언트를 만들어보자.
+
+클라이언트의 기능은 아래와 같다.
+
+1. `printMenu()` : 메뉴에 있는 모든 항목 출력
+2. `printBreakfastMenu()` : 아침 식사 항목만 출력
+3. `printLunchMenu()` : 점심 식사 항목만 출력
+4. `printVegetarianMenu()` : 채식주의자용 메뉴 항목만 출력
+5. `isItemVegetarian(name)` : name 항목이 채식주의자용 메뉴이면 true, 아니면 false
+
+```java
+PancakeHouseMenu pancakeHouseMenu = new PancakeHouseMenu();
+ArrayList<MenuItem> breakfastItems = pancakeHouseMenu.getMenuItems();
+
+DinerMenu dinerMenu = new DinerMenu();
+MenuItem[] lunchItems = dinerMenu.getMenuItems();
+
+for ( int i=0; i < breakfaseItems.size(); i++) }
+	MenuItem menuItem = breakfastItems.get(i);
+	System.out.println(menuItem.getName());
+	System.out.println(menuItem.getPrice());
+	System.out.println(menuItem.getDescription());
+}
+
+for ( int i=0; i < lunchItems.length; i++) {
+	MenuItem menuItem = lunchItems[i];
+	System.out.println(menuItem.getName());
+	System.out.println(menuItem.getPrice());
+	System.out.println(menuItem.getDescription());
+}
+```
+
+메뉴의 모든 항목을 출력하려면 위와 같은 코드를 작성하게 될 것이다.
+
+다른 메소드들도 결국 위의 코드와 비슷하게 작성될 것이다.
+
+항상 두 메뉴를 이용하고, 각 아이템에 대해서 반복적인 작업을 수행하기 위해 두 개의 순환문을 써야 한다.
+
+이후에 메뉴가 더 추가된다면? 이 상황이 계속 반복될 것이다.
+
+그렇면 반복을 분리해 `Iterator` 라는 객체를 만들자
+
+```java
+Iterator<MenuItem> iterator = breakfastMenu.createIterator();
+while(iterator.hasNext()){
+	MenuItem menuItem = iterator.next();
+}
+
+Iterator<MenuItem> iterator = lunchMenu.createIterator();
+while(iterator.hasNext()){
+	MenuItem menuItem = iterator.next();
+}
+```
+
+사용자 정의 `Iterator` 인터페이스를 만들어도 되지만, `java.util.Iterator` 인터페이스를 사용해서 적용해보자
+
+```java
+public interface Menu {
+	public Iterator<MenuItem> createIterator();
+}
+```
+
+```java
+public class PancakeHouseMenu **implements Menu** {
+	ArrayList<MenuItem> menuItems;
+	
+	public PancakeHouseMenu() {
+		this.menuItems = new ArrayList();
+		additem("K&B 팬케이크 세트","스크램블드 에그와 토스트가 곁들여진 펜케이크",true,2.99);
+		additem("레귤러 팬케이크 세트","달걀 후라이와 소시지가 곁들여진 펜케이크",false,2.99);
+		additem("블루베리 펜케이크","신선한 블루베리와 블루베리 시럽으로 만든 펜케이크",true,3.49);
+		additem("와플","와플, 취향에 따라 블루베리나 딸기를 얹을 수 있습니다.",true,3.59);
+	}
+	
+	public void additem(string name, String description, boolean vegetarian, double price) {
+		MenuItem menuItem = new MenuItem(name, description, vegetarian, price);
+		menuItem.add(menuItem);
+	}
+	
+	public ArrayList<MenuItem> getMenuItems() {
+		return menuItems;	
+	}
+
+	**@Override
+	public Iterator<MenuItem> createIterator() {
+		// ArrayList 컬렉션에 반복자를 리턴하는 iterator() 메소드 활용
+		return menuItems.iterator();
+	}**
+}
+```
+
+```java
+public class DinerMenuIterator implements Iterator<MenuItem> {
+	Menuitem[] list;
+	int position = 0;
+
+	public DinerMenuIterator(MenuItem[] list) {
+		this.list = list;
+	}
+
+	@Override	
+	public MenuItem next() {
+		MenuItem menuItem = list[position];
+		position += 1;
+		return menuItem;
+	}
+
+	@Override
+	public boolean hasNext() {
+		if(position >= list.length || list[position] == null) return false;
+		else return true;
+	}
+	
+	// 반드시 기능을 제공하지 않아도됨 그렇다면 java.lang.UnsupportedOperationException을 던지도록 하면됨
+	@Override
+	public void remove() { 
+		if(position <= 0) 
+			Throw new IllegalStateException("next()가 한번도 호출되지 않음.");
+		
+		if(list[position-1] != null){
+			for(int i=position-1; i<(list.length-1); i++){
+				list[i] = list[i+1];
+			}
+			list[list.length-1] = null;
+		}
+	}
+
+}
+```
+
+```java
+public class DinerMenu **implements Menu** {
+	static final int MAX_ITEMS = 6;
+	int numberOfItems = 0;
+	MenuItem[] menuItems;
+	
+	public DinerMenu() {
+		this.menuItems = new MenuItem[MAX_ITEMS];
+		additem("채식주의자용 BLT","통밀 위에 (식물성)베이컨, 상추, 토마토를 얹은 메뉴",true,2.99);
+		additem("BLT","통밀 위에 베이컨, 상추, 토마토를 얹은 메뉴",false,2.99);
+		additem("오늘의 스프","감자 샐러드를 곁들인 오늘의 스프",false,3.29);
+		additem("핫도그","사워크라우트, 갖은 양념, 양파, 치즈가 곁들여진 핫도그",false,3.05);
+	}
+
+	public void additem(string name, String description, boolean vegetarian, double price) {	
+		MenuItem menuItem = new MenuItem(name, description, vegetarian, price);
+		if(nemberOfItems >= MAX_ITEMS){
+			System.err.println("죄송합니다, 메뉴가 꽉 찼습니다. 더 이상 추가할 수 없습니다.");
+		} else {
+			menuItems[numberOfItems] = menuItem;
+			numberOfItems = numberOfItems+1;
+		}
+	}
+	
+	public MenuItem[] getMenuItems() {
+		return menuItems;
+	}
+
+	**@Override
+	public Iterator<MenuItem> createIterator() {
+		return new DinerMenuIterator(menuItems);
+	}**
+
+}
+```
+
+```java
+public class Waitress {
+	ArrayList<Menu> menus;
+	
+	public Waitress(ArrayList<Menu> menus) {
+		this.menus = menus;
+	}
+	
+	public void printMenu() {
+		Iterator menuIterator = menus.iterator();
+
+		while(menuIterator.hasNext()){
+			Menu menu = menuIterator.next();			
+			printMenu(menu.createIterator());
+		}
+	}
+	
+	private void printMenu(Iterator<MenuItem> iterator) {
+		while(iterator.hasNext()) {
+			MenuItem menuItem = iterator.next();
+			System.out.println(menuItem.getName());
+			System.out.println(menuItem.getPrice());
+			System.out.println(menuItem.getDescription());		
+		}
+	}
+}
+```
+
+```java
+public class MenuTestDrive {
+	public static void main(String args[]) {
+		ArrayList<Menu> menuList = new ArrayList();
+		menuList.add(new PancakeHouseMenu());
+		menuList.add(new DinerMenu());
+		
+		Waitress waitress = new Waitress(menuList);
+		waitress.printMenu();
+	}
+}
+```
+
+위와 같이 `Iterator`  로 분리한 후에  `Waitress` 클래스에서 컬렉션을 받아서 프린트하는 메소드를 작성하면 `main` 에서는 내부 로직을 신경쓰지 않고 모든 항목들에 대해 반복 작업을 수행할 수 있게 된다.
 
 ---
 
