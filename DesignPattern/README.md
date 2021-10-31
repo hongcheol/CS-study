@@ -1364,7 +1364,7 @@ br.readLine();
 <p align="center"><img width="70%" alt="99B6F54A5C68D4A91D" src="https://user-images.githubusercontent.com/51703260/136665199-6829f771-bea6-458e-9e8f-b75d4d1098b3.png"></p>
 
 퍼사드란, 프랑스어 Façade 에서 유래된 단어로 **"건물의 겉면"** 을 의미한다.
-   
+
 퍼사드 패턴의 목적은 복잡한 **서브시스템(내부 구조)** 을 거대한 **클래스(외벽)** 로 감싸서 편리한 인터페이스를 제공해주는 것이다. <br> 이 퍼사드 패턴은 제 3의 API(Third Party API)같은 외부 라이브러리를 추상화 하는데도 사용되기도 한다. 
 
 클라이언트는 퍼사드에서 고수준 인터페이스를 정의하기 때문에 서브시스템을 더 쉽게 사용할 수 있고 오직 퍼사드만 알아도 되므로 서브시스템에 의존하지 않을 수 있게 된다.
@@ -1374,13 +1374,13 @@ br.readLine();
 <p align="center"><img width="70%" alt="99B6F54A5C68D4A91D" src="https://user-images.githubusercontent.com/51703260/136668628-26a61237-872a-49a7-b053-cdfaad07cb46.jpg"></p>
 
 전자레인지를 예시로 퍼사드 패턴을 설명해보려고 한다.
-   
+
 전자레인지를 작동시키는 방법은 전원을 연결시키고 타이머를 설정하고 버튼을 눌러 작동 시킬 수 있다.
-   
+
 우리가 전자레인지를 사용하기 위해서는 전자레인지가 동작하는 원리라던가, 복잡한 내부구조에 대해서는 굳이 알 필요가 없다.
-   
+
 이런것이 일종의 전자레인지 퍼사드라고 이해해도 좋을 것 같다.
-   
+
 #### 전자레인지의 내부 구성
 - `스위치` : 전원을 키고 끔
 - `쿨러` : 전자레인지를 식혀줌
@@ -2408,6 +2408,231 @@ public class WeatherStation {
 * 브로드캐스팅 기능이 요구될 때
 
 +) Observer 패턴은 모델-뷰-컨트롤러(Model-View-controller, MVC) 패러다임과 자주 결합된다. Observer 패턴은 MVC에서 모델과 뷰 사이를 느슨히 연결하기 위해 사용된다. 대표적으로 모델에서 일어나는 이벤트를 통보받는 Observer는 뷰의 내용을 바꾸는 스위치를 작동시킨다.
+
+------
+
+<br>
+
+# Strategy Pattern
+
+Strategy Pattern은 객체들의 행위를 클래스로 만들어서 캡슐화한 뒤, 행위의 변경이나 수정이 필요할 때 동적으로 행위를 바꿀 수 있도록 하는 디자인 패턴입니다.
+
+
+
+<p align="center"><img src="img/Strategy_class.PNG" width="600"></p>
+
+
+
+## Strategy Pattern 사용 예
+
+
+
+<p align="center"><img src="img/Strategy_Robot.PNG" width="400"></p>
+
+```java
+public abstract class Robot {
+  private String name;
+  public Robot(String name) { this.name = name; }
+  public String getName() { return name; }
+  // 추상 메서드
+  public abstract void attack();
+  public abstract void move();
+}
+
+public class TaekwonV extends Robot {
+  public TaekwonV(String name) { super(name); }
+  public void attack() { System.out.println("I have Missile."); }
+  public void move() { System.out.println("I can only walk."); }
+}
+public class Atom extends Robot {
+  public Atom(String name) { super(name); }
+  public void attack() { System.out.println("I have strong punch."); }
+  public void move() { System.out.println("I can fly."); }
+}
+```
+
+
+
+```java
+public class Client {
+  public static void main(String[] args) {
+    Robot taekwonV = new TaekwonV("TaekwonV");
+    Robot atom = new Atom("Atom");
+
+    System.out.println("My name is " + taekwonV.getName());
+    taekwonV.move();
+    taekwonV.attack();
+
+    System.out.println()
+    System.out.println("My name is " + atom.getName());
+    atom.move();
+    atom.attack();
+  }
+}
+
+```
+
+
+
+### Atom이 움직이는 방법을 수정한다면?
+
+```java
+public class Atom extends Robot {
+  public Atom(String name) { super(name); }
+  public void attack() { System.out.println("I have strong punch."); }
+
+  //public void move() { System.out.println("I can fly."); }
+  public void move() { System.out.println("I can only walk."); } // 수정
+}
+```
+
+- move()를 수정하려면 기존 코드의 내용을 수정해야 하므로 OCP에 위배됩니다.
+
+- 상속을 통한 메소드 overriding 구현은 중복 코드가 발생하기 쉽습니다.
+
+  - TaekwonV와 Atom의 move() 메서드 내용이 중복됩니다.
+
+  - 새로운 방식으로 수정하려면 중복 코드를 모두 수정해야 합니다.
+
+
+
+### 해결 방법
+
+<p align="center"><img src="img/Strategy_strategy.PNG" width="800"></p>
+
+- 변화되는 것을 찾고 이를 클래스로 캡슐화합니다.
+  - 변화되는 것: attact(), move()
+  - 공격과 이동을 위한 인터페이스를 만들고 이들을 구현한 클래스를 만들어서 캡슐화.
+- strategy 멤버 변수를 추가하고 setter로 넣어줍니다.
+  - 공격과 이동을 상속받는 것이 아니라 외부 타입의 멤버 변수로 만든다.
+  - 상속이 아닌 구성으로 setter를 통해 동적으로 바인딩이 가능하다.
+  - Robot에 새로운 공격과 이동 방법을 추가할 때 Robot 구현 클래스를 수정하지 않아도 된다.
+  - OCP를 만족
+
+```java
+public abstract class Robot {
+private String name;
+private AttackStrategy attackStrategy;
+private MovingStrategy movingStrategy;
+
+public Robot(String name) { this.name = name; }
+public String getName() { return name; }
+public void attack() { attackStrategy.attack(); }
+public void move() { movingStrategy.move(); }
+
+// setter 메서드
+public void setAttackStrategy(AttackStrategy attackStrategy) {
+  this.attackStrategy = attackStrategy; }
+public void setMovingStrategy(MovingStrategy movingStrategy) {
+  this.movingStrategy = movingStrategy; }
+}
+
+```
+
+
+
+```java
+public class TaekwonV extends Robot {
+	public TaekwonV(String name) { super(name); }
+}
+
+public class Atom extends Robot {
+	public Atom(String name) { super(name); }
+}
+```
+
+
+
+```java
+// 인터페이스
+interface AttackStrategy { public void attack(); }
+
+// 구체적인 클래스
+public class MissileStrategy implements AttackStrategy {
+  public void attack() { System.out.println("I have Missile."); }
+}
+
+public class PunchStrategy implements AttackStrategy {
+  public void attack() { System.out.println("I have strong punch."); }
+}
+
+```
+
+
+
+```java
+// 인터페이스
+interface MovingStrategy { public void move(); }
+
+// 구체적인 클래스
+public class FlyingStrategy implements MovingStrategy {
+  public void move() { System.out.println("I can fly."); }
+}
+
+public class WalkingStrategy implements MovingStrategy {
+  public void move() { System.out.println("I can only walk."); }
+}
+```
+
+
+
+```java
+public class Client {
+	public static void main(String[] args) {
+      Robot taekwonV = new TaekwonV("TaekwonV");
+      Robot atom = new Atom("Atom");
+
+      /* 수정된 부분: 전략 변경 방법 */
+      taekwonV.setMovingStrategy(new WalkingStrategy());
+      taekwonV.setAttackStrategy(new MissileStrategy());
+      atom.setMovingStrategy(new FlyingStrategy());
+      atom.setAttackStrategy(new PunchStrategy());
+
+      /* 아래부터는 동일 */
+      System.out.println("My name is " + taekwonV.getName());
+      taekwonV.move();
+      taekwonV.attack();
+
+      System.out.println()
+      System.out.println("My name is " + atom.getName());
+      atom.move();
+      atom.attack();
+	}
+}
+```
+
+
+
+## 장점 및 단점
+
+- 장점
+  - 동적으로 Context 의 행위를 변경할 수 있습니다.
+  - Context 코드의 변경 없이 새로운 Strategy를 추가하여 수정할 수 있습니다.
+    - OCP를 만족합니다.
+- 단점
+  - Strategy 객체와 Context 객체 사이에 통신 오버헤드가 생깁니다.
+    - Context 객채는 사용하지 않는 Strategy 정보도 갖게 됩니다.
+  - 객체 수가 증가합니다.
+
+
+
+### 실제 사용 예
+
+[Spring framework 에서 oauth2 를 이용하여 google, facebook, 등 로그인을 사용하는 예제](https://kscory.com/dev/design-pattern/strategy)
+
+[스프링 부트 어플리케이션의 전략 패턴](https://velog.io/@hsw0194/%EC%8A%A4%ED%94%84%EB%A7%81-%EB%B6%80%ED%8A%B8-%EC%96%B4%ED%94%8C%EB%A6%AC%EC%BC%80%EC%9D%B4%EC%85%98%EC%9D%98-%EC%A0%84%EB%9E%B5-%ED%8C%A8%ED%84%B4Strategy-Design-Pattern-with-in-Spring-Boot-application)
+
+
+
+### Reference
+
+https://gmlwjd9405.github.io/2018/07/06/strategy-pattern.html
+
+https://victorydntmd.tistory.com/292
+
+------
+
+
 
 <br>
 
