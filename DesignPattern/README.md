@@ -7,7 +7,7 @@
 크게 생성, 구조, 행위 3가지 패턴으로 디자인 패턴을 구분지을 수 있다.
 
 **1. 생성 패턴**
-   - [Builder](#Builder-Pattern)
+   - [Builder](#builder-pattern)
    - Prototype
    - [Factory Method](#factory-method)
    - [Abstract Factory](#abstract-factory)
@@ -25,7 +25,7 @@
 **3. 행위 패턴**
 
    - Interpreter
-   - [Template Method](#Template-Method)
+   - [Template Method](#template-method)
    - Chain of Responsibillity
    - [Command](#command)
    - Iterator
@@ -33,8 +33,8 @@
    - Memento
    - [Observer](#observer)
    - State
-   - Strategy
-   - [Visitor](#Visitor-Pattern)
+   - [Strategy](#strategy-pattern)
+   - [Visitor](#visitor-pattern)
 
 <hr>
 
@@ -2427,7 +2427,7 @@ Strategy Pattern은 객체들의 행위를 클래스로 만들어서 캡슐화�
 
 
 
-<p align="center"><img src="img/Strategy_Robot.PNG" width="400"></p>
+<p align="center"><img src="img/Strategy_robot.PNG" width="400"></p>
 
 ```java
 public abstract class Robot {
