@@ -24,7 +24,7 @@
 
 **3. 행위 패턴**
 
-   - Interpreter
+   - [Interpreter](#interpreter)
    - [Template Method](#template-method)
    - Chain of Responsibillity
    - [Command](#command)
@@ -1719,6 +1719,148 @@ public class Main{
 ---
 
 # 3.행위 패턴
+# Interpreter
+
+## 동기
+문제를 해결하기 위해 간단한 언어(미니 언어)를 만들어야 하는 경우가 있는데, 조금만 확장이 일어나도 코드가 복잡해져 불편했던 경우가 있다. 이러한 문제를 해결하기 위해 등장한 패턴이 인터프리터 패턴이다.
+
+## 설명
+
+문제를 해결하기 위한 간단한 미니 언어를 해석해서 실행하기 위한 통역 프로그램이다. (언어 분석기라고 생각하면 된다.)
+
+언어 문법이나 표현을 평가하는 방법을 제공하는 행동 패턴(Behavioral pattern) 중 하나이다. 
+
+이 패턴은 SQL 구문 분석, 기호 처리 엔진 등에 사용된다.
+
+## BNF
+
+BNF는 컴퓨터 언어에서 언어의 문법을 수학적인 수식으로 나타낼 때 사용하는 언어 도구이다.
+
+대부분의 언어 구조가 BNF 형태로 표현할 수 있기 때문에 언어를 해석할 때 BNF 형태로 나타내는 경우가 많다.
+
+인터프리터 패턴도 BNF 구조의 언어를 해석할 수 있도록 디자인 되었습니다.
+
+> ## (( not X ) and ( Y or Z )) 의 경우
+BNF로 표현된 Syntax의 언어를 분석해서 그림으로 나타내면 아래와 같다.
+![image](https://user-images.githubusercontent.com/53392870/139570650-5d23af40-0d40-4283-995e-e49fdcc8f903.png)
+[출처](https://palpit.tistory.com/entry/Design-Pattern-%EC%9D%B8%ED%84%B0%ED%94%84%EB%A6%AC%ED%84%B0Interpreter-%ED%8C%A8%ED%84%B4-%EB%94%94%EC%9E%90%EC%9D%B8-%ED%8C%A8%ED%84%B4)
+
+위의 그림을 보면 BNF에서 Terminal Expression과 Non-Terminal Expression이 존재합니다.
+인터프리터 패턴 역시 Expression 인터페이스와 Terminal Expression, Non-Terminal Expression을 나타내는 클래스로 구성되어 있습니다.
+
+### 장점
+- 문법의 추가 및 수정, 구현이 쉬워진다.
+각 문법 규칙을 클래스로 표현하기 때문에 언어를 쉽게 구현할 수 있다.
+문법이 클래스에 의해 표현되기 때문에 언어를 쉽게 변경하거나 확장할 수 있다.
+Expression 인터페이스에 메소드만 추가하면 프로그램을 해석하는 기본 기능 외에 보기 쉽게 출력하는 기능이나 더 나은 프로그램 확인 기능과 같은 새로운 기능을 추가할 수 있다.
+
+### 단점
+- 복잡한 문법의 경우 관리 및 유지가 어려워진다.
+문법이 복잡해질 경우 인터프리터 패턴으로 구현하기 보다는 파서 생성기와 같은 도구를 이용하는 것이 낫다.
+- 효율성이 별로 좋지 않다. 따라서 효율성이 고려 사항이 아닌 경우 사용하는 것이 좋다.
+ 
+## 구성
+
+1. Context Class
+문장을 저장하고 관리하는 클래스이다.
+2. Expression Interface
+문장 해석을 위한 인터페이스, interpret 메소드는 문장 해석을 위한 메소드이고 하위 클래스에서 기능을 구현한다.
+3. Terminal Expression Class
+문장 해석의 끝을 의미한다.
+4. Non Terminal Expression Class
+문장 해석에서 계속해서 전개되는 표현식이다.
+
+## 예제
+![image](https://user-images.githubusercontent.com/53392870/139569414-1c633f8a-41d5-4bd1-969c-c73cc5b607cb.png)
+
+1. Expression 인터페이스: 문장을 해석하기 위한 인터페이스, interpret()을 정의한다.
+```java
+public interface Expression {
+	public boolean interpret(String context);
+}
+```
+2. TerminalExpression 클래스: 인터페이스를 구현하는 클래스로 context의 인터프리터 역할을 한다.
+```java
+public class TerminalExpression implements Expression {
+	
+	private String data;
+	
+	public TerminalExpression(String data) {
+		this.data = data;
+	}
+	
+	@Override
+	public boolean interpret(String context) {
+		if (context.contains(data)) return true;
+		else return false;
+	}
+}
+```
+3. AndExpression, OrExpression 클래스: Expression을 구현하고 조합식을 만드는 데 사용한다.
+```java
+public class AndExpression implements Expression{
+	
+	private Expression expr1;
+	private Expression expr2;
+	
+	public AndExpression(Expression expr1, Expression expr2) {
+		this.expr1 = expr1;
+		this.expr2 = expr2;
+	}
+	
+	@Override
+	public boolean interpret(String context) {
+		return expr1.interpret(context) && expr2.interpret(context);
+	}
+}
+```
+```java
+
+public class OrExpression implements Expression{
+	
+	private Expression expr1;
+	private Expression expr2;
+	
+	public OrExpression(Expression expr1, Expression expr2) {
+		this.expr1 = expr1;
+		this.expr2 = expr2;
+	}
+	
+	@Override
+	public boolean interpret(String context) {
+		return expr1.interpret(context) || expr2.interpret(context);
+	}
+}
+```
+4. Main 클래스: Expression 클래스를 사용하여 규칙을 만들고 식을 구문 분석한다.
+```java
+
+public class Main {
+	// Rule: Robert and John are male
+	public static Expression getMaleExpression() {
+		Expression robert = new TerminalExpression("Robert");
+		Expression john = new TerminalExpression("John");
+		return new OrExpression(robert, john);
+	}
+
+	// Rule: Julie is a married women
+	public static Expression getMarriedWomanExpression() {
+		Expression julie = new TerminalExpression("Julie");
+		Expression married = new TerminalExpression("Married");
+		return new AndExpression(julie, married);
+	}
+
+	public static void main(String[] args) {
+		Expression isMale = getMaleExpression();
+		Expression isMarriedWoman = getMarriedWomanExpression();
+
+		System.out.println("John is male? " + isMale.interpret("John"));
+		System.out.println("Julie is a married women? " + isMarriedWoman.interpret("Married Julie"));
+	}
+}
+```
+
+<hr>
 
 # Template Method
 
