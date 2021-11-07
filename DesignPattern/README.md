@@ -19,7 +19,7 @@
    - [Facade](#facade)
    - Flyweight
    - Proxy
-   - Composite
+   - [Composite](#composite)
    - [Adapter](#adapter)
 
 **3. 행위 패턴**
@@ -1574,7 +1574,152 @@ public class MicrowaveTest {
 #### 단점
 - 클라이언트에게 내부 서브시스템까지 숨길 수는 없다.
 - 클라이언트가 서브시스템 내부의 클래스를 직접 사용하는 것을 막을 수 없다.
+
 ---
+
+## Composite
+
+![image](https://user-images.githubusercontent.com/51703260/140633928-205dd18b-c314-49f8-83e8-baeccf12d8b5.png)
+
+### Composite Pattern 이란?
+Composite Pattern은 객체들을 트리 구조로 구성한 다음, 이러한 구조를 개별 객체인 것처럼 사용할 수 있는 구조 설계 디자인 패턴이다.
+
+### Problem
+> Composite Pattern을 사용하는 것은 어플리케이션의 핵심 모델을 트리로 나타낼 수 있는 경우에만 의미가 있다.
+
+![image](https://user-images.githubusercontent.com/51703260/140634082-16812f69-8d0a-42bd-8bde-53f71d07d38f.png)
+
+예를 들어, `Product` 및 `Box`라는 두 가지 유형의 객체가 있다고 가정해 보자. 
+
+`Box`에는 여러 `Product`와 여러 개의 작은 `Box`가 포함될 수 있다. 이러한 작은 상자에는 일부 `Product` 또는 더 작은 `Box` 등이 포함될 수 있다.
+
+그 다음 이러한 클래스를 사용하는 주문 시스템을 만들기로 결정했다고 추가적으로 가정해 보자. 
+
+주문에는 박스 포장이 없는 `Prodcut`와, 작은 Box와 Product들로 채워진 `Box`가 포함될 수 있다.
+
+이 때, 주문의 총 가격을 어떻게 결정해야할까?
+
+당장 떠오르는 러프한 결정 방법으로는 포장된 상자를 모두 풀고 모든 제품을 살펴본 다음 합계를 계산하는 방법이 있다. 이 방법은 현실세계에서 이런식으로 할 수 있다.
+
+하지만, 프로그램에서는 이건 그렇게 간단한 문제가 아니다.
+
+그렇다면 어떤 해결 방법이 있을까?
+
+### Solution
+Composite pattern을 적용한다면, 토탈 가격을 계산할 수 있는 공통 인터페이스를 선언하고 `Product`와 `Box`가 이를 구현하는 방식으로 문제를 해결할 수 있다.
+
+이러한 구조는 어떻게 작동할까? 
+
+`Product`의 경우, 단순히 Product의 가격을 리턴한다. 
+
+`Box`의 경우 Box에 들어 있는 각 아이템들을 살펴보고 각각 아이템에 대한 가격을 모두 구한 다음 결과적으로 이 상자에 대한 토탈 가격을 리턴한다. 
+
+![image](https://user-images.githubusercontent.com/51703260/140634390-d3312d75-37d4-4e82-b6a9-342709211c47.png)
+
+만약 `Box`의 아이템이 `더 작은 Box`라면, 재귀적으로 접근하여 작은 Box 또한 자신이 담겨있는 큰 Box와 동일한 매커니즘으로 가격을 구할 수 있다.
+
+<br/>
+
+이러한 접근 방식의 가장 큰 장점은 트리를 구성하는 객체들의 구체적인 클래스에 대해 신경을 쓰지않아도 된다는 점이다.
+
+`Box`속 객체가 `Product`인지 또 `다른 Box`인지 알 필요없이 공통 인터페이스를 통해 모두 동일하게 처리할 수 있다. 
+
+### Structure
+
+![image](https://user-images.githubusercontent.com/51703260/140637232-3bc42df8-2d7a-4409-a3d1-2f0e637adc8e.png)
+
+Composite Pattern의 구조는 위에서 설명했듯 트리구조이고, 크게 4가지로 구조를 구분할 수 있다.
+
+1. `Component` : Component 인터페이스는 트리의 단일 객체(like `Product`)와 복합 객체(like `Box`) 모두에게 공통 인터페이스를 제공한다.
+2. `Leaf` : Leaf는 일반적인 트리구조에서 Leaf Node와 같은 의미이다. Composite Pattern에서 Leaf는 트리의 단순 요소(like `Product`)만으로 이루어져 있으므로 대부분의 실제 작업을 수행한다. 
+3. `Container` : Container는 Composite와 동일한 의미이며, Container는 하위 요소들을 가진 요소(like `작은 Box`를 가진 `Box`)이다. <br/>
+    자식들의 구체적인 클래스를 알지못하며 공통 인터페이스를 통해 모든 하위 요소와 함께 작동한다. <br/>
+    요청을 받으면 본인이 처리할 수 있는 부분은 직접 처리하고, 하위 요소중 자신과 같은 Container가 있다면 자식 Container에게 작업을 위임하여 결과를 리턴받고 결과를 종합하여 응답한다.
+4. `Client` : Client는 Component 인터페이스를 통해 모든 구성요소와 함께 작동한다. 결과적으로 Client는 트리의 단순 요소 또는 복잡한 요소 모두에 대해 동일한 방식으로 작업할 수 있게된다.
+
+### Implementation
+
+지금까지의 `Product` `Box`를 예시로 Composite Pattern을 간단하게 구현해보자.
+
+> Product.interface
+```java
+public interface Products {
+	int getPrice();
+}
+```
+
+> Product.class
+```java
+public class Product implements Products{
+	int price = 1000;
+	
+	@Override
+	public int getPrice() {
+		return this.price;
+	}
+}
+```
+
+> Box.class
+```java
+import java.util.*;
+
+public class Box implements Products{
+	List<Products> products = new ArrayList<Products>();
+	int price;
+	
+	public void addProduct(Products product) {
+		products.add(product);
+	}
+	
+	@Override
+	public int getPrice() {
+		for(Products product : products) this.price += product.getPrice();
+		return this.price;
+	}
+}
+```
+
+> Main.class
+```java
+public class Main {
+	public static void main(String[] args) {
+		Box box1 = new Box();
+		box1.addProduct(new Product());
+		box1.addProduct(new Product());
+		box1.addProduct(new Product());
+		
+		Box box2 = new Box();
+		box2.addProduct(new Product());
+		box2.addProduct(new Product());
+		box2.addProduct(box1);
+		
+		Box product = new Box();
+		product.addProduct(new Product());
+		product.addProduct(box2);
+		
+		System.out.println(product.getPrice());
+	}
+}
+```
+
+> 출력 : 6000 
+
+### Composite Pattern의 장단점
+**장점**
+- 객체들이 모두 같은 타입으로 취급되기 때문에 새로운 클래스 추가가 용이하다.
+- 단일 객체, 복합 객체 구분하지 않고 코드 작성이 가능하다.
+
+**단점**
+- 설계를 일반화 시켜 객체간의 구분, 제약이 힘들다.
+
+정리하자면, 컴포지트 패턴의 장점은 사용자 입장에서는 이게 단일 객체인지 복합 객체인지 신경쓰지 않고 사용할 수 있다는 장점이 있지만 설계가 지나치게 범용성을 갖기 때문에 새로운 요소를 추가할 때 복합 객체에서 구성 요소에 제약을 갖기가 힘들다.
+
+### Reference
+[https://refactoring.guru/design-patterns/composite](https://refactoring.guru/design-patterns/composite)
+
+---
+
 ## Adapter
 #### 어댑터 패턴(Decorator Pattern)이란 한 클래스의 인터페이스를 클라이언트에서 사용하고자 할 때, 다른 인터페이스로 변환시켜 사용하는 패턴이다. 
 #### 어댑터를 이용하면 인터페이스 호환성 문제 때문에 같이 쓸 수 없는 클래스들을 연결해서 쓸 수 있다.
