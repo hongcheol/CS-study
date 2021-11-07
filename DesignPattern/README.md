@@ -7,7 +7,7 @@
 크게 생성, 구조, 행위 3가지 패턴으로 디자인 패턴을 구분지을 수 있다.
 
 **1. 생성 패턴**
-   - [Builder](#builder-pattern)
+   - [Builder](#builder)
    - Prototype
    - [Factory Method](#factory-method)
    - [Abstract Factory](#abstract-factory)
@@ -33,8 +33,8 @@
    - Memento
    - [Observer](#observer)
    - State
-   - [Strategy](#strategy-pattern)
-   - [Visitor](#visitor-pattern)
+   - [Strategy](#strategy)
+   - [Visitor](#visitor)
 
 <hr>
 
@@ -42,7 +42,7 @@
 
 <br>
 
-# Builder Pattern
+# Builder
 
 복잡한 객체에 대해 `생성(contruction)과 표현(representation)을 분리`함으로써 **똑같은 생성 과정으로 서로 다른 객체 표현**을 가능하게 하는 생성 디자인 패턴
 
@@ -3223,9 +3223,7 @@ public class WeatherStation {
 
 ------
 
-<br>
-
-# Strategy Pattern
+## Strategy
 
 Strategy Pattern은 객체들의 행위를 클래스로 만들어서 캡슐화한 뒤, 행위의 변경이나 수정이 필요할 때 동적으로 행위를 바꿀 수 있도록 하는 디자인 패턴입니다.
 
@@ -3235,7 +3233,7 @@ Strategy Pattern은 객체들의 행위를 클래스로 만들어서 캡슐화�
 
 
 
-## Strategy Pattern 사용 예
+### Strategy Pattern 사용 예
 
 
 
@@ -3413,9 +3411,7 @@ public class Client {
 }
 ```
 
-
-
-## 장점 및 단점
+### 장점 및 단점
 
 - 장점
   - 동적으로 Context 의 행위를 변경할 수 있습니다.
@@ -3426,15 +3422,11 @@ public class Client {
     - Context 객채는 사용하지 않는 Strategy 정보도 갖게 됩니다.
   - 객체 수가 증가합니다.
 
-
-
 ### 실제 사용 예
 
 [Spring framework 에서 oauth2 를 이용하여 google, facebook, 등 로그인을 사용하는 예제](https://kscory.com/dev/design-pattern/strategy)
 
 [스프링 부트 어플리케이션의 전략 패턴](https://velog.io/@hsw0194/%EC%8A%A4%ED%94%84%EB%A7%81-%EB%B6%80%ED%8A%B8-%EC%96%B4%ED%94%8C%EB%A6%AC%EC%BC%80%EC%9D%B4%EC%85%98%EC%9D%98-%EC%A0%84%EB%9E%B5-%ED%8C%A8%ED%84%B4Strategy-Design-Pattern-with-in-Spring-Boot-application)
-
-
 
 ### Reference
 
@@ -3444,16 +3436,12 @@ https://victorydntmd.tistory.com/292
 
 ------
 
-
-
-<br>
-
-# Visitor Pattern
+## Visitor
 
 `객체`(데이터 구조)와 `로직`(알고리즘)을 분리하는 디자인 패턴  
 새로운 로직을 추가하더라도 객체의 구조는 변경하지 않은 채 새로운 동작을 추가할 수 있다.
 
-## Visitor Pattern을 적용하기 위한 빌드 업
+### Visitor Pattern을 적용하기 위한 빌드 업
 
 유리컵과 신선 식품을 파는 쇼핑몰 사장님이 됐다고 생각해보자. 눈치 챘겠지만 이 예제에서 **객체**는 **상품**(유리컵, 신선 식품)이 될 것이고, **로직**은 **상품 주문**이 될 것이다.
 
@@ -3593,13 +3581,13 @@ public static void main(String[] args) {
 
 ### 문제 3. Single Dispatch(Dynamic Dispatch) 문제
 
-#### Dispatch란?
+### Dispatch란?
 
 `Dispatch`란 메서드를 호출하는 방식을 말한다.
 
 자바는 런타임 시에 어떤 메서드를 호출할지 결정하는, 즉 **런타임** 시에 생성되는 인스턴스를 **동적으로 타입 체크** 하는 `dynamic dispatch`만을 지원한다.(single dispatch)
 
-#### 예제
+### 예제
 
 1. 2번 예제의 상품 객체와 주문 클래스를 유지하되, 주문 클래스에서 각 상품 타입 별 메서드를 생성한다.
 
@@ -3655,7 +3643,7 @@ public static void main(String[] args) {
 
 <br>
 
-## Visitor Pattern을 이용한 해결 방안
+### Visitor Pattern을 이용한 해결 방안
 
 이제 위의 문제점들을 Visitor Pattern을 이용해 해결해보자. 
 
@@ -3765,10 +3753,9 @@ Visitor 패턴을 적용한 이후 달라진 부분은 다음과 같다.
 <br>
 <hr>
 
-#### References
+### References
 
 [방문자 패턴 - Visitor pattern by Jeongjin Kim](https://thecodinglog.github.io/design/2019/10/29/visitor-pattern.html)
 
 [토비의봄#01. Double Dispatch by LichKing](https://multifrontgarden.tistory.com/133)
 
-<br>
