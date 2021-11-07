@@ -45,8 +45,96 @@ Composite pattern을 적용한다면, 토탈 가격을 계산할 수 있는 공�
 
 `Box`속 객체가 `Product`인지 또 `다른 Box`인지 알 필요없이 공통 인터페이스를 통해 모두 동일하게 처리할 수 있다. 
 
+### Structure
 
+![image](https://user-images.githubusercontent.com/51703260/140637232-3bc42df8-2d7a-4409-a3d1-2f0e637adc8e.png)
 
+Composite Pattern의 구조는 위에서 설명했듯 트리구조이고, 크게 4가지로 구조를 구분할 수 있다.
+
+1. `Component` : Component 인터페이스는 트리의 단일 객체(like `Product`)와 복합 객체(like `Box`) 모두에게 공통 인터페이스를 제공한다.
+2. `Leaf` : Leaf는 일반적인 트리구조에서 Leaf Node와 같은 의미이다. Composite Pattern에서 Leaf는 트리의 단순 요소(like `Product`)만으로 이루어져 있으므로 대부분의 실제 작업을 수행한다. 
+3. `Container` : Container는 Composite와 동일한 의미이며, Container는 하위 요소들을 가진 요소(like `작은 Box`를 가진 `Box`)이다. <br/>
+    자식들의 구체적인 클래스를 알지못하며 공통 인터페이스를 통해 모든 하위 요소와 함께 작동한다. <br/>
+    요청을 받으면 본인이 처리할 수 있는 부분은 직접 처리하고, 하위 요소중 자신과 같은 Container가 있다면 자식 Container에게 작업을 위임하여 결과를 리턴받고 결과를 종합하여 응답한다.
+4. `Client` : Client는 Component 인터페이스를 통해 모든 구성요소와 함께 작동한다. 결과적으로 Client는 트리의 단순 요소 또는 복잡한 요소 모두에 대해 동일한 방식으로 작업할 수 있게된다.
+
+### Implementation
+
+지금까지의 `Product` `Box`예시로 Composite Pattern을 구현해보자.
+
+> Product.interface
+```java
+public interface Products {
+	int getPrice();
+}
+```
+
+> Product.class
+```java
+public class Product implements Products{
+	int price = 1000;
+	
+	@Override
+	public int getPrice() {
+		return this.price;
+	}
+}
+```
+
+> Box.class
+```java
+import java.util.*;
+
+public class Box implements Products{
+	List<Products> products = new ArrayList<Products>();
+	int price;
+	
+	public void addProduct(Products product) {
+		products.add(product);
+	}
+	
+	@Override
+	public int getPrice() {
+		for(Products product : products) this.price += product.getPrice();
+		return this.price;
+	}
+}
+```
+
+> Main.class
+```java
+public class Main {
+	public static void main(String[] args) {
+		Box box1 = new Box();
+		box1.addProduct(new Product());
+		box1.addProduct(new Product());
+		box1.addProduct(new Product());
+		
+		Box box2 = new Box();
+		box2.addProduct(new Product());
+		box2.addProduct(new Product());
+		box2.addProduct(box1);
+		
+		Box product = new Box();
+		product.addProduct(new Product());
+		product.addProduct(box2);
+		
+		System.out.println(product.getPrice());
+	}
+}
+```
+
+> 출력 : 6000 
+
+### Composite Pattern의 장단점
+**장점**
+- 객체들이 모두 같은 타입으로 취급되기 때문에 새로운 클래스 추가가 용이하다.
+- 단일 객체, 복합 객체 구분하지 않고 코드 작성이 가능하다.
+
+**단점**
+- 설계를 일반화 시켜 객체간의 구분, 제약이 힘들다.
+
+정리하자면, 컴포지트 패턴의 장점은 사용자 입장에서는 이게 단일 객체인지 복합 객체인지 신경쓰지 않고 사용할 수 있다는 장점이 있지만 설계가 지나치게 범용성을 갖기 때문에 새로운 요소를 추가할 때 복합 객체에서 구성 요소에 제약을 갖기가 힘들다.
 
 # Bridge
 
