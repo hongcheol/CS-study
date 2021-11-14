@@ -32,7 +32,7 @@
    - Mediator
    - Memento
    - [Observer](#observer)
-   - State
+   - [State](#state-pattern)
    - Strategy
    - [Visitor](#Visitor-Pattern)
 
@@ -2633,6 +2633,257 @@ https://victorydntmd.tistory.com/292
 ------
 
 
+
+<br>
+
+# State Pattern
+
+State Pattern은 객체의 내부 상태에 따라 객체의 행위를 바꿔야 할 때,  행위를 객체화 하여 상태를 직접 확인하지 않고 상태 객체에 상태에 따라 다른 행위를 하도록 위임하는 패턴입니다. 
+
+그래서 객체의 상태를 인터페이스로 캡슐화 한 뒤, 특정 상태를 클래스로 선언하고 그 상태에서 할 수 있는 행위들을 메서드로 정의하여 사용합니다.
+
+<p align="center"><img src="https://user-images.githubusercontent.com/37362758/141669819-2f7199cc-3c7d-4898-bfc6-22087da2cbf9.PNG" width="500"></p>
+
+- Context: 클라이언트 객체를 의미합니다. request를 호출하면 state의 handle을 요청합니다.
+- State: 객체의 행위를 정의한 인터페이스입니다.
+- ConcreteState: State 인터페이스를 구현한 클래스입니다. Context로 부터 전달된 요청을 처리합니다. 각 클래스는 각각의 상태에 따라 수행할 handle 메서드를 구현합니다.
+
+
+
+## State Pattern 사용 예
+
+ON, OFF 스위치를 가진 형광등 클래스를 구현합니다.
+
+ON을 누르면 불이 켜지고, OFF를 누르면 불이 꺼집니다. 불이 켜졌을 때 ON을 누르거나 불이 꺼졌을 때 OFF를 누르면 동작하지 않습니다.
+
+- 사용 전
+
+```java
+public class NotStatePattern {
+    
+    public static final int ON=1;
+    public static final int OFF=0;
+    
+    //현 상태
+    private int currentState;
+    
+    public NotStatePattern() {
+        currentState=OFF;
+    }
+    
+    //ON 스위치 push
+    public void on_button() {
+        if(currentState==ON) System.out.println("동작 없음.");
+        else {
+            System.out.println("불 켜짐!");
+            currentState=ON;
+        }
+    }
+    //OFF 스위치 push    
+    public void off_button() {
+        if(currentState==OFF) System.out.println("동작 없음.");
+        else {
+            System.out.println("불 꺼짐!");
+            currentState=OFF;
+        }
+    }
+    
+}
+```
+
+하지만, 형광등의 불이 켜졌을 때 ON 버튼을 누르면 수면 모드가 되도록 기능을 추가한다면 코드에는 더 많은 변수와 if문이 필요합니다. 
+그래서 위와 같은 구조라면 기능이 추가될 때마다 코드가 수정되어야 하고, 유지보수가 힘들어 질 것입니다. 즉 OCP를 만족하지 않습니다.
+
+
+
+- 사용 후
+
+```java
+// Context
+public class Light {
+    
+    private State state;
+    
+    public Light() {
+        state=OffState.getInstance();
+    }
+    
+    public void setState(State state) {
+        this.state=state;
+    }
+    
+    // 형광등의 상태를 변경하기 위해서 자기자신을 매개변수로 보냅니다.
+    public void onButton() {
+        this.state.onButton(this);
+    }
+    
+    public void offButton() {
+        this.state.offButton(this);
+    }
+    
+}
+```
+
+
+
+```java
+// State
+public interface State {
+    
+    public void onButton(Light light);
+    public void offButton(Light light);
+    
+}
+
+```
+
+
+
+```java
+// ConcreteState
+// 상태들은 Light 객체의 상태를 수시로 바꾸어주기 때문에 싱글톤으로 설계하여
+// 새로운 객체 생성으로 인한 메모리 과다 사용을 막습니다.
+public class OnState implements State {
+    
+    private OnState() {}
+    
+    private static class LazyHolder{
+        public static final OnState ON=new OnState();
+    }
+   
+    public static OnState getInstance() {
+        return LazyHolder.ON;
+    }
+ 
+    @Override
+    public void onButton(Light light) {
+        light.setState(SleepState.getInstance());
+        System.out.println("잠자기 모드!");
+    }
+ 
+    @Override
+    public void offButton(Light light) {
+        light.setState(OffState.getInstance());
+        System.out.println("불 꺼짐!");
+    }
+ 
+}
+ 
+public class OffState implements State {
+    
+    private OffState() {}
+    
+    private static class LazyHolder{
+        public static final OffState OFF=new OffState();
+    }
+    
+    public static OffState getInstance() {
+        return LazyHolder.OFF;
+    }
+    
+    @Override
+    public void onButton(Light light) {
+        light.setState(OnState.getInstance());
+        System.out.println("불 켜짐!");
+    }
+ 
+    @Override
+    public void offButton(Light light) {
+        System.out.println("동작 없음!");
+    }
+ 
+}
+ 
+public class SleepState implements State {
+    
+    private SleepState() {}
+    
+    private static class LazyHolder{
+        public static final SleepState SLEEP=new SleepState();
+    }
+    
+    public static SleepState getInstance() {
+        return LazyHolder.SLEEP;
+    }
+    
+    @Override
+    public void onButton(Light light) {
+        light.setState(OnState.getInstance());
+        System.out.println("잠자기 모드 해제!(ON 상태)");
+    }
+ 
+    @Override
+    public void offButton(Light light) {
+        light.setState(OffState.getInstance());
+        System.out.println("불 꺼짐!");
+    }
+ 
+}
+```
+
+
+
+```java
+public class StatePatternMain {
+ 
+    public static void main(String[] args) {
+        Light l = new Light();
+        
+        l.offButton();
+        l.onButton();
+        l.onButton();
+        l.onButton();
+        l.offButton();
+        l.onButton();
+        l.offButton();
+    }
+ 
+}
+
+=>result
+동작 없음!
+불 켜짐!
+잠자기 모드!
+잠자기 모드 해제!(ON 상태)
+불 꺼짐!
+불 켜짐!
+불 꺼짐!
+```
+
+State Pattern을 적용하면 클라이언트는 현재 상태와 그에 따른 행위를 상태 클래스에 모두 위임합니다. 그래서 새로운 기능이 추가될 때,  상태 클래스를 추가 구현하기만 하면 되므로 OCP를 만족합니다.
+
+
+
+## 장점 및 단점
+
+- 장점
+  -  하나의 객체에 대한 여러 동작을 구현해야할 때 상태 객체만 수정하므로 동작의 추가, 삭제 및 수정이 간단해집니다.
+  - 객체의 상태에 따른 조건문(if/else, switch)이 줄어들어 코드가 간결해지고 가독성이 올라갑니다.
+- 단점
+  - 상태에 따른 조건문을 대신한 상태 객체가 증가하여 관리해야할 클래스의 수가 증가합니다.
+
+
+
+## Strategy Pattern과 State Pattern의 차이
+
+Strategy Pattern과 State Pattern은 클래스 다이어그램이 똑같습니다. 하지만 사용 용도에는 차이가 있습니다.
+
+Strategy Pattern 실행 중에 객체의 행동을 변경시킬 수 있는 유연성을 제공하는 것이 목적입니다. 
+그래서 상속을 대신해서 구성을 통해 행동을 정의하는 전략 객체를 유연하게 바꿀 수 있게 설계하였습니다.  그러므로 클라이언트에서 컨텍스트 객체한테 어떤 전략 객체를 사용할 지 지정해야하며, 클라이언트는 전략들을 선택해야 하기 때문에 어떤 전략들이 있는지 알고 있어야 합니다. 
+
+ 하지만, State Pattern은 객체의 상태에 따라 행동을 다르게 하기 위해 객체의 상태 체크에 필요한 코드 내의 조건문들을  없애는 것이 목적입니다. 그래서 상태 객체를 만들어서 알고리즘을 캡슐화 한뒤, 내부 상태에 따라 상태 객체의 행동이 바뀌도록 설계하였습니다.  그러므로 클라이언트에서는 상태 객체에 대해 몰라도 됩니다. 
+
+
+
+### Reference
+
+https://coding-start.tistory.com/247
+
+https://victorydntmd.tistory.com/294
+
+https://always-intern.tistory.com/9
+
+------
 
 <br>
 
