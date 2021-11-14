@@ -7,42 +7,41 @@
 크게 생성, 구조, 행위 3가지 패턴으로 디자인 패턴을 구분지을 수 있다.
 
 **1. 생성 패턴**
-   - [Builder](#Builder-Pattern)
+   - [Builder](#builder)
    - Prototype
    - [Factory Method](#factory-method)
    - [Abstract Factory](#abstract-factory)
    - [Singleton](#singleton)
 
 **2. 구조 패턴**
-   - Bridge
+   - [Bridge](#bridge)
    - [Decorator](#decorator)
    - [Facade](#facade)
    - Flyweight
    - Proxy
-   - Composite
+   - [Composite](#composite)
    - [Adapter](#adapter)
 
 **3. 행위 패턴**
 
-   - Interpreter
-   - [Template Method](#Template-Method)
+   - [Interpreter](#interpreter)
+   - [Template Method](#template-method)
    - Chain of Responsibillity
    - [Command](#command)
-   - Iterator
+   - [Iterator](#iterator)
    - Mediator
    - Memento
    - [Observer](#observer)
-   - [State](#state-pattern)
-   - Strategy
-   - [Visitor](#Visitor-Pattern)
-
+   - [Strategy](#strategy)
+   - [State](#state)
+   - [Visitor](#visitor)
 <hr>
 
 # 1. 생성패턴 
 
 <br>
 
-# Builder Pattern
+# Builder
 
 복잡한 객체에 대해 `생성(contruction)과 표현(representation)을 분리`함으로써 **똑같은 생성 과정으로 서로 다른 객체 표현**을 가능하게 하는 생성 디자인 패턴
 
@@ -1097,8 +1096,217 @@ public class Singleton2 {
     }
 }
 ```
+---
 
-# 2. 구조패턴 
+# 2. 구조패턴
+
+## Bridge
+
+![image](https://user-images.githubusercontent.com/51703260/139539726-1d068a79-2be8-4053-98fe-13c9cdd3e0b2.png)
+
+### Bridge 패턴이란?
+
+큰 클래스 또는 밀접하게 관련된 클래스 집합을 서로 독립적으로 개발할 수 있도록 두 개의 계층(기능 계층과 구현 계층)으로 분리한 디자인 패턴이다.
+
+구현부에서 추상층을 분리하여 각자 독립적으로 변형이 가능하고 확장이 가능하도록 한다. 즉 기능과 구현에 대해서 두 개를 별도의 클래스로 구현을 한다.
+
+![image](https://user-images.githubusercontent.com/51703260/139540332-abdf7c90-daee-46cd-ada2-5e0f9a0b6125.png)
+
+먼저 브릿지 패턴이 왜 필요한지 알아보자. 
+
+### Problem
+
+`Shape`라는 클래스가 `Circle`과 `Square`라는 2개의 서브클래스를 가진다고 가정해보자. 
+
+이 클래스 구조에서 각각 `Red`와 `Blue` 라는 Color를 적용시켜 Shape에 **Color를 통합, 확장시키려고 한다.**
+
+이미 `Shape`에는 `Circle`과 `Square`라는 하위 클래스가 있으므로, 위 이미지와 같이 `BlueCircle` 및 `RedSquare`와 같이 네 개의 클래스 조합을 만들어야 한다.
+
+만약 계속 이런 방식으로 클래스를 확장해 나가서 Shape가 100개, Color가 100개가 된다면 10,000개의 클래스가 필요하게 된다.
+
+이 후 Shape이나, Color를 1개라도 추가시키려면 각 Shape별 혹은 Color별 클래스가 100개씩 추가시키는 작업이 필요하게 되는 것은 큰 문제이다.
+
+이러한 문제를 해결하는 디자인 패턴이 바로 브릿지 패턴이다.
+
+### Solution
+
+위와 같은 문제는 Shape 클래스를 Shape별, Color별 독립적으로 확장하려고 하기 때문에 발생하는 문제인데, 이러한 문제는 계급 상속과 관련된 매우 흔한 문제라고 할 수 있다.
+
+브릿지 패턴은 객체 합성으로 이 문제를 해결한다. 한 클래스 내에 모든 상태나 동작을 포함하는 것이 아닌 아래의 이미지와 같이 원래의 클래스가 새로 확장하려는 상태를 클래스로 분리하여 해당 클래스를 참조하여 조합을 만드는 것이다.
+
+![image](https://user-images.githubusercontent.com/51703260/139540800-86a35324-bb99-48dc-ae37-3db3af9666e7.png)
+
+### Bridge 패턴 구조
+
+![image](https://user-images.githubusercontent.com/51703260/139540113-b331333f-b29c-46e8-94ea-308bcaad7ae8.png)
+
+- `Client` : 일반적으로 클라이언트는 추상화 작업에만 관심이 있지만 추상화 개체를 구현 개체 중 하나와 연결하는 것은 클라이언트가 해주어야 하는 작업이다.
+
+- `Abstraction` : 기능 계층의 최상위 클래스. 구현 부분에 해당하는 클래스를 인스턴스를 가지고 해당 인스턴스를 통해 구현 부분의 메서드를 호출한다.
+
+- `Refined Abstraction` : 기능 계층에서 새로운 부분을 확장한 클래스
+
+- `Implementation` : Abstraction의 기능을 구현하기 위한 인터페이스 정의
+
+- `ConcreteImplementions` : 실제 기능을 구현한다.
+
+### Bridge 패턴 구현
+
+![image](https://user-images.githubusercontent.com/51703260/139540304-cb7a48ac-16ba-4c57-9a69-5da09f9050ed.png)
+
+> RemoteControl.class
+```java
+public class RemoteControl {
+    private Device divice;
+    
+    public RemoteControl(Device divice){
+         this.divice = divice;
+    }
+    
+    public void togglePower() {
+         if(divice.isEnabled()) divice.disable();
+         else divice.enable();
+    }
+    
+    public void volumeDown {
+         device.setVolume(device.getVolume() - 10);
+    }
+    
+    public void volumeUp {
+         device.setVolume(device.getVolume() + 10);
+    }
+    
+    public void channelDown {
+         device.setChannel(device.getChannel() - 1);
+    }
+    
+    public void channelUp {
+         device.setChannel(device.getChannel() + 1);
+    }
+}
+```
+
+> AdvancedRemoteControl.class
+```java
+public class AdvancedRemoteControl extends RemoteControl {
+    public void mute() {
+         device.setVolume(0);
+    }
+}
+```
+
+> Device.interface
+```java
+public interface Device {
+    public boolean isEnabled();
+    public void enable();
+    public void disable();
+    public int getVolume();
+    public void setVolume(int percent);
+    public int getChannel();
+    public void setChannel(int channel);
+}
+```
+
+> Radio.class
+```java
+public class Radio implements Device {
+    private int volume = 50, channel = 11;
+    private boolean isEnabled;
+
+    public boolean isEnabled(){
+         return this.isEnabled
+    }
+    public void enable(){
+         this.isEnabled = true;
+    }
+    public void disable(){
+         this.isEnabled = false;
+    }
+    public int getVolume(){
+         return this.volume;
+    }
+    public void setVolume(int volume){
+         this.volume = volume;
+    }
+    public int getChannel(){
+         return this.channel;
+    }
+    public void setChannel(int channel){
+         this.channel = channel;
+    }
+}
+```
+
+> TV.class
+```java
+public class TV implements Device{
+    private int volume, channel;
+    private boolean isEnabled;
+
+    public boolean isEnabled(){
+         return this.isEnabled
+    }
+    public void enable(){
+         this.isEnabled = true;
+    }
+    public void disable(){
+         this.isEnabled = false;
+    }
+    public int getVolume(){
+         return this.volume;
+    }
+    public void setVolume(int volume){
+         this.volume = volume;
+    }
+    public int getChannel(){
+         return this.channel;
+    }
+    public void setChannel(int channel){
+         this.channel = channel;
+    }
+}
+```
+
+> Main.class
+```java
+public class Main {
+    public static void main(String argsp[])
+    {    
+        tv = new Tv()
+         remote = new RemoteControl(tv);
+         remote.togglePower();
+
+         radio = new Radio();
+         remote = new AdvancedRemoteControl(radio);
+    }
+}
+```
+
+흔히 `Adapter` 패턴과 `Bridge` 패턴을 헷갈려하는 경우가 많다고 한다. 
+
+`Adapter` 패턴은 **서로 다른 인터페이스(API)를 연결해주는 패턴**이라면, 
+
+`Bridge` 패턴은 **구현 계층과 기능(추상) 계층을 서로 분리, 연결시켜주는 패턴**이다.
+
+### Bridge 패턴의 활용
+- 여러 플랫폼에서 사용해야 할 그래픽스 및 윈도우 처리 시스템에서 유용하게 쓰인다.
+- 인터페이스와 실제 구현부를 서로 다른 방식으로 변경해야 하는 경우에 유용하게 쓰인다.
+
+### Bridge 패턴의 장점
+- 조합의 개수가 늘어남으로써 발생하는 기하급수적인 클래스 확장을 막을 수 있다.
+- 구현을 인터페이스에 완전히 결합시키지 않았기 때문에 구현과 추상화된 부분을 분리시킬 수 있다.
+- 추상화된 부분과 실제 구현 부분을 독립적으로 확장할 수 있습니다.
+- 추상화된 부분을 구현한 구상 클래스를 바꿔도 클라이언트 쪽에는 영향을 끼치지 않는다.
+
+### Bridge 패턴의 단점
+- 응집도가 높은 클래스에 적용하면 코드와 디자인이 더 복잡해진다는 단점이 있다.
+
+### Reference
+[https://refactoring.guru/design-patterns/bridge](https://refactoring.guru/design-patterns/bridge)
+
+---
+
 ## Decorator
 #### 데코레이터 패턴(Decorator Pattern)이란 주어진 상황 및 용도에 따라 어떤 객체에 장식(기능)을 추가하는 패턴이다. 
 #### 객체에 추가적인 기능을 동적으로 첨가하며, 기능 확장이 필요할 때 서브클래스 대신 쓸 수 있는 유연한 대안이 될 수 있다.
@@ -1574,7 +1782,152 @@ public class MicrowaveTest {
 #### 단점
 - 클라이언트에게 내부 서브시스템까지 숨길 수는 없다.
 - 클라이언트가 서브시스템 내부의 클래스를 직접 사용하는 것을 막을 수 없다.
+
 ---
+
+## Composite
+
+![image](https://user-images.githubusercontent.com/51703260/140633928-205dd18b-c314-49f8-83e8-baeccf12d8b5.png)
+
+### Composite Pattern 이란?
+Composite Pattern은 객체들을 트리 구조로 구성한 다음, 이러한 구조를 개별 객체인 것처럼 사용할 수 있는 구조 설계 디자인 패턴이다.
+
+### Problem
+> Composite Pattern을 사용하는 것은 어플리케이션의 핵심 모델을 트리로 나타낼 수 있는 경우에만 의미가 있다.
+
+![image](https://user-images.githubusercontent.com/51703260/140634082-16812f69-8d0a-42bd-8bde-53f71d07d38f.png)
+
+예를 들어, `Product` 및 `Box`라는 두 가지 유형의 객체가 있다고 가정해 보자. 
+
+`Box`에는 여러 `Product`와 여러 개의 작은 `Box`가 포함될 수 있다. 이러한 작은 상자에는 일부 `Product` 또는 더 작은 `Box` 등이 포함될 수 있다.
+
+그 다음 이러한 클래스를 사용하는 주문 시스템을 만들기로 결정했다고 추가적으로 가정해 보자. 
+
+주문에는 박스 포장이 없는 `Prodcut`와, 작은 Box와 Product들로 채워진 `Box`가 포함될 수 있다.
+
+이 때, 주문의 총 가격을 어떻게 결정해야할까?
+
+당장 떠오르는 러프한 결정 방법으로는 포장된 상자를 모두 풀고 모든 제품을 살펴본 다음 합계를 계산하는 방법이 있다. 이 방법은 현실세계에서 이런식으로 할 수 있다.
+
+하지만, 프로그램에서는 이건 그렇게 간단한 문제가 아니다.
+
+그렇다면 어떤 해결 방법이 있을까?
+
+### Solution
+Composite pattern을 적용한다면, 토탈 가격을 계산할 수 있는 공통 인터페이스를 선언하고 `Product`와 `Box`가 이를 구현하는 방식으로 문제를 해결할 수 있다.
+
+이러한 구조는 어떻게 작동할까? 
+
+`Product`의 경우, 단순히 Product의 가격을 리턴한다. 
+
+`Box`의 경우 Box에 들어 있는 각 아이템들을 살펴보고 각각 아이템에 대한 가격을 모두 구한 다음 결과적으로 이 상자에 대한 토탈 가격을 리턴한다. 
+
+![image](https://user-images.githubusercontent.com/51703260/140634390-d3312d75-37d4-4e82-b6a9-342709211c47.png)
+
+만약 `Box`의 아이템이 `더 작은 Box`라면, 재귀적으로 접근하여 작은 Box 또한 자신이 담겨있는 큰 Box와 동일한 매커니즘으로 가격을 구할 수 있다.
+
+<br/>
+
+이러한 접근 방식의 가장 큰 장점은 트리를 구성하는 객체들의 구체적인 클래스에 대해 신경을 쓰지않아도 된다는 점이다.
+
+`Box`속 객체가 `Product`인지 또 `다른 Box`인지 알 필요없이 공통 인터페이스를 통해 모두 동일하게 처리할 수 있다. 
+
+### Structure
+
+![image](https://user-images.githubusercontent.com/51703260/140637232-3bc42df8-2d7a-4409-a3d1-2f0e637adc8e.png)
+
+Composite Pattern의 구조는 위에서 설명했듯 트리구조이고, 크게 4가지로 구조를 구분할 수 있다.
+
+1. `Component` : Component 인터페이스는 트리의 단일 객체(like `Product`)와 복합 객체(like `Box`) 모두에게 공통 인터페이스를 제공한다.
+2. `Leaf` : Leaf는 일반적인 트리구조에서 Leaf Node와 같은 의미이다. Composite Pattern에서 Leaf는 트리의 단순 요소(like `Product`)만으로 이루어져 있으므로 대부분의 실제 작업을 수행한다. 
+3. `Container` : Container는 Composite와 동일한 의미이며, Container는 하위 요소들을 가진 요소(like `작은 Box`를 가진 `Box`)이다. <br/>
+    자식들의 구체적인 클래스를 알지못하며 공통 인터페이스를 통해 모든 하위 요소와 함께 작동한다. <br/>
+    요청을 받으면 본인이 처리할 수 있는 부분은 직접 처리하고, 하위 요소중 자신과 같은 Container가 있다면 자식 Container에게 작업을 위임하여 결과를 리턴받고 결과를 종합하여 응답한다.
+4. `Client` : Client는 Component 인터페이스를 통해 모든 구성요소와 함께 작동한다. 결과적으로 Client는 트리의 단순 요소 또는 복잡한 요소 모두에 대해 동일한 방식으로 작업할 수 있게된다.
+
+### Implementation
+
+지금까지의 `Product` `Box`를 예시로 Composite Pattern을 간단하게 구현해보자.
+
+> Product.interface
+```java
+public interface Products {
+	int getPrice();
+}
+```
+
+> Product.class
+```java
+public class Product implements Products{
+	int price = 1000;
+	
+	@Override
+	public int getPrice() {
+		return this.price;
+	}
+}
+```
+
+> Box.class
+```java
+import java.util.*;
+
+public class Box implements Products{
+	List<Products> products = new ArrayList<Products>();
+	int price;
+	
+	public void addProduct(Products product) {
+		products.add(product);
+	}
+	
+	@Override
+	public int getPrice() {
+		for(Products product : products) this.price += product.getPrice();
+		return this.price;
+	}
+}
+```
+
+> Main.class
+```java
+public class Main {
+	public static void main(String[] args) {
+		Box box1 = new Box();
+		box1.addProduct(new Product());
+		box1.addProduct(new Product());
+		box1.addProduct(new Product());
+		
+		Box box2 = new Box();
+		box2.addProduct(new Product());
+		box2.addProduct(new Product());
+		box2.addProduct(box1);
+		
+		Box product = new Box();
+		product.addProduct(new Product());
+		product.addProduct(box2);
+		
+		System.out.println(product.getPrice());
+	}
+}
+```
+
+> 출력 : 6000 
+
+### Composite Pattern의 장단점
+**장점**
+- 객체들이 모두 같은 타입으로 취급되기 때문에 새로운 클래스 추가가 용이하다.
+- 단일 객체, 복합 객체 구분하지 않고 코드 작성이 가능하다.
+
+**단점**
+- 설계를 일반화 시켜 객체간의 구분, 제약이 힘들다.
+
+정리하자면, 컴포지트 패턴의 장점은 사용자 입장에서는 이게 단일 객체인지 복합 객체인지 신경쓰지 않고 사용할 수 있다는 장점이 있지만 설계가 지나치게 범용성을 갖기 때문에 새로운 요소를 추가할 때 복합 객체에서 구성 요소에 제약을 갖기가 힘들다.
+
+### Reference
+[https://refactoring.guru/design-patterns/composite](https://refactoring.guru/design-patterns/composite)
+
+---
+
 ## Adapter
 #### 어댑터 패턴(Decorator Pattern)이란 한 클래스의 인터페이스를 클라이언트에서 사용하고자 할 때, 다른 인터페이스로 변환시켜 사용하는 패턴이다. 
 #### 어댑터를 이용하면 인터페이스 호환성 문제 때문에 같이 쓸 수 없는 클래스들을 연결해서 쓸 수 있다.
@@ -1719,6 +2072,148 @@ public class Main{
 ---
 
 # 3.행위 패턴
+# Interpreter
+
+## 동기
+문제를 해결하기 위해 간단한 언어(미니 언어)를 만들어야 하는 경우가 있는데, 조금만 확장이 일어나도 코드가 복잡해져 불편했던 경우가 있다. 이러한 문제를 해결하기 위해 등장한 패턴이 인터프리터 패턴이다.
+
+## 설명
+
+문제를 해결하기 위한 간단한 미니 언어를 해석해서 실행하기 위한 통역 프로그램이다. (언어 분석기라고 생각하면 된다.)
+
+언어 문법이나 표현을 평가하는 방법을 제공하는 행동 패턴(Behavioral pattern) 중 하나이다. 
+
+이 패턴은 SQL 구문 분석, 기호 처리 엔진 등에 사용된다.
+
+## BNF
+
+BNF는 컴퓨터 언어에서 언어의 문법을 수학적인 수식으로 나타낼 때 사용하는 언어 도구이다.
+
+대부분의 언어 구조가 BNF 형태로 표현할 수 있기 때문에 언어를 해석할 때 BNF 형태로 나타내는 경우가 많다.
+
+인터프리터 패턴도 BNF 구조의 언어를 해석할 수 있도록 디자인 되었습니다.
+
+> ## (( not X ) and ( Y or Z )) 의 경우
+BNF로 표현된 Syntax의 언어를 분석해서 그림으로 나타내면 아래와 같다.
+![image](https://user-images.githubusercontent.com/53392870/139570650-5d23af40-0d40-4283-995e-e49fdcc8f903.png)
+[출처](https://palpit.tistory.com/entry/Design-Pattern-%EC%9D%B8%ED%84%B0%ED%94%84%EB%A6%AC%ED%84%B0Interpreter-%ED%8C%A8%ED%84%B4-%EB%94%94%EC%9E%90%EC%9D%B8-%ED%8C%A8%ED%84%B4)
+
+위의 그림을 보면 BNF에서 Terminal Expression과 Non-Terminal Expression이 존재합니다.
+인터프리터 패턴 역시 Expression 인터페이스와 Terminal Expression, Non-Terminal Expression을 나타내는 클래스로 구성되어 있습니다.
+
+### 장점
+- 문법의 추가 및 수정, 구현이 쉬워진다.
+각 문법 규칙을 클래스로 표현하기 때문에 언어를 쉽게 구현할 수 있다.
+문법이 클래스에 의해 표현되기 때문에 언어를 쉽게 변경하거나 확장할 수 있다.
+Expression 인터페이스에 메소드만 추가하면 프로그램을 해석하는 기본 기능 외에 보기 쉽게 출력하는 기능이나 더 나은 프로그램 확인 기능과 같은 새로운 기능을 추가할 수 있다.
+
+### 단점
+- 복잡한 문법의 경우 관리 및 유지가 어려워진다.
+문법이 복잡해질 경우 인터프리터 패턴으로 구현하기 보다는 파서 생성기와 같은 도구를 이용하는 것이 낫다.
+- 효율성이 별로 좋지 않다. 따라서 효율성이 고려 사항이 아닌 경우 사용하는 것이 좋다.
+
+## 구성
+
+1. Context Class
+문장을 저장하고 관리하는 클래스이다.
+2. Expression Interface
+문장 해석을 위한 인터페이스, interpret 메소드는 문장 해석을 위한 메소드이고 하위 클래스에서 기능을 구현한다.
+3. Terminal Expression Class
+문장 해석의 끝을 의미한다.
+4. Non Terminal Expression Class
+문장 해석에서 계속해서 전개되는 표현식이다.
+
+## 예제
+![image](https://user-images.githubusercontent.com/53392870/139569414-1c633f8a-41d5-4bd1-969c-c73cc5b607cb.png)
+
+1. Expression 인터페이스: 문장을 해석하기 위한 인터페이스, interpret()을 정의한다.
+```java
+public interface Expression {
+	public boolean interpret(String context);
+}
+```
+2. TerminalExpression 클래스: 인터페이스를 구현하는 클래스로 context의 인터프리터 역할을 한다.
+```java
+public class TerminalExpression implements Expression {
+	
+	private String data;
+	
+	public TerminalExpression(String data) {
+		this.data = data;
+	}
+	
+	@Override
+	public boolean interpret(String context) {
+		if (context.contains(data)) return true;
+		else return false;
+	}
+}
+```
+3. AndExpression, OrExpression 클래스: Expression을 구현하고 조합식을 만드는 데 사용한다.
+```java
+public class AndExpression implements Expression{
+	
+	private Expression expr1;
+	private Expression expr2;
+	
+	public AndExpression(Expression expr1, Expression expr2) {
+		this.expr1 = expr1;
+		this.expr2 = expr2;
+	}
+	
+	@Override
+	public boolean interpret(String context) {
+		return expr1.interpret(context) && expr2.interpret(context);
+	}
+}
+```
+```java
+
+public class OrExpression implements Expression{
+	
+	private Expression expr1;
+	private Expression expr2;
+	
+	public OrExpression(Expression expr1, Expression expr2) {
+		this.expr1 = expr1;
+		this.expr2 = expr2;
+	}
+	
+	@Override
+	public boolean interpret(String context) {
+		return expr1.interpret(context) || expr2.interpret(context);
+	}
+}
+```
+4. Main 클래스: Expression 클래스를 사용하여 규칙을 만들고 식을 구문 분석한다.
+```java
+
+public class Main {
+	// Rule: Robert and John are male
+	public static Expression getMaleExpression() {
+		Expression robert = new TerminalExpression("Robert");
+		Expression john = new TerminalExpression("John");
+		return new OrExpression(robert, john);
+	}
+
+	// Rule: Julie is a married women
+	public static Expression getMarriedWomanExpression() {
+		Expression julie = new TerminalExpression("Julie");
+		Expression married = new TerminalExpression("Married");
+		return new AndExpression(julie, married);
+	}
+
+	public static void main(String[] args) {
+		Expression isMale = getMaleExpression();
+		Expression isMarriedWoman = getMarriedWomanExpression();
+
+		System.out.println("John is male? " + isMale.interpret("John"));
+		System.out.println("Julie is a married women? " + isMarriedWoman.interpret("Married Julie"));
+	}
+}
+```
+
+<hr>
 
 # Template Method
 
@@ -2143,6 +2638,322 @@ https://brownbears.tistory.com/561
 
 ---
 
+# Iterator
+
+컬렉션 구현 방법을 노출시키지 않으면서 그 집합체 안에 들어있는 모든 항목에 접근할 수 있는 방법을 제공한다.
+
+컬렉션 객체 안에 들어있는 모든 항목에 접근하는 방식이 통일되어 있으면 어떤 종류의 집합체에 대해서도 사용할 수 있는 다형적인 코드를 만들 수 있다.
+
+이터레이터 패턴을 사용하면 모든 항목에 일일이 접근하는 작업을 컬렉션 객체가 아닌 반복자 객체에서 맡게 된다.
+
+이렇게 하면 집합체의 인터페이스 및 구현이 간단해질 뿐 아니라, 집합체에서는 반복작업에서 손을 떼고 원래 자신이 할 일 (객체 컬렉션 관리) 에만 전념할 수 있다.
+
+## 예제
+
+두 개의 서로다른 식당이 있고 각각의 식당에서 메뉴를 구현한다고 가정해보자
+
+```java
+public class MenuItem {
+	String name;
+	String description;
+	String vegetarian;
+	double price;
+
+	public MenuItem(String name, String description, boolean vegetarian, double price){
+		this.nae = name;
+		this.description = description;
+		this.vegetarian = vegetarian;	
+		this.price = price;
+	}
+
+	public String getName() {
+		return name;
+	}
+	
+	public String getDescription() {
+		return description;
+	}
+
+	public double getPrice() {
+		return price;
+	}
+
+	public boolean isVegetarian() {
+		return vegetarian;
+	}
+	
+}
+```
+
+```java
+public class PancakeHouseMenu {
+	ArrayList<MenuItem> menuItems;
+	
+	public PancakeHouseMenu() {
+		this.menuItems = new ArrayList();
+		additem("K&B 팬케이크 세트","스크램블드 에그와 토스트가 곁들여진 펜케이크",true,2.99);
+		additem("레귤러 팬케이크 세트","달걀 후라이와 소시지가 곁들여진 펜케이크",false,2.99);
+		additem("블루베리 펜케이크","신선한 블루베리와 블루베리 시럽으로 만든 펜케이크",true,3.49);
+		additem("와플","와플, 취향에 따라 블루베리나 딸기를 얹을 수 있습니다.",true,3.59);
+	}
+	
+	public void additem(string name, String description, boolean vegetarian, double price) {
+		MenuItem menuItem = new MenuItem(name, description, vegetarian, price);
+		menuItem.add(menuItem);
+	}
+	
+	public ArrayList<MenuItem> getMenuItems() {
+		return menuItems;	
+	}
+
+	//기타 메소드
+}
+```
+
+```java
+public class DinerMenu {
+	static final int MAX_ITEMS = 6;
+	int numberOfItems = 0;
+	MenuItem[] menuItems;
+	
+	public DinerMenu() {
+		this.menuItems = new MenuItem[MAX_ITEMS];
+		additem("채식주의자용 BLT","통밀 위에 (식물성)베이컨, 상추, 토마토를 얹은 메뉴",true,2.99);
+		additem("BLT","통밀 위에 베이컨, 상추, 토마토를 얹은 메뉴",false,2.99);
+		additem("오늘의 스프","감자 샐러드를 곁들인 오늘의 스프",false,3.29);
+		additem("핫도그","사워크라우트, 갖은 양념, 양파, 치즈가 곁들여진 핫도그",false,3.05);
+	}
+
+	public void additem(string name, String description, boolean vegetarian, double price) {	
+		MenuItem menuItem = new MenuItem(name, description, vegetarian, price);
+		if(nemberOfItems >= MAX_ITEMS){
+			System.err.println("죄송합니다, 메뉴가 꽉 찼습니다. 더 이상 추가할 수 없습니다.");
+		} else {
+			menuItems[numberOfItems] = menuItem;
+			numberOfItems = numberOfItems+1;
+		}
+	}
+	
+	public MenuItem[] getMenuItems() {
+		return menuItems;
+	}
+
+	//기타 메소드
+
+}
+```
+
+이 위의 두 개의 메뉴를 사용하는 클라이언트를 만들어보자.
+
+클라이언트의 기능은 아래와 같다.
+
+1. `printMenu()` : 메뉴에 있는 모든 항목 출력
+2. `printBreakfastMenu()` : 아침 식사 항목만 출력
+3. `printLunchMenu()` : 점심 식사 항목만 출력
+4. `printVegetarianMenu()` : 채식주의자용 메뉴 항목만 출력
+5. `isItemVegetarian(name)` : name 항목이 채식주의자용 메뉴이면 true, 아니면 false
+
+```java
+PancakeHouseMenu pancakeHouseMenu = new PancakeHouseMenu();
+ArrayList<MenuItem> breakfastItems = pancakeHouseMenu.getMenuItems();
+
+DinerMenu dinerMenu = new DinerMenu();
+MenuItem[] lunchItems = dinerMenu.getMenuItems();
+
+for ( int i=0; i < breakfaseItems.size(); i++) }
+	MenuItem menuItem = breakfastItems.get(i);
+	System.out.println(menuItem.getName());
+	System.out.println(menuItem.getPrice());
+	System.out.println(menuItem.getDescription());
+}
+
+for ( int i=0; i < lunchItems.length; i++) {
+	MenuItem menuItem = lunchItems[i];
+	System.out.println(menuItem.getName());
+	System.out.println(menuItem.getPrice());
+	System.out.println(menuItem.getDescription());
+}
+```
+
+메뉴의 모든 항목을 출력하려면 위와 같은 코드를 작성하게 될 것이다.
+
+다른 메소드들도 결국 위의 코드와 비슷하게 작성될 것이다.
+
+항상 두 메뉴를 이용하고, 각 아이템에 대해서 반복적인 작업을 수행하기 위해 두 개의 순환문을 써야 한다.
+
+이후에 메뉴가 더 추가된다면? 이 상황이 계속 반복될 것이다.
+
+그렇면 반복을 분리해 `Iterator` 라는 객체를 만들자
+
+```java
+Iterator<MenuItem> iterator = breakfastMenu.createIterator();
+while(iterator.hasNext()){
+	MenuItem menuItem = iterator.next();
+}
+
+Iterator<MenuItem> iterator = lunchMenu.createIterator();
+while(iterator.hasNext()){
+	MenuItem menuItem = iterator.next();
+}
+```
+
+사용자 정의 `Iterator` 인터페이스를 만들어도 되지만, `java.util.Iterator` 인터페이스를 사용해서 적용해보자
+
+```java
+public interface Menu {
+	public Iterator<MenuItem> createIterator();
+}
+```
+
+```java
+public class PancakeHouseMenu **implements Menu** {
+	ArrayList<MenuItem> menuItems;
+	
+	public PancakeHouseMenu() {
+		this.menuItems = new ArrayList();
+		additem("K&B 팬케이크 세트","스크램블드 에그와 토스트가 곁들여진 펜케이크",true,2.99);
+		additem("레귤러 팬케이크 세트","달걀 후라이와 소시지가 곁들여진 펜케이크",false,2.99);
+		additem("블루베리 펜케이크","신선한 블루베리와 블루베리 시럽으로 만든 펜케이크",true,3.49);
+		additem("와플","와플, 취향에 따라 블루베리나 딸기를 얹을 수 있습니다.",true,3.59);
+	}
+	
+	public void additem(string name, String description, boolean vegetarian, double price) {
+		MenuItem menuItem = new MenuItem(name, description, vegetarian, price);
+		menuItem.add(menuItem);
+	}
+	
+	public ArrayList<MenuItem> getMenuItems() {
+		return menuItems;	
+	}
+
+	**@Override
+	public Iterator<MenuItem> createIterator() {
+		// ArrayList 컬렉션에 반복자를 리턴하는 iterator() 메소드 활용
+		return menuItems.iterator();
+	}**
+}
+```
+
+```java
+public class DinerMenuIterator implements Iterator<MenuItem> {
+	Menuitem[] list;
+	int position = 0;
+
+	public DinerMenuIterator(MenuItem[] list) {
+		this.list = list;
+	}
+
+	@Override	
+	public MenuItem next() {
+		MenuItem menuItem = list[position];
+		position += 1;
+		return menuItem;
+	}
+
+	@Override
+	public boolean hasNext() {
+		if(position >= list.length || list[position] == null) return false;
+		else return true;
+	}
+	
+	// 반드시 기능을 제공하지 않아도됨 그렇다면 java.lang.UnsupportedOperationException을 던지도록 하면됨
+	@Override
+	public void remove() { 
+		if(position <= 0) 
+			Throw new IllegalStateException("next()가 한번도 호출되지 않음.");
+		
+		if(list[position-1] != null){
+			for(int i=position-1; i<(list.length-1); i++){
+				list[i] = list[i+1];
+			}
+			list[list.length-1] = null;
+		}
+	}
+
+}
+```
+
+```java
+public class DinerMenu **implements Menu** {
+	static final int MAX_ITEMS = 6;
+	int numberOfItems = 0;
+	MenuItem[] menuItems;
+	
+	public DinerMenu() {
+		this.menuItems = new MenuItem[MAX_ITEMS];
+		additem("채식주의자용 BLT","통밀 위에 (식물성)베이컨, 상추, 토마토를 얹은 메뉴",true,2.99);
+		additem("BLT","통밀 위에 베이컨, 상추, 토마토를 얹은 메뉴",false,2.99);
+		additem("오늘의 스프","감자 샐러드를 곁들인 오늘의 스프",false,3.29);
+		additem("핫도그","사워크라우트, 갖은 양념, 양파, 치즈가 곁들여진 핫도그",false,3.05);
+	}
+
+	public void additem(string name, String description, boolean vegetarian, double price) {	
+		MenuItem menuItem = new MenuItem(name, description, vegetarian, price);
+		if(nemberOfItems >= MAX_ITEMS){
+			System.err.println("죄송합니다, 메뉴가 꽉 찼습니다. 더 이상 추가할 수 없습니다.");
+		} else {
+			menuItems[numberOfItems] = menuItem;
+			numberOfItems = numberOfItems+1;
+		}
+	}
+	
+	public MenuItem[] getMenuItems() {
+		return menuItems;
+	}
+
+	**@Override
+	public Iterator<MenuItem> createIterator() {
+		return new DinerMenuIterator(menuItems);
+	}**
+
+}
+```
+
+```java
+public class Waitress {
+	ArrayList<Menu> menus;
+	
+	public Waitress(ArrayList<Menu> menus) {
+		this.menus = menus;
+	}
+	
+	public void printMenu() {
+		Iterator menuIterator = menus.iterator();
+
+		while(menuIterator.hasNext()){
+			Menu menu = menuIterator.next();			
+			printMenu(menu.createIterator());
+		}
+	}
+	
+	private void printMenu(Iterator<MenuItem> iterator) {
+		while(iterator.hasNext()) {
+			MenuItem menuItem = iterator.next();
+			System.out.println(menuItem.getName());
+			System.out.println(menuItem.getPrice());
+			System.out.println(menuItem.getDescription());		
+		}
+	}
+}
+```
+
+```java
+public class MenuTestDrive {
+	public static void main(String args[]) {
+		ArrayList<Menu> menuList = new ArrayList();
+		menuList.add(new PancakeHouseMenu());
+		menuList.add(new DinerMenu());
+		
+		Waitress waitress = new Waitress(menuList);
+		waitress.printMenu();
+	}
+}
+```
+
+위와 같이 `Iterator`  로 분리한 후에  `Waitress` 클래스에서 컬렉션을 받아서 프린트하는 메소드를 작성하면 `main` 에서는 내부 로직을 신경쓰지 않고 모든 항목들에 대해 반복 작업을 수행할 수 있게 된다.
+
+---
+
 <br>
 
 # Observer
@@ -2411,9 +3222,7 @@ public class WeatherStation {
 
 ------
 
-<br>
-
-# Strategy Pattern
+## Strategy
 
 Strategy Pattern은 객체들의 행위를 클래스로 만들어서 캡슐화한 뒤, 행위의 변경이나 수정이 필요할 때 동적으로 행위를 바꿀 수 있도록 하는 디자인 패턴입니다.
 
@@ -2423,11 +3232,11 @@ Strategy Pattern은 객체들의 행위를 클래스로 만들어서 캡슐화�
 
 
 
-## Strategy Pattern 사용 예
+### Strategy Pattern 사용 예
 
 
 
-<p align="center"><img src="img/Strategy_Robot.PNG" width="400"></p>
+<p align="center"><img src="img/Strategy_robot.PNG" width="400"></p>
 
 ```java
 public abstract class Robot {
@@ -2601,9 +3410,7 @@ public class Client {
 }
 ```
 
-
-
-## 장점 및 단점
+### 장점 및 단점
 
 - 장점
   - 동적으로 Context 의 행위를 변경할 수 있습니다.
@@ -2614,15 +3421,11 @@ public class Client {
     - Context 객채는 사용하지 않는 Strategy 정보도 갖게 됩니다.
   - 객체 수가 증가합니다.
 
-
-
 ### 실제 사용 예
 
 [Spring framework 에서 oauth2 를 이용하여 google, facebook, 등 로그인을 사용하는 예제](https://kscory.com/dev/design-pattern/strategy)
 
 [스프링 부트 어플리케이션의 전략 패턴](https://velog.io/@hsw0194/%EC%8A%A4%ED%94%84%EB%A7%81-%EB%B6%80%ED%8A%B8-%EC%96%B4%ED%94%8C%EB%A6%AC%EC%BC%80%EC%9D%B4%EC%85%98%EC%9D%98-%EC%A0%84%EB%9E%B5-%ED%8C%A8%ED%84%B4Strategy-Design-Pattern-with-in-Spring-Boot-application)
-
-
 
 ### Reference
 
@@ -2636,7 +3439,7 @@ https://victorydntmd.tistory.com/292
 
 <br>
 
-# State Pattern
+# State
 
 State Pattern은 객체의 내부 상태에 따라 객체의 행위를 바꿔야 할 때,  행위를 객체화 하여 상태를 직접 확인하지 않고 상태 객체에 상태에 따라 다른 행위를 하도록 위임하는 패턴입니다. 
 
@@ -2887,12 +3690,12 @@ https://always-intern.tistory.com/9
 
 <br>
 
-# Visitor Pattern
+## Visitor
 
 `객체`(데이터 구조)와 `로직`(알고리즘)을 분리하는 디자인 패턴  
 새로운 로직을 추가하더라도 객체의 구조는 변경하지 않은 채 새로운 동작을 추가할 수 있다.
 
-## Visitor Pattern을 적용하기 위한 빌드 업
+### Visitor Pattern을 적용하기 위한 빌드 업
 
 유리컵과 신선 식품을 파는 쇼핑몰 사장님이 됐다고 생각해보자. 눈치 챘겠지만 이 예제에서 **객체**는 **상품**(유리컵, 신선 식품)이 될 것이고, **로직**은 **상품 주문**이 될 것이다.
 
@@ -3032,13 +3835,13 @@ public static void main(String[] args) {
 
 ### 문제 3. Single Dispatch(Dynamic Dispatch) 문제
 
-#### Dispatch란?
+### Dispatch란?
 
 `Dispatch`란 메서드를 호출하는 방식을 말한다.
 
 자바는 런타임 시에 어떤 메서드를 호출할지 결정하는, 즉 **런타임** 시에 생성되는 인스턴스를 **동적으로 타입 체크** 하는 `dynamic dispatch`만을 지원한다.(single dispatch)
 
-#### 예제
+### 예제
 
 1. 2번 예제의 상품 객체와 주문 클래스를 유지하되, 주문 클래스에서 각 상품 타입 별 메서드를 생성한다.
 
@@ -3094,7 +3897,7 @@ public static void main(String[] args) {
 
 <br>
 
-## Visitor Pattern을 이용한 해결 방안
+### Visitor Pattern을 이용한 해결 방안
 
 이제 위의 문제점들을 Visitor Pattern을 이용해 해결해보자. 
 
@@ -3204,10 +4007,9 @@ Visitor 패턴을 적용한 이후 달라진 부분은 다음과 같다.
 <br>
 <hr>
 
-#### References
+### References
 
 [방문자 패턴 - Visitor pattern by Jeongjin Kim](https://thecodinglog.github.io/design/2019/10/29/visitor-pattern.html)
 
 [토비의봄#01. Double Dispatch by LichKing](https://multifrontgarden.tistory.com/133)
 
-<br>
