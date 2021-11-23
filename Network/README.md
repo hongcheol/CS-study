@@ -5,11 +5,11 @@
    1. [IPv4](#ipv4)
    2. [IPv6](#ipv6)
    3. [공인 IP, 사설 IP](#공인-ip-사설-ip)
-3. [TCP/IP](#tcp/ip)
+3. [TCP/IP](#tcpip)
 4. [UDP](#udp)
 5. [대칭키 & 공개키](#대칭키-공개키)
 6. [Load Balancing](#load-balancing)
-7. [Blocking/Non-Blocking & Synchronous/Asynchronous I/O](#Blocking-vs-Non-Blocking-IO와-Synchronous-vs-Asynchronous-IO)
+7. [Blocking/Non-Blocking & Synchronous/Asynchronous I/O](#blocking-vs-non-blocking-io와-synchronous-vs-asynchronous-io)
 8. [웹 동작 방식](#웹-동작-방식)
 9. [DNS](#dns)
 10. [HTTP 프로토콜](#http-프로토콜)
@@ -17,7 +17,7 @@
 12. [HTTP Method](#http-method)
 13. [HTTP 상태 코드](#http-상태코드)
 14. [쿠키, 세션](#쿠키-세션)
-15. [JWT, OAuth](#JWT-OAuth)
+15. [JWT, OAuth](#jwt-oauth)
 
 # OSI 7계층
 
